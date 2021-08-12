@@ -40,7 +40,7 @@ jobs:
 
   release:
     name: Release to GitHub
-    # if: contains(github.event.head_commit.message, 'release:') && github.repository == 'NTBBloodbath/lcfetch'
+    if: contains(github.event.head_commit.message, 'release:') && github.repository == 'NTBBloodbath/lcfetch'
     needs: [linux]
     runs-on: ubuntu-latest
     steps:
@@ -56,8 +56,7 @@ jobs:
 
       - name: Compress
         run: |
-          [ -f lcfetch ] && echo "lcfetch binary found"
-          mv lcfetch-x86_64 lcfetch && tar caf lcfetch-x86_64.tar.xz lcfetch && rm lcfetch
+          tar caf lcfetch-x86_64.tar.xz lcfetch && rm lcfetch
           ls -lh
 
       - name: Setup Release information
