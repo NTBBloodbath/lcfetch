@@ -11,9 +11,11 @@ CC=clang
 CCF=clang-format
 CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -llua -lX11
 
+PANDOC=pandoc
+
 LOG_INFO=$(shell date +"%H:%M:%S") \e[1;32mINFO\e[0m
 
-.PHONY: clean fmt build run
+.PHONY: clean fmt build run docs
 .SILENT: clean run
 .DEFAULT_GOAL := all
 
@@ -28,9 +30,11 @@ build: clean lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfet
 
 install: build
 	@echo -e "$(LOG_INFO) Installing lcfetch under $(PREFIX)/bin directory ..."
-	mkdir -p $(PREFIX)/bin $(CONFIG_DIR)
+	mkdir -p $(PREFIX)/bin $(PREFIX)/share/man/man1 $(CONFIG_DIR)
 	install $(BIN_DIR)/lcfetch $(PREFIX)/bin/lcfetch
 	cp $(CURDIR)/config/sample.lua $(CONFIG_DIR)/config.lua
+	cp $(CURDIR)/man/lcfetch.1 $(PREFIX)/share/man/man1/lcfetch.1
+	mandb -pu
 
 
 clean:
@@ -42,6 +46,11 @@ endif
 fmt:
 	@echo -e "$(LOG_INFO) Formatting source code ..."
 	$(CCF) -style=file --sort-includes -i $(INC_DIR)/*.h $(LIB_DIR)/*.c
+
+
+docs:
+	@echo -e "$(LOG_INFO) Generating man pages ..."
+	$(PANDOC) $(CURDIR)/man/lcfetch.1.md -s -t man -o $(CURDIR)/man/lcfetch.1
 
 
 run: build
