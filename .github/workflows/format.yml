@@ -1,0 +1,44 @@
+name: format
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          path: lcfetch
+          submodules: recursive
+
+      - name: Install clang-format
+        run: |
+          sudo apt update -q
+          sudo apt install clang-format -y -q
+
+      - name: Format source code
+        run: |
+          cd ./lcfetch
+          make fmt
+
+      - name: Commit changes
+        run: |
+          cd ./lcfetch
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          if [[ ! -z $(git status -s) ]]; then
+            git add .
+            git commit -m "chore: format source code"
+          fi
+
+      - name: Push formatted files
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          directory: ./lcfetch
