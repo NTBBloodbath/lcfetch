@@ -19,12 +19,12 @@ written in C and configured using Lua (still in a very early stage)!
 You can grab the latest release from our [releases](https://github.com/NTBBloodbath/lcfetch/releases/latest)
 or if you want to live in the bleeding-edge with the latest features you can [build from source](#building-from-source).
 
+> **NOTE**: lcfetch was tested only with Lua `5.3+` but should work as expected with earlier
+> Lua versions.
+
 ### Building from source
 
 #### Installing dependencies
-
-> **NOTE**: lcfetch was tested only with Lua 5.3+ but should work as expected with earlier
-> Lua versions.
 
 ##### Ubuntu
 
