@@ -128,7 +128,7 @@ configuration options has a **options.** prefix because they're a Lua table.
     - circles
 
 **ascii_distro**
-: ASCII distro logo to be printed.
+: ASCII distro logo to be printed (does nothing at the moment).
 
 **display_logo**
 : If the ASCII distro logo should be printed.
