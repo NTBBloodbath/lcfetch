@@ -323,8 +323,6 @@ int main(int argc, char *argv[]) {
                         if (strcmp(field, "") == 0) {
                             printf("%s%s\n", LOGO[i], "\e[0m");
                         } else {
-                            // strncpy(field_message, field, -1);
-                            // printf("%s", field_message);
                             if (strcasecmp(field, "OS") == 0) {
                                 function = get_os();
                                 field_message = get_option_string("os_message");
