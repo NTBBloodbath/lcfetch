@@ -54,6 +54,9 @@ in C and configuredusing Lua.
 **lcfetch** uses the Lua scripting language as its configurations language. All the
 configuration options has a **options.** prefix because they're a Lua table.
 
+The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
+`config.lua` file by default.
+
 **enabled_fields**
 : Enabled information fields, the data that will be printed.
 
