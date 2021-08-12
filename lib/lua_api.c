@@ -94,6 +94,7 @@ void init_options(void) {
     // TODO: stop hardcoding this accent color, it should depend on the ASCII distro logo
     set_table_string("accent_color", "\e[1;35m");
     set_table_string("colors_style", "classic");
+    set_table_boolean("display_logo", 1);
 
     // Fields messages
     set_table_string("os_message", "OS");

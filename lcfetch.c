@@ -244,6 +244,7 @@ int main(int argc, char *argv[]) {
         "`/\e[1;37mohdmmddhys+++/:\e[1;35m.`                   ",
         "  `-//////:--.\n                                      ",
     };
+
     // Command-line arguments (CLI)
     int c;
     char *config_file_path;
@@ -291,25 +292,78 @@ int main(int argc, char *argv[]) {
     sysinfo(&sys_info);
     display = XOpenDisplay(NULL);
 
-    // Print ASCII distro logo
-    int enabled_fields = get_table_size("enabled_fields");
-    for (int i = 0; i < COUNT(LOGO); i++) {
-        // Count two extra fields for (user@host and the separator)
-        if (i >= enabled_fields + 2) {
-            // If we've run out of information to show then we will
-            // just print the next logo line
-            printf("%s%s%s\n", accent_color, LOGO[i], "\e[0m");
-        } else {
+    int display_logo = get_option_boolean("display_logo");
+
+    if (display_logo) {
+        // Print ASCII distro logo
+        int enabled_fields = get_table_size("enabled_fields");
+        for (int i = 0; i < COUNT(LOGO); i++) {
+            // Count two extra fields for (user@host and the separator)
+            if (i >= enabled_fields + 2) {
+                // If we've run out of information to show then we will
+                // just print the next logo line
+                printf("%s%s%s\n", accent_color, LOGO[i], "\e[0m");
+            } else {
+                if (i == 0) {
+                    printf("%s %s", LOGO[i], get_title());
+                } else if (i == 1) {
+                    printf("%s%s %s\n", LOGO[i], "\e[0m", get_separator());
+                } else {
+                    const char *field =
+                        get_subtable_string("enabled_fields", i - 1);
+                    if (strcasecmp(field, "colors") == 0) {
+                        printf("%s %s\n", LOGO[i], get_colors_dark());
+                        printf("%s %s\n", LOGO[i], get_colors_bright());
+                    } else {
+                        // Set the function that will be used for getting the field
+                        // value
+                        const char *function = NULL;
+                        const char *field_message = NULL;
+                        // If we should draw an empty line as a separator
+                        if (strcmp(field, "") == 0) {
+                            printf("%s%s\n", LOGO[i], "\e[0m");
+                        } else {
+                            // strncpy(field_message, field, -1);
+                            // printf("%s", field_message);
+                            if (strcasecmp(field, "OS") == 0) {
+                                function = get_os();
+                                field_message = get_option_string("os_message");
+                            } else if (strcasecmp(field, "Kernel") == 0) {
+                                function = get_kernel();
+                                field_message = get_option_string("kernel_message");
+                            } else if (strcasecmp(field, "Uptime") == 0) {
+                                function = get_uptime();
+                                field_message = get_option_string("uptime_message");
+                            } else if (strcasecmp(field, "Shell") == 0) {
+                                function = get_shell();
+                                field_message = get_option_string("shell_message");
+                            } else if (strcasecmp(field, "Terminal") == 0) {
+                                function = get_terminal();
+                                field_message = get_option_string("terminal_message");
+                            } else {
+                                function = "Not implemented yet (maybe?)";
+                                field_message = (char*)field;
+                            }
+                            printf("%s %s%s: %s\n", LOGO[i], field_message, "\e[0m", function);
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        int enabled_fields = get_table_size("enabled_fields");
+        for (int i = 0; i <= enabled_fields; i++) {
+            // Count two extra fields for (user@host and the separator)
             if (i == 0) {
-                printf("%s %s", LOGO[i], get_title());
+                printf("%s", get_title());
             } else if (i == 1) {
-                printf("%s%s %s\n", LOGO[i], "\e[0m", get_separator());
+                printf("%s\n", get_separator());
             } else {
                 const char *field =
                     get_subtable_string("enabled_fields", i - 1);
                 if (strcasecmp(field, "colors") == 0) {
-                    printf("%s %s\n", LOGO[i], get_colors_dark());
-                    printf("%s %s\n", LOGO[i], get_colors_bright());
+                    printf("%s\n", get_colors_dark());
+                    printf("%s\n", get_colors_bright());
                 } else {
                     // Set the function that will be used for getting the field
                     // value
@@ -317,7 +371,7 @@ int main(int argc, char *argv[]) {
                     const char *field_message = NULL;
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
-                        printf("%s%s\n", LOGO[i], "\e[0m");
+                        printf("\n");
                     } else {
                         // strncpy(field_message, field, -1);
                         // printf("%s", field_message);
@@ -340,7 +394,7 @@ int main(int argc, char *argv[]) {
                             function = "Not implemented yet (maybe?)";
                             field_message = (char*)field;
                         }
-                        printf("%s %s%s: %s\n", LOGO[i], field_message, "\e[0m", function);
+                        printf("%s%s%s: %s\n", accent_color, field_message, "\e[0m", function);
                     }
                 }
             }

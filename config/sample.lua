@@ -65,3 +65,8 @@
 --
 -- NOTE: by default the ASCII distro logo is automatically detected (WIP)
 -- options.ascii_distro = ""
+
+-- If the ASCII distro logo should be printed
+--
+-- NOTE: default is true
+-- options.display_logo = true
