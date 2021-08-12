@@ -16,18 +16,23 @@ written in C and configured using Lua (still in a very early stage)!
 
 ## Installation
 
-### Installing dependencies
+You can grab the latest release from our [releases](https://github.com/NTBBloodbath/lcfetch/releases/latest)
+or if you want to live in the bleeding-edge with the latest features you can [build from source](#building-from-source).
+
+### Building from source
+
+#### Installing dependencies
 
 > **NOTE**: lcfetch was tested only with Lua 5.3+ but should work as expected with earlier
 > Lua versions.
 
-#### Ubuntu
+##### Ubuntu
 
 ```sh
 apt install lua5.3 liblua5.3-dev libx11-dev libreadline-dev
 ```
 
-#### Fedora
+##### Fedora
 
 ```sh
 dnf install lua lua-devel libX11-devel readline-devel
