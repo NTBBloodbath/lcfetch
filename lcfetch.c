@@ -42,6 +42,7 @@ static char *get_title() {
 static char *get_separator() {
     char *separator = xmalloc(BUF_SIZE);
     char *str = separator;
+
     for (int i = 0; i < title_length; i++) {
         *(str++) = '-';
     }
