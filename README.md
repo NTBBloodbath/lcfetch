@@ -18,7 +18,7 @@ written in C and configured using Lua (still in a very early stage)!
 
 ### Installing dependencies
 
-> **NOTE**: lcfetch was tested only with Lua 5.4 but should work as expected with earlier
+> **NOTE**: lcfetch was tested only with Lua 5.3+ but should work as expected with earlier
 > Lua versions.
 
 #### Ubuntu
