@@ -56,7 +56,7 @@ jobs:
 
       - name: Compress
         run: |
-          ls -lh . lcfetch
+          [ -f lcfetch ] && echo "lcfetch binary found"
           mv lcfetch-x86_64 lcfetch && tar caf lcfetch-x86_64.tar.xz lcfetch && rm lcfetch
           ls -lh
 
