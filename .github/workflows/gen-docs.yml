@@ -3,7 +3,7 @@ name: generate docs
 on:
   push:
     paths:
-      - "lcfetch.1.md"
+      - "**.1.md"
 
 jobs:
   pandoc:
