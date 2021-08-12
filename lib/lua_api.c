@@ -29,7 +29,7 @@ char *get_configuration_file_path() {
  * Print Lua API stack to stdout, for debugging purposes
  * NOTE: remove the '__attribute__((unused))' statement when using it
  */
-static void dumpstack(lua_State *L) {
+static void __attribute__((unused)) dumpstack(lua_State *L) {
     int top = lua_gettop(L);
     for (int i = 1; i <= top; i++) {
         printf("%d\t%s\t", i, luaL_typename(L, i));
