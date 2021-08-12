@@ -223,7 +223,7 @@ void help() {
     printf("%s", help_message);
 }
 
-int main(int argc, char *argv[]) {
+void print_info() {
     char *LOGO[] = {
         "\e[1;35m         -/oyddmdhs+:.                ",
         "     -o\e[1;37mdNMMMMMMMMNNmhy+\e[1;35m-`             ",
@@ -245,54 +245,13 @@ int main(int argc, char *argv[]) {
         "  `-//////:--.\n                                      ",
     };
 
-    // Command-line arguments (CLI)
-    int c;
-    char *config_file_path;
-    while (1) {
-        static struct option long_options[] = {
-            {"help", no_argument, NULL, 'h'},
-            {"version", no_argument, NULL, 'v'},
-            {"config", required_argument, NULL, 'c'},
-        };
-
-        int option_index = 0;
-        c = getopt_long(argc, argv, "hvc:", long_options, &option_index);
-
-        // Detect the end of the command-line options
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-        case 'v':
-            version();
-        case 'h':
-            help();
-            exit(0);
-        case 'c':
-            config_file_path = optarg;
-            break;
-        default:
-            help();
-            exit(1);
-        }
-    }
-
-    // Start our Lua environment
-    start_lua(config_file_path);
+    // If the ASCII distro logo should be printed
+    int display_logo = get_option_boolean("display_logo");
 
     // Get the accent color
     // NOTE: delete this after setting the dynamic coloring using the ASCII
     // distro
     const char *accent_color = get_option_string("accent_color");
-
-    // populate the os_uname struct
-    uname(&os_uname);
-    // populate the sys_info struct
-    sysinfo(&sys_info);
-    display = XOpenDisplay(NULL);
-
-    int display_logo = get_option_boolean("display_logo");
 
     if (display_logo) {
         // Print ASCII distro logo
@@ -398,6 +357,53 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+
+}
+
+int main(int argc, char *argv[]) {
+    // Command-line arguments (CLI)
+    int c;
+    char *config_file_path;
+    while (1) {
+        static struct option long_options[] = {
+            {"help", no_argument, NULL, 'h'},
+            {"version", no_argument, NULL, 'v'},
+            {"config", required_argument, NULL, 'c'},
+        };
+
+        int option_index = 0;
+        c = getopt_long(argc, argv, "hvc:", long_options, &option_index);
+
+        // Detect the end of the command-line options
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+        case 'v':
+            version();
+        case 'h':
+            help();
+            exit(0);
+        case 'c':
+            config_file_path = optarg;
+            break;
+        default:
+            help();
+            exit(1);
+        }
+    }
+
+    // Start our Lua environment
+    start_lua(config_file_path);
+
+    // populate the os_uname struct
+    uname(&os_uname);
+    // populate the sys_info struct
+    sysinfo(&sys_info);
+    display = XOpenDisplay(NULL);
+
+    print_info();
 
     if(display != NULL) { 
         XCloseDisplay(display);

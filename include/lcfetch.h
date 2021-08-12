@@ -35,6 +35,8 @@
     }
 
 void version(void);
+void help(void);
+void print_info();
 
 /* memory.c */
 void *xmalloc(size_t size);
