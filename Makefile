@@ -22,7 +22,7 @@ LOG_INFO=$(shell date +"%H:%M:%S") \e[1;32mINFO\e[0m
 all: build
 
 
-build: clean lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfetch.h
+build: clean lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfetch.h
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) $(CFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch

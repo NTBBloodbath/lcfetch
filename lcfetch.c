@@ -11,6 +11,9 @@
 #include <unistd.h>
 /* Custom headers */
 #include "include/lcfetch.h"
+#include "include/logos/linux.h"
+#include "include/logos/gentoo.h"
+#include "include/logos/fedora.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
@@ -18,7 +21,7 @@ struct sysinfo sys_info;
 Display *display;
 int title_length, status;
 
-static char *get_title() {
+static char *get_title(char *accent_color) {
     // reduce the maximum size for the title components so we don't over-fill
     // the string
     char hostname[BUF_SIZE / 3];
@@ -32,7 +35,6 @@ static char *get_title() {
     title_length = strlen(hostname) + strlen(username) + 1;
 
     // Get the accent color
-    const char *accent_color = get_option_string("accent_color");
     snprintf(title, BUF_SIZE, "%s%s\e[0m@%s%s\e[0m\n", accent_color, username,
              accent_color, hostname);
 
@@ -51,7 +53,7 @@ static char *get_separator() {
     return separator;
 }
 
-static char *get_os() {
+static char *get_os(int pretty_name) {
     char *os = xmalloc(BUF_SIZE);
     char *name = xmalloc(BUF_SIZE);
     char *line = NULL;
@@ -59,13 +61,23 @@ static char *get_os() {
 
     FILE *os_release = fopen("/etc/os-release", "r");
     while (getline(&line, &len, os_release) != -1) {
-        if (sscanf(line, "PRETTY_NAME=\"%[^\"]+", name) > 0) {
+        // NOTE: the 'NAME' field will be used later for determining the
+        // distribution ASCII logo and accent color
+        if ((!pretty_name) && (sscanf(line, "NAME=%s", name) > 0)) {
+            break;
+        } else if ((!pretty_name) && (sscanf(line, "NAME=\"%[^\"]+", name) > 0)) {
+            break;
+        } else if ((pretty_name) && (sscanf(line, "PRETTY_NAME=\"%[^\"]+", name) > 0)) {
             break;
         }
     }
     xfree(line);
     fclose(os_release);
-    snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
+    if (pretty_name) {
+        snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
+    } else {
+        snprintf(os, BUF_SIZE, "%s", name);
+    }
     xfree(name);
 
     return os;
@@ -206,73 +218,36 @@ static char *get_colors_bright() {
     return bright_colors;
 }
 
-void version() {
-    printf("lcfetch %s\n\n%s\n", VERSION, COPYRIGHT);
-    exit(0);
-}
-
-void help() {
-    const char *help_message =
-        "Usage: lcfetch [OPTIONS]\n\n"
-        "OPTIONS:\n"
-        "\t-c, --config /path/to/config\tSpecify a path to a custom config "
-        "file\n"
-        "\t-h, --help\t\t\t\t\t\tPrint this message and exit\n"
-        "\t-v, --version\t\t\t\t\tShow lcfetch version\n\n"
-        "Report bugs to https://github.com/NTBBloodbath/lcfetch/issues\n";
-    printf("%s", help_message);
-}
-
 void print_info() {
-    char *LOGO[] = {
-        "\e[1;35m         -/oyddmdhs+:.                ",
-        "     -o\e[1;37mdNMMMMMMMMNNmhy+\e[1;35m-`             ",
-        "   -y\e[1;37mNMMMMMMMMMMMNNNmmdhy\e[1;35m+-           ",
-        " `o\e[1;37mmMMMMMMMMMMMMNmdmmmmddhhy\e[1;35m/`        ",
-        " om\e[1;37mMMMMMMMMMMMN\e[1;35mhhyyyo\e[1;37mhmdddhhhd\e[1;35mo`      ",
-        ".y\e[1;37mdMMMMMMMMMMd\e[1;35mhs++so/s\e[1;37mmdddhhhhdm\e[1;35m+`    ",
-        " oy\e[1;37mhdmNMMMMMMMN\e[1;35mdyooy\e[1;37mdmddddhhhhyhN\e[1;35md.   ",
-        "  :o\e[1;37myhhdNNMMMMMMMNNNmmdddhhhhhyym\e[1;35mMh   ",
-        "    .:\e[1;37m+sydNMMMMMNNNmmmdddhhhhhhmM\e[1;35mmy   ",
-        "       /m\e[1;37mMMMMMMNNNmmmdddhhhhhmMNh\e[1;35ms:   ",
-        "    `o\e[1;37mNMMMMMMMNNNmmmddddhhdmMNhs\e[1;35m+`    ",
-        "  `s\e[1;37mNMMMMMMMMNNNmmmdddddmNMmhs\e[1;35m/.      ",
-        " /N\e[1;37mMMMMMMMMNNNNmmmdddmNMNdso\e[1;35m:`        ",
-        "+M\e[1;37mMMMMMMNNNNNmmmmdmNMNdso\e[1;35m/-           ",
-        "yM\e[1;37mMNNNNNNNmmmmmNNMmhs+/\e[1;35m-`             ",
-        "/h\e[1;37mMMNNNNNNNNMNdhs++/\e[1;35m-`                ",
-        "`/\e[1;37mohdmmddhys+++/:\e[1;35m.`                   ",
-        "  `-//////:--.\n                                      ",
-    };
-
     // If the ASCII distro logo should be printed
     int display_logo = get_option_boolean("display_logo");
 
     // Get the accent color
     // NOTE: delete this after setting the dynamic coloring using the ASCII
     // distro
-    const char *accent_color = get_option_string("accent_color");
+    // const char *accent_color = get_option_string("accent_color");
 
+    // Get the amount of enabled information fields
+    int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
         // Print ASCII distro logo
-        int enabled_fields = get_table_size("enabled_fields");
-        for (int i = 0; i < COUNT(LOGO); i++) {
+        for (int i = 0; i < COUNT(gentoo); i++) {
             // Count two extra fields for (user@host and the separator)
             if (i >= enabled_fields + 2) {
                 // If we've run out of information to show then we will
                 // just print the next logo line
-                printf("%s%s%s\n", accent_color, LOGO[i], "\e[0m");
+                printf("%s%s%s\n", gentoo_accent, gentoo[i], "\e[0m");
             } else {
                 if (i == 0) {
-                    printf("%s %s", LOGO[i], get_title());
+                    printf("%s %s", gentoo[i], get_title(gentoo_accent));
                 } else if (i == 1) {
-                    printf("%s%s %s\n", LOGO[i], "\e[0m", get_separator());
+                    printf("%s%s %s\n", gentoo[i], "\e[0m", get_separator());
                 } else {
                     const char *field =
                         get_subtable_string("enabled_fields", i - 1);
                     if (strcasecmp(field, "colors") == 0) {
-                        printf("%s %s\n", LOGO[i], get_colors_dark());
-                        printf("%s %s\n", LOGO[i], get_colors_bright());
+                        printf("%s %s\n", gentoo[i], get_colors_dark());
+                        printf("%s %s\n", gentoo[i], get_colors_bright());
                     } else {
                         // Set the function that will be used for getting the field
                         // value
@@ -280,10 +255,10 @@ void print_info() {
                         const char *field_message = NULL;
                         // If we should draw an empty line as a separator
                         if (strcmp(field, "") == 0) {
-                            printf("%s%s\n", LOGO[i], "\e[0m");
+                            printf("%s%s\n", gentoo[i], "\e[0m");
                         } else {
                             if (strcasecmp(field, "OS") == 0) {
-                                function = get_os();
+                                function = get_os(1);
                                 field_message = get_option_string("os_message");
                             } else if (strcasecmp(field, "Kernel") == 0) {
                                 function = get_kernel();
@@ -301,18 +276,17 @@ void print_info() {
                                 function = "Not implemented yet (maybe?)";
                                 field_message = (char*)field;
                             }
-                            printf("%s %s%s: %s\n", LOGO[i], field_message, "\e[0m", function);
+                            printf("%s %s%s: %s\n", gentoo[i], field_message, "\e[0m", function);
                         }
                     }
                 }
             }
         }
     } else {
-        int enabled_fields = get_table_size("enabled_fields");
         for (int i = 0; i <= enabled_fields; i++) {
             // Count two extra fields for (user@host and the separator)
             if (i == 0) {
-                printf("%s", get_title());
+                printf("%s", get_title(gentoo_accent));
             } else if (i == 1) {
                 printf("%s\n", get_separator());
             } else {
@@ -330,10 +304,8 @@ void print_info() {
                     if (strcmp(field, "") == 0) {
                         printf("\n");
                     } else {
-                        // strncpy(field_message, field, -1);
-                        // printf("%s", field_message);
                         if (strcasecmp(field, "OS") == 0) {
-                            function = get_os();
+                            function = get_os(1);
                             field_message = get_option_string("os_message");
                         } else if (strcasecmp(field, "Kernel") == 0) {
                             function = get_kernel();
@@ -351,13 +323,12 @@ void print_info() {
                             function = "Not implemented yet (maybe?)";
                             field_message = (char*)field;
                         }
-                        printf("%s%s%s: %s\n", accent_color, field_message, "\e[0m", function);
+                        printf("%s%s%s: %s\n", gentoo_accent, field_message, "\e[0m", function);
                     }
                 }
             }
         }
     }
-
 }
 
 int main(int argc, char *argv[]) {
@@ -401,8 +372,10 @@ int main(int argc, char *argv[]) {
     uname(&os_uname);
     // populate the sys_info struct
     sysinfo(&sys_info);
+
     display = XOpenDisplay(NULL);
 
+    // Print all stuff (logo, information)
     print_info();
 
     if(display != NULL) { 

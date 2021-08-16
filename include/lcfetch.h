@@ -34,13 +34,13 @@
         puts("");                                                                                                      \
     }
 
-void version(void);
-void help(void);
-void print_info();
-
 /* memory.c */
 void *xmalloc(size_t size);
 void xfree(void *ptr);
+
+/* cli.c */
+void version(void);
+void help(void);
 
 /* lua_api.c */
 void start_lua(const char *config_file_path);

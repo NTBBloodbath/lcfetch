@@ -9,9 +9,7 @@
  * A malloc() wrapper that checks the results and dies in case of error
  */
 void *xmalloc(size_t size) {
-    void *ptr;
-    ptr = (void *)malloc(size);
-
+    void *ptr = malloc(size);
     if (ptr == NULL) {
         log_fatal("allocating memory; %s\n", strerror(errno));
     }
