@@ -17,7 +17,7 @@ lcfetch - A fast and easy to configure alternative to neofetch.
 # DESCRIPTION
 
 **lcfetch** is a fast and easy to configure alternative to neofetch, written
-in C and configuredusing Lua.
+in C and configured using Lua.
 
 # OPTIONS
 
