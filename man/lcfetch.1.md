@@ -3,7 +3,7 @@ title: lcfetch
 section: 1
 header: lcfetch user manual
 footer: lcfetch 0.1.0-beta2
-date: August 12, 2021
+date: August 17, 2021
 ---
 
 # NAME
