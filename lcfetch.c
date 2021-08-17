@@ -287,7 +287,6 @@ void print_info() {
                                 function = get_kernel();
                                 field_message = get_option_string("kernel_message");
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
-                                // xfree(function);
                             } else if (strcasecmp(field, "Uptime") == 0) {
                                 function = get_uptime();
                                 field_message = get_option_string("uptime_message");
