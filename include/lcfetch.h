@@ -5,7 +5,7 @@
 #define LCFETCH_H
 
 /* lcfetch version */
-#define VERSION "0.1.0-beta2"
+#define VERSION "0.1.0-beta3"
 
 /* copyright notice */
 #define COPYRIGHT                                                                                                      \
