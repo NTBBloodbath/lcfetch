@@ -11,6 +11,7 @@
 #include <unistd.h>
 /* Custom headers */
 #include "include/lcfetch.h"
+/* ASCII logos */
 #include "include/logos/linux.h"
 // TODO: find the way to dynamically set the logo array in C
 // #include "include/logos/gentoo.h"
