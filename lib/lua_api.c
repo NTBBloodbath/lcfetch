@@ -22,7 +22,7 @@ char *get_configuration_file_path() {
     }
     char *config_file_path = strncat(config_directory, "/lcfetch/config.lua", -1);
 
-    return strdup(config_file_path);
+    return config_file_path;
 }
 
 /**
@@ -95,6 +95,7 @@ void init_options(void) {
     set_table_string("accent_color", "\e[1;35m");
     set_table_string("colors_style", "classic");
     set_table_boolean("display_logo", 1);
+    set_table_number("gap", 3);
 
     // Fields messages
     set_table_string("os_message", "OS");

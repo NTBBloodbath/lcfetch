@@ -70,3 +70,9 @@
 --
 -- NOTE: default is true
 -- options.display_logo = true
+
+-- The gap between the ASCII distro logo and the
+-- information fields
+--
+-- NOTE: by default is 3
+options.gap = 3

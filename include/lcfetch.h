@@ -22,17 +22,6 @@
 /* lcfetch.c */
 #define BUF_SIZE 150
 #define COUNT(x) (int)(sizeof x / sizeof *x)
-/*
- * NOTE: not implemented yet, it's meant to be used for the spacing between
- *       the distro logo and the fields information
- */
-#define REPEAT(str, times)                                                                                             \
-    {                                                                                                                  \
-        for (int i = 0; i < times; i++) {                                                                              \
-            printf("%s", str);                                                                                         \
-        }                                                                                                              \
-        puts("");                                                                                                      \
-    }
 
 /* memory.c */
 void *xmalloc(size_t size);

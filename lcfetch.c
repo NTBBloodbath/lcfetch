@@ -12,14 +12,31 @@
 /* Custom headers */
 #include "include/lcfetch.h"
 #include "include/logos/linux.h"
-#include "include/logos/gentoo.h"
-#include "include/logos/fedora.h"
+// TODO: find the way to dynamically set the logo array in C
+// #include "include/logos/gentoo.h"
+// #include "include/logos/fedora.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
 
 Display *display;
 int title_length, status;
+
+char *repeat_string(char *str, int times) {
+    if (times < 1) {
+        return str;
+    }
+
+    char *result = xmalloc(BUF_SIZE);
+    char *repeated = result;
+
+    for (int i = 0; i < times; i++) {
+        *(repeated++) = *str;
+    }
+    *repeated = '\0';
+
+    return result;
+}
 
 static char *get_title(char *accent_color) {
     // reduce the maximum size for the title components so we don't over-fill
@@ -42,15 +59,7 @@ static char *get_title(char *accent_color) {
 }
 
 static char *get_separator() {
-    char *separator = xmalloc(BUF_SIZE);
-    char *str = separator;
-
-    for (int i = 0; i < title_length; i++) {
-        *(str++) = '-';
-    }
-    *str = '\0';
-
-    return separator;
+    return repeat_string("-", title_length);
 }
 
 static char *get_os(int pretty_name) {
@@ -84,10 +93,7 @@ static char *get_os(int pretty_name) {
 }
 
 static char *get_kernel() {
-    char *kernel = xmalloc(BUF_SIZE);
-    strncpy(kernel, os_uname.release, BUF_SIZE);
-
-    return kernel;
+    return os_uname.release;
 }
 
 static char *get_uptime() {
@@ -104,7 +110,7 @@ static char *get_uptime() {
 
     int n, len = 0;
     char *uptime = xmalloc(BUF_SIZE);
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; i++) {
         if ((n = seconds / units[i].seconds) || i == 2) {
             len += snprintf(uptime + len, BUF_SIZE - len, "%d %s%s, ", n,
                             units[i].name, n != 1 ? "s" : "");
@@ -137,8 +143,8 @@ static char *get_shell() {
 static char *get_terminal() {
     char *terminal = xmalloc(BUF_SIZE);
     int* terminal_pid = xmalloc(BUF_SIZE);
-    const char *terminal_pid_path = xmalloc(BUF_SIZE);
-    const char *terminal_child_pid_path = xmalloc(BUF_SIZE);
+    char *terminal_pid_path = xmalloc(BUF_SIZE);
+    char *terminal_child_pid_path = xmalloc(BUF_SIZE);
     char* line = NULL;
     size_t len;
 
@@ -147,7 +153,7 @@ static char *get_terminal() {
         pid_t ppid;
         // Get parent lcfetch process ID (shell)
         ppid = getppid();
-        snprintf((char*)terminal_child_pid_path, BUF_SIZE, "/proc/%d/status", ppid);
+        snprintf(terminal_child_pid_path, BUF_SIZE, "/proc/%d/status", ppid);
 
         // Get parent shell process ID (terminal)
         FILE *terminal_child_pid = fopen(terminal_child_pid_path, "r");
@@ -156,15 +162,17 @@ static char *get_terminal() {
                 break;
             }
         }
+        fclose(terminal_child_pid);
 
         // Get terminal name
-        snprintf((char*)terminal_pid_path, BUF_SIZE, "/proc/%d/status", *terminal_pid);
+        snprintf(terminal_pid_path, BUF_SIZE, "/proc/%d/status", *terminal_pid);
         FILE *terminal_name = fopen(terminal_pid_path, "r");
         while (getline(&line, &len, terminal_name) != -1) {
             if (sscanf(line, "Name: %s", terminal) > 0) {
                 break;
             }
         }
+        fclose(terminal_name);
     } else {
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
         if (strcmp(terminal, "linux") == 0) {
@@ -174,8 +182,8 @@ static char *get_terminal() {
 
     xfree(line);
     xfree(terminal_pid);
-    xfree((char*)terminal_pid_path);
-    xfree((char*)terminal_child_pid_path);
+    xfree(terminal_pid_path);
+    xfree(terminal_child_pid_path);
 
     return terminal;
 }
@@ -230,100 +238,146 @@ void print_info() {
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
-        // Print ASCII distro logo
-        for (int i = 0; i < COUNT(gentoo); i++) {
+        // Get the gap that should be between the logo and the information
+        int gap_size = get_option_number("gap");
+        char *gap = repeat_string(" ", gap_size);
+
+        for (int i = 0; i < COUNT(linux_logo); i++) {
             // Count two extra fields for (user@host and the separator)
             if (i >= enabled_fields + 2) {
                 // If we've run out of information to show then we will
                 // just print the next logo line
-                printf("%s%s%s\n", gentoo_accent, gentoo[i], "\e[0m");
+                printf("%s%s%s\n", linux_accent, linux_logo[i], "\e[0m");
             } else {
                 if (i == 0) {
-                    printf("%s %s", gentoo[i], get_title(gentoo_accent));
+                    char *title = get_title(linux_accent);
+                    printf("%s%s%s", linux_logo[i], gap, title);
+                    xfree(title);
                 } else if (i == 1) {
-                    printf("%s%s %s\n", gentoo[i], "\e[0m", get_separator());
+                    char *separator = get_separator();
+                    printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap, separator);
+                    xfree(separator);
                 } else {
                     const char *field =
                         get_subtable_string("enabled_fields", i - 1);
                     if (strcasecmp(field, "colors") == 0) {
-                        printf("%s %s\n", gentoo[i], get_colors_dark());
-                        printf("%s %s\n", gentoo[i], get_colors_bright());
+                        char *dark_colors = get_colors_dark();
+                        char *bright_colors = get_colors_bright();
+                        printf("%s%s%s\n", linux_logo[i], gap, dark_colors);
+                        printf("%s%s%s\n", linux_logo[i], gap, bright_colors);
+                        xfree(dark_colors);
+                        xfree(bright_colors);
                     } else {
                         // Set the function that will be used for getting the field
                         // value
-                        const char *function = NULL;
+                        char *function = NULL;
                         const char *field_message = NULL;
                         // If we should draw an empty line as a separator
                         if (strcmp(field, "") == 0) {
-                            printf("%s%s\n", gentoo[i], "\e[0m");
+                            printf("%s%s\n", linux_logo[i], "\e[0m");
                         } else {
+                            char *message = xmalloc(BUF_SIZE);
                             if (strcasecmp(field, "OS") == 0) {
                                 function = get_os(1);
                                 field_message = get_option_string("os_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Kernel") == 0) {
                                 function = get_kernel();
                                 field_message = get_option_string("kernel_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                // xfree(function);
                             } else if (strcasecmp(field, "Uptime") == 0) {
                                 function = get_uptime();
                                 field_message = get_option_string("uptime_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Shell") == 0) {
                                 function = get_shell();
                                 field_message = get_option_string("shell_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Terminal") == 0) {
                                 function = get_terminal();
                                 field_message = get_option_string("terminal_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else {
                                 function = "Not implemented yet (maybe?)";
                                 field_message = (char*)field;
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             }
-                            printf("%s %s%s: %s\n", gentoo[i], field_message, "\e[0m", function);
+                            printf("%s%s%s%s\n", linux_logo[i], gap, linux_accent, message);
+                            xfree(message);
                         }
                     }
                 }
             }
         }
+        xfree(gap);
     } else {
-        for (int i = 0; i <= enabled_fields; i++) {
+        for (int i = 0; i <= (enabled_fields + 1); i++) {
             // Count two extra fields for (user@host and the separator)
             if (i == 0) {
-                printf("%s", get_title(gentoo_accent));
+                char *title = get_title(linux_accent);
+                printf("%s", title);
+                xfree(title);
             } else if (i == 1) {
-                printf("%s\n", get_separator());
+                char *separator = get_separator();
+                printf("%s\n", separator);
+                xfree(separator);
             } else {
                 const char *field =
                     get_subtable_string("enabled_fields", i - 1);
                 if (strcasecmp(field, "colors") == 0) {
-                    printf("%s\n", get_colors_dark());
-                    printf("%s\n", get_colors_bright());
+                    char *dark_colors = get_colors_dark();
+                    char *bright_colors = get_colors_bright();
+                    printf("%s\n", dark_colors);
+                    printf("%s\n", bright_colors);
+                    xfree(dark_colors);
+                    xfree(bright_colors);
                 } else {
                     // Set the function that will be used for getting the field
                     // value
-                    const char *function = NULL;
+                    char *function = NULL;
                     const char *field_message = NULL;
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
                         printf("\n");
                     } else {
+                        char *message = xmalloc(BUF_SIZE);
                         if (strcasecmp(field, "OS") == 0) {
                             function = get_os(1);
                             field_message = get_option_string("os_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
                         } else if (strcasecmp(field, "Kernel") == 0) {
                             function = get_kernel();
                             field_message = get_option_string("kernel_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            // xfree(function);
                         } else if (strcasecmp(field, "Uptime") == 0) {
                             function = get_uptime();
                             field_message = get_option_string("uptime_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
                             function = get_shell();
                             field_message = get_option_string("shell_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
                         } else if (strcasecmp(field, "Terminal") == 0) {
                             function = get_terminal();
                             field_message = get_option_string("terminal_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
                         } else {
                             function = "Not implemented yet (maybe?)";
                             field_message = (char*)field;
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                         }
-                        printf("%s%s%s: %s\n", gentoo_accent, field_message, "\e[0m", function);
+                        printf("%s%s\n", linux_accent, message);
+                        xfree(message);
                     }
                 }
             }
