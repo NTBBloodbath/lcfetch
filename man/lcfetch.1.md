@@ -136,6 +136,9 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 **display_logo**
 : If the ASCII distro logo should be printed.
 
+**gap**
+: The gap between the ASCII distro logo and the information fields.
+
 # AUTHORS
 
 Written by NTBBloodbath.
