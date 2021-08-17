@@ -314,7 +314,9 @@ void print_info() {
                 }
             }
         }
-        xfree(gap);
+        if (gap_size >= 1) {
+            xfree(gap);
+        }
     } else {
         for (int i = 0; i <= (enabled_fields + 1); i++) {
             // Count two extra fields for (user@host and the separator)
