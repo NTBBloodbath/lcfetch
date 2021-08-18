@@ -23,13 +23,15 @@ all: build
 
 
 build: clean lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfetch.h
-	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
+	@echo -e "$(LOG_INFO) Cloning third-party dependencies ..."
+	git clone --depth 1 git@github.com:rxi/log.c.git $(TP_DIR)/log.c
+	@echo -e "\n$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) $(CFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch
 
 
 install: build
-	@echo -e "$(LOG_INFO) Installing lcfetch under $(PREFIX)/bin directory ..."
+	@echo -e "\n$(LOG_INFO) Installing lcfetch under $(PREFIX)/bin directory ..."
 	mkdir -p $(PREFIX)/bin $(PREFIX)/share/man/man1 $(CONFIG_DIR)
 	install $(BIN_DIR)/lcfetch $(PREFIX)/bin/lcfetch
 	cp $(CURDIR)/config/sample.lua $(CONFIG_DIR)/config.lua
@@ -54,5 +56,5 @@ docs:
 
 
 run: build
-	echo -e "$(LOG_INFO) Running lcfetch ..."
+	echo -e "\n$(LOG_INFO) Running lcfetch ..."
 	$(BIN_DIR)/lcfetch
