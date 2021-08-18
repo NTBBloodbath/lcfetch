@@ -184,7 +184,7 @@ static char *get_terminal() {
 }
 
 static char *get_memory() {
-    char *line = xmalloc(BUF_SIZE);
+    char *line = NULL;
     char *memory = xmalloc(BUF_SIZE);
     int memory_in_gib = get_option_boolean("memory_in_gib");
 
@@ -202,8 +202,8 @@ static char *get_memory() {
         sscanf(line, "Cached: %d", &cached);
         sscanf(line, "SReclaimable: %d", &reclaimable);
     }
-    free(line);
     fclose(meminfo);
+    xfree(line);
 
     // we're using same calculation as neofetch
     // KiB / 1024 = MiB
