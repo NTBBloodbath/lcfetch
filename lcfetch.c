@@ -186,6 +186,8 @@ static char *get_terminal() {
 static char *get_memory() {
     char *line = xmalloc(BUF_SIZE);
     char *memory = xmalloc(BUF_SIZE);
+    int memory_in_gib = get_option_boolean("memory_in_gib");
+
     int total_memory, used_memory;
     int total, shared, memfree, buffers, cached, reclaimable;
     size_t len;
@@ -204,10 +206,17 @@ static char *get_memory() {
     fclose(meminfo);
 
     // we're using same calculation as neofetch
+    // KiB / 1024 = MiB
     used_memory = (total + shared - memfree - buffers - cached - reclaimable) / 1024;
     total_memory = total / 1024;
-
-    snprintf(memory, BUF_SIZE, "%dMiB / %dMiB", used_memory, total_memory);
+    if (memory_in_gib) {
+        // MiB / 1024 = GiB
+        float used_memory_gib = (float)used_memory / (float)1024;
+        float total_memory_gib = (float)total_memory / (float)1024;
+        snprintf(memory, BUF_SIZE, "%.2f GiB / %.2f GiB", used_memory_gib, total_memory_gib);
+    } else {
+        snprintf(memory, BUF_SIZE, "%d MiB / %d MiB", used_memory, total_memory);
+    }
 
     return memory;
 }

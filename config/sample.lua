@@ -75,4 +75,9 @@
 -- information fields
 --
 -- NOTE: by default is 3
-options.gap = 3
+-- options.gap = 3
+
+-- If the memory should be printed as GiB instead of MiB
+--
+-- NOTE: by default is false
+-- options.memory_in_gib = false

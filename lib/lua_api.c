@@ -91,9 +91,8 @@ void init_options(void) {
 
     // Set the default basic types options (strings, numbers, booleans)
     set_table_string("ascii_distro", "tux");
-    // TODO: stop hardcoding this accent color, it should depend on the ASCII distro logo
-    set_table_string("accent_color", "\e[1;35m");
     set_table_string("colors_style", "classic");
+    set_table_boolean("memory_in_gib", 0);
     set_table_boolean("display_logo", 1);
     set_table_number("gap", 3);
 
