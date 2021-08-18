@@ -9,7 +9,8 @@ LUA_INC_DIR=/usr/include/lua
 
 CC=clang
 CCF=clang-format
-CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -llua -lX11
+CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -lX11
+LDFLAGS=$(shell pkg-config --libs $(LUA))
 
 PANDOC=pandoc
 
@@ -32,7 +33,7 @@ _clone_deps:
 
 build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch
 
 
