@@ -138,6 +138,7 @@ completely remove them.
 - [ ] Stop hardcoding the ASCII distro logo and accent color
 - [ ] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
+- [ ] Add support for MacOS (probably the last thing to be done?)
 
 ## License
 
