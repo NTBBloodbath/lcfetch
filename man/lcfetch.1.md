@@ -139,6 +139,9 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 **gap**
 : The gap between the ASCII distro logo and the information fields.
 
+**memory_in_gib**
+: If the memory should be printed as GiB instead of MiB.
+
 # AUTHORS
 
 Written by NTBBloodbath.
