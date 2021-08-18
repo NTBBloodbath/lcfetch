@@ -423,8 +423,12 @@ int main(int argc, char *argv[]) {
 
     display = XOpenDisplay(NULL);
 
+    // Disable line wrapping so we can keep the logo intact on small terminals
+    printf("\e[?7l");
     // Print all stuff (logo, information)
     print_info();
+    // Re-enable line wrapping again
+    printf("\e[?7h");
 
     if (display != NULL) {
         XCloseDisplay(display);

@@ -125,7 +125,7 @@ All the configuration options are self-documented and easy to understand.
 - [ ] Support for some missing fields (e.g. `Packages` and `DE`/`WM`)
 - [ ] Stop hardcoding the ASCII distro logo and accent color
 - [ ] Add more configurations
-- [ ] Strip content on non-wide terminals if we need to (like neofetch)
+- [x] Strip content on non-wide terminals if we need to (like neofetch)
 
 ## License
 
