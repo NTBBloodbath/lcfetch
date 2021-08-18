@@ -53,15 +53,12 @@ static char *get_title(char *accent_color) {
     title_length = strlen(hostname) + strlen(username) + 1;
 
     // Get the accent color
-    snprintf(title, BUF_SIZE, "%s%s\e[0m@%s%s\e[0m\n", accent_color, username,
-             accent_color, hostname);
+    snprintf(title, BUF_SIZE, "%s%s\e[0m@%s%s\e[0m\n", accent_color, username, accent_color, hostname);
 
     return title;
 }
 
-static char *get_separator() {
-    return repeat_string("-", title_length);
-}
+static char *get_separator() { return repeat_string("-", title_length); }
 
 static char *get_os(int pretty_name) {
     char *os = xmalloc(BUF_SIZE);
@@ -93,9 +90,7 @@ static char *get_os(int pretty_name) {
     return os;
 }
 
-static char *get_kernel() {
-    return os_uname.release;
-}
+static char *get_kernel() { return os_uname.release; }
 
 static char *get_uptime() {
     long seconds = sys_info.uptime;
@@ -113,8 +108,7 @@ static char *get_uptime() {
     char *uptime = xmalloc(BUF_SIZE);
     for (int i = 0; i < 4; i++) {
         if ((n = seconds / units[i].seconds) || i == 2) {
-            len += snprintf(uptime + len, BUF_SIZE - len, "%d %s%s, ", n,
-                            units[i].name, n != 1 ? "s" : "");
+            len += snprintf(uptime + len, BUF_SIZE - len, "%d %s%s, ", n, units[i].name, n != 1 ? "s" : "");
         }
         seconds %= units[i].seconds;
     }
@@ -143,10 +137,10 @@ static char *get_shell() {
 
 static char *get_terminal() {
     char *terminal = xmalloc(BUF_SIZE);
-    int* terminal_pid = xmalloc(BUF_SIZE);
+    int *terminal_pid = xmalloc(BUF_SIZE);
     char *terminal_pid_path = xmalloc(BUF_SIZE);
     char *terminal_child_pid_path = xmalloc(BUF_SIZE);
-    char* line = NULL;
+    char *line = NULL;
     size_t len;
 
     // Check if we are running in a TTY or a graphical X interface
@@ -259,8 +253,7 @@ void print_info() {
                     printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap, separator);
                     xfree(separator);
                 } else {
-                    const char *field =
-                        get_subtable_string("enabled_fields", i - 1);
+                    const char *field = get_subtable_string("enabled_fields", i - 1);
                     if (strcasecmp(field, "colors") == 0) {
                         char *dark_colors = get_colors_dark();
                         char *bright_colors = get_colors_bright();
@@ -304,7 +297,7 @@ void print_info() {
                                 xfree(function);
                             } else {
                                 function = "Not implemented yet (maybe?)";
-                                field_message = (char*)field;
+                                field_message = (char *)field;
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             }
                             printf("%s%s%s%s\n", linux_logo[i], gap, linux_accent, message);
@@ -329,8 +322,7 @@ void print_info() {
                 printf("%s\n", separator);
                 xfree(separator);
             } else {
-                const char *field =
-                    get_subtable_string("enabled_fields", i - 1);
+                const char *field = get_subtable_string("enabled_fields", i - 1);
                 if (strcasecmp(field, "colors") == 0) {
                     char *dark_colors = get_colors_dark();
                     char *bright_colors = get_colors_bright();
@@ -375,7 +367,7 @@ void print_info() {
                             xfree(function);
                         } else {
                             function = "Not implemented yet (maybe?)";
-                            field_message = (char*)field;
+                            field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                         }
                         printf("%s%s\n", linux_accent, message);
@@ -434,7 +426,7 @@ int main(int argc, char *argv[]) {
     // Print all stuff (logo, information)
     print_info();
 
-    if(display != NULL) { 
+    if (display != NULL) {
         XCloseDisplay(display);
     }
 
