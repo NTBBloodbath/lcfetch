@@ -12,6 +12,8 @@
 --   * Uptime
 --   * Shell
 --   * Terminal
+--   * CPU
+--   * Memory
 --   * Colors
 --
 -- NOTE: fields are case-insensitive
