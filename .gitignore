@@ -1,3 +1,3 @@
 # Produced binaries
 lcfetch
-third-party/**
+third-party/**/
