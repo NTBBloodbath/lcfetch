@@ -11,8 +11,8 @@ LUA_INC_DIR=/usr/include/$(LUA)
 
 CC=clang
 CCF=clang-format
-CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -lX11
-LDFLAGS=$(shell pkg-config --libs $(LUA))
+CFLAGS=-O2 -Wall -Wextra
+LDFLAGS=$(shell pkg-config --libs $(LUA)) -lX11
 
 PANDOC=pandoc
 
@@ -26,16 +26,28 @@ all: build
 
 
 _clone_deps:
+	@echo -e "$(LOG_INFO) Downloading third-party dependencies if needed ...\n"
 	@if [ ! -d "$(TP_DIR)/log.c" ]; then \
-		echo -e "$(LOG_INFO) Cloning third-party dependencies ..."; \
+		echo -e "$(LOG_INFO) Cloning log.c ..."; \
 		git clone --depth 1 https://github.com/rxi/log.c.git $(TP_DIR)/log.c; \
+		echo ""; \
+	fi
+	@if [ ! -d "$(TP_DIR)/lua-5.3.6" ]; then \
+		echo -e "$(LOG_INFO) Downloading lua-5.3.6.tar.gz ..."; \
+		pushd $(TP_DIR); \
+		curl -R -O http://www.lua.org/ftp/lua-5.3.6.tar.gz; \
+		tar xf lua-5.3.6.tar.gz && rm lua-5.3.6.tar.gz; \
+		popd; \
+		pushd $(TP_DIR)/lua-5.3.6; \
+		make linux; \
+		popd; \
 		echo ""; \
 	fi
 
 
 build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
+	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch
 
 
