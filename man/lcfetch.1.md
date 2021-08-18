@@ -3,7 +3,7 @@ title: lcfetch
 section: 1
 header: lcfetch user manual
 footer: lcfetch 0.1.0-beta3
-date: August 17, 2021
+date: August 18, 2021
 ---
 
 # NAME
@@ -68,6 +68,8 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     - Uptime
     - Shell
     - Terminal
+    - CPU
+    - Memory
     - Colors
 
     Type: table
