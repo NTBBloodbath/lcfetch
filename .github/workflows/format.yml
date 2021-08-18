@@ -2,9 +2,9 @@ name: format
 
 on:
   push:
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
+    paths:
+      - "**.c"
+      - "**.h"
 
 jobs:
   clang-format:
