@@ -28,7 +28,7 @@ jobs:
       - name: Build lcfetch
         run: |
           cd ./lcfetch
-          make CFLAGS="-I/usr/include/lua5.3 -O2 -Wall -Wextra -llua5.3 -lX11"
+          make LUA=lua5.3
 
       - name: Upload produced binary
         uses: actions/upload-artifact@v2
@@ -55,6 +55,7 @@ jobs:
 
       - name: Compress
         run: |
+          chmod +x lcfetch
           tar caf lcfetch-x86_64.tar.xz lcfetch && rm lcfetch
           ls -lh
 
