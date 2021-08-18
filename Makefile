@@ -1,3 +1,5 @@
+LUA=lua
+
 PREFIX=$(HOME)/.local
 CONFIG_DIR=$(HOME)/.config/lcfetch
 
@@ -5,12 +7,12 @@ TP_DIR=$(CURDIR)/third-party
 BIN_DIR=$(CURDIR)/bin
 LIB_DIR=$(CURDIR)/lib
 INC_DIR=$(CURDIR)/include
-LUA_INC_DIR=/usr/include/lua
+LUA_INC_DIR=/usr/include/$(LUA)
 
 CC=clang
 CCF=clang-format
 CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -lX11
-LDFLAGS=$(shell pkg-config --libs lua)
+LDFLAGS=$(shell pkg-config --libs $(LUA))
 
 PANDOC=pandoc
 
