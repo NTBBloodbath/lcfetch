@@ -10,7 +10,7 @@ LUA_INC_DIR=/usr/include/lua
 CC=clang
 CCF=clang-format
 CFLAGS=-I$(LUA_INC_DIR) -O2 -Wall -Wextra -lX11
-LDFLAGS=$(shell pkg-config --libs $(LUA))
+LDFLAGS=$(shell pkg-config --libs lua)
 
 PANDOC=pandoc
 
