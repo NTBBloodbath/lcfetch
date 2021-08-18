@@ -520,23 +520,32 @@ void print_info() {
         }
         xfree(gap_logo);
     } else {
+        // Get the gap that should be between the left terminal border and the information
+        int gap_size = get_option_number("gap");
+        char *gap_term_info = repeat_string(" ", gap_size);
+
+        // Do not add gaps if gap_size is 0
+        if (gap_size == 0) {
+            gap_term_info = "";
+        }
+
         for (int i = 0; i <= (enabled_fields + 1); i++) {
             // Count two extra fields for (user@host and the separator)
             if (i == 0) {
                 char *title = get_title(linux_accent);
-                printf("%s", title);
+                printf("%s%s", gap_term_info, title);
                 xfree(title);
             } else if (i == 1) {
                 char *separator = get_separator();
-                printf("%s\n", separator);
+                printf("%s%s\n", gap_term_info, separator);
                 xfree(separator);
             } else {
                 const char *field = get_subtable_string("enabled_fields", i - 1);
                 if (strcasecmp(field, "colors") == 0) {
                     char *dark_colors = get_colors_dark();
                     char *bright_colors = get_colors_bright();
-                    printf("%s\n", dark_colors);
-                    printf("%s\n", bright_colors);
+                    printf("%s%s\n", gap_term_info, dark_colors);
+                    printf("%s%s\n", gap_term_info, bright_colors);
                     xfree(dark_colors);
                     xfree(bright_colors);
                 } else {
@@ -589,7 +598,7 @@ void print_info() {
                             field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                         }
-                        printf("%s%s\n", linux_accent, message);
+                        printf("%s%s%s\n", gap_term_info, linux_accent, message);
                         xfree(message);
                     }
                 }
