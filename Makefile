@@ -22,10 +22,16 @@ LOG_INFO=$(shell date +"%H:%M:%S") \e[1;32mINFO\e[0m
 all: build
 
 
-build: clean lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfetch.h
-	@echo -e "$(LOG_INFO) Cloning third-party dependencies ..."
-	git clone --depth 1 git@github.com:rxi/log.c.git $(TP_DIR)/log.c
-	@echo -e "\n$(LOG_INFO) Building lcfetch.c ..."
+_clone_deps:
+	@if [ ! -d "$(TP_DIR)/log.c" ]; then \
+		echo -e "$(LOG_INFO) Cloning third-party dependencies ..."; \
+		git clone --depth 1 git@github.com:rxi/log.c.git $(TP_DIR)/log.c; \
+		echo ""; \
+	fi
+
+
+build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(INC_DIR)/lcfetch.h
+	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) $(CFLAGS) -o $(BIN_DIR)/lcfetch lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch
 
