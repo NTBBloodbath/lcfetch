@@ -271,14 +271,19 @@ void print_info() {
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
-        // Get the logo length
-        int logo_length = (strlen(linux_logo[0]) - strlen("\e[1;30m") - strlen("\e[0m"));
+        // Get the logo length, substracting the ANSI escapes length
+        // NOTE: this should be refactored once we manage to dynamically change the logo (maybe)
+        int logo_length = (strlen(linux_logo[0]) - strlen("\e[1;00m") - strlen("\e[0m"));
         // Get the gap that should be between the logo and the information
         int gap_size = get_option_number("gap");
         char *gap_logo_info = repeat_string(" ", gap_size);
         // This gap is specially used when there's more information but the
         // logo is already complete
         char *gap_logo = repeat_string(" ", logo_length);
+
+        // Store the amount of displayed information so we can determine if there is still information
+        // that needs to be rendered after the logo finishes
+        int displayed_info = 0;
 
         for (int i = 0; i < COUNT(linux_logo); i++) {
             // Count two extra fields for (user@host and the separator)
@@ -354,7 +359,71 @@ void print_info() {
                     }
                 }
             }
+            displayed_info++;
         }
+        // If there's still information that needs to be rendered then let's render them
+        // leaving a padding from the logo
+        if (displayed_info < enabled_fields) {
+            for (int i = displayed_info; i <= (enabled_fields + 1); i++) {
+                const char *field = get_subtable_string("enabled_fields", i - 1);
+                if (strcasecmp(field, "colors") == 0) {
+                    char *dark_colors = get_colors_dark();
+                    char *bright_colors = get_colors_bright();
+                    printf("%s%s%s\n", gap_logo, gap_logo_info, dark_colors);
+                    printf("%s%s%s\n", gap_logo, gap_logo_info, bright_colors);
+                    xfree(dark_colors);
+                    xfree(bright_colors);
+                } else {
+                    // Set the function that will be used for getting the field
+                    // value
+                    char *function = NULL;
+                    const char *field_message = NULL;
+                    // If we should draw an empty line as a separator
+                    if (strcmp(field, "") == 0) {
+                        printf("%s\n", gap_logo);
+                    } else {
+                        char *message = xmalloc(BUF_SIZE);
+                        if (strcasecmp(field, "OS") == 0) {
+                            function = get_os(1);
+                            field_message = get_option_string("os_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Kernel") == 0) {
+                            function = get_kernel();
+                            field_message = get_option_string("kernel_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                        } else if (strcasecmp(field, "Uptime") == 0) {
+                            function = get_uptime();
+                            field_message = get_option_string("uptime_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Shell") == 0) {
+                            function = get_shell();
+                            field_message = get_option_string("shell_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Terminal") == 0) {
+                            function = get_terminal();
+                            field_message = get_option_string("terminal_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Memory") == 0) {
+                            function = get_memory();
+                            field_message = get_option_string("memory_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else {
+                            function = "Not implemented yet (maybe?)";
+                            field_message = (char *)field;
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                        }
+                        printf("%s%s%s%s\n", gap_logo, gap_logo_info, linux_accent, message);
+                        xfree(message);
+                    }
+                }
+            }
+        }
+
         // If the gap between the logo and the information was higher than 0
         // then we will need to free it
         if (gap_size >= 1) {
