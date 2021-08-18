@@ -47,7 +47,7 @@ dnf install lua lua-devel libX11-devel readline-devel
 Now that you have the dependencies you can proceed to build and install lcfetch!
 
 ```sh
-git clone --depth 1 --recurse-submodules https://github.com/NTBBloodbath/lcfetch.git \
+git clone --depth 1 https://github.com/NTBBloodbath/lcfetch.git \
     && cd lcfetch
 ```
 
