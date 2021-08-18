@@ -25,7 +25,7 @@ all: build
 _clone_deps:
 	@if [ ! -d "$(TP_DIR)/log.c" ]; then \
 		echo -e "$(LOG_INFO) Cloning third-party dependencies ..."; \
-		git clone --depth 1 git@github.com:rxi/log.c.git $(TP_DIR)/log.c; \
+		git clone --depth 1 https://github.com/rxi/log.c.git $(TP_DIR)/log.c; \
 		echo ""; \
 	fi
 
