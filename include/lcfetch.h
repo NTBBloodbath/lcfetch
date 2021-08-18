@@ -1,5 +1,5 @@
-#include "lua.h"
-#include "lualib.h"
+#include "../third-party/lua-5.3.6/src/lua.h"
+#include "../third-party/lua-5.3.6/src/lualib.h"
 #ifndef LCFETCH_H
 #define LCFETCH_H
 

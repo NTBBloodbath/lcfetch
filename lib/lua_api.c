@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 /* Lua headers */
-#include "lauxlib.h"
-#include "lua.h"
-#include "lualib.h"
+#include "../third-party/lua-5.3.6/src/lauxlib.h"
+#include "../third-party/lua-5.3.6/src/lua.h"
+#include "../third-party/lua-5.3.6/src/lualib.h"
 /* Custom headers */
 #include "../include/lcfetch.h"
 
