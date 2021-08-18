@@ -20,6 +20,8 @@ written in C and configured using Lua (still in a very early stage)!
 You can grab the latest release from our [releases](https://github.com/NTBBloodbath/lcfetch/releases/latest)
 or if you want to live in the bleeding-edge with the latest features you can [build from source](#building-from-source).
 
+You will also need to install `lua5.3` if you do not have it installed.
+
 > **NOTE**: lcfetch was tested only with Lua `5.3+` but should work as expected with earlier
 > Lua versions.
 
@@ -75,9 +77,9 @@ make install
 
 ## Usage
 
-For starting `lcfetch` you will only need to type `lcfetch` in your terminal.
+For starting lcfetch you will only need to type `lcfetch` in your terminal.
 
-`lcfetch` also provides a CLI with some options.
+lcfetch also provides a CLI with some options.
 
 ```
 $ lcfetch --help
@@ -91,25 +93,35 @@ OPTIONS:
 Report bugs to https://github.com/NTBBloodbath/lcfetch/issues
 ```
 
+> See `man lcfetch` for more information about usage and configurations.
+
 ### Configuring lcfetch
 
-`lcfetch` uses the [Lua scripting language](https://www.lua.org/) as its configuration
+lcfetch uses the [Lua scripting language](https://www.lua.org/) as its configuration
 language.
 
-When installing `lcfetch` with `make` we will automatically copy the default configurations
-under the default configurations path for `lcfetch` (`~/.config/lcfetch/config.lua`).
+When installing lcfetch with `GNU Make` we will automatically copy the default configurations
+under the default configurations path for lcfetch (`~/.config/lcfetch/config.lua`).
 
-> **NOTE**: if you didn't installed `lcfetch` with `make` you will need to copy the file
+> **NOTE**: if you didn't installed lcfetch with `make` you will need to copy the file
 > by yourself under `~/.config/lcfetch` directory. The default configurations file is
 > located under [config](./config) directory in the repository.
 
 All the configuration options are self-documented and easy to understand.
 
+## Uninstalling
+
+For uninstalling lcfetch you can simply run `make uninstall` in the lcfetch directory.
+
+This command will remove the lcfetch binary from `~/.local/bin` directory and also
+the lcfetch man pages from `~/.local/share/man/man1` and refresh your `mandb` to
+completely remove them.
+
 ## Acknowledgements
 
 - [dylanaraps](https://github.com/dylanaraps), creator of `neofetch`. We _will_
   extract the ASCII distribution logos from `neofetch`.
-- [rxi](https://github.com/rxi), `lcfetch` is using his [log.c](https://github.com/rxi/log.c)
+- [rxi](https://github.com/rxi), lcfetch is using his [log.c](https://github.com/rxi/log.c)
   library for providing error logs in a fancy way.
 
 ## Contribute
@@ -129,4 +141,4 @@ All the configuration options are self-documented and easy to understand.
 
 ## License
 
-`lcfetch` is distributed under [GPLv2 license](./LICENSE).
+lcfetch is distributed under [GPLv2 license](./LICENSE).

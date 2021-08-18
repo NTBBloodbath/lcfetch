@@ -45,6 +45,18 @@ install: build
 	mandb -pu
 
 
+uninstall:
+	@echo -e "$(LOG_INFO) Uninstalling lcfetch ..."
+	@if [ -f "$(PREFIX)/bin/lcfetch" ]; then \
+		rm "$(PREFIX)/bin/lcfetch"; \
+	fi
+	@echo -e "$(LOG_INFO) Removing lcfetch man pages ..."
+	@if [ -f "$(PREFIX)/share/man/man1/lcfetch.1" ]; then \
+		rm "$(PREFIX)/share/man/man1/lcfetch.1"; \
+		mandb -pu; \
+	fi
+
+
 clean:
 ifneq (,$(wildcard $(BIN_DIR)/lcfetch))
 	rm $(BIN_DIR)/lcfetch
