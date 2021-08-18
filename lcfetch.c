@@ -11,6 +11,7 @@
 #include <unistd.h>
 /* Custom headers */
 #include "include/lcfetch.h"
+#include "third-party/log.c/src/log.h"
 /* ASCII logos */
 #include "include/logos/linux.h"
 // TODO: find the way to dynamically set the logo array in C
@@ -67,6 +68,9 @@ static char *get_os(int pretty_name) {
     size_t len;
 
     FILE *os_release = fopen("/etc/os-release", "r");
+    if (os_release == NULL) {
+        log_error("Unable to open /etc/os-release");
+    }
     while (getline(&line, &len, os_release) != -1) {
         // NOTE: the 'NAME' field will be used later for determining the
         // distribution ASCII logo and accent color
@@ -152,6 +156,9 @@ static char *get_terminal() {
 
         // Get parent shell process ID (terminal)
         FILE *terminal_child_pid = fopen(terminal_child_pid_path, "r");
+        if (terminal_child_pid == NULL) {
+            log_error("Unable to open %s", terminal_child_pid_path);
+        }
         while (getline(&line, &len, terminal_child_pid) != -1) {
             if (sscanf(line, "PPid: %d", terminal_pid) > 0) {
                 break;
@@ -162,6 +169,9 @@ static char *get_terminal() {
         // Get terminal name
         snprintf(terminal_pid_path, BUF_SIZE, "/proc/%d/status", *terminal_pid);
         FILE *terminal_name = fopen(terminal_pid_path, "r");
+        if (terminal_name == NULL) {
+            log_error("Unable to open /proc/%d/status", *terminal_pid);
+        }
         while (getline(&line, &len, terminal_name) != -1) {
             if (sscanf(line, "Name: %s", terminal) > 0) {
                 break;
@@ -193,6 +203,9 @@ static char *get_memory() {
     size_t len;
 
     FILE *meminfo = fopen("/proc/meminfo", "r");
+    if (meminfo == NULL) {
+        log_error("Unable to open /proc/meminfo");
+    }
     while (getline(&line, &len, meminfo) != -1) {
         /* if sscanf doesn't find a match, pointer is untouched */
         sscanf(line, "MemTotal: %d", &total);
