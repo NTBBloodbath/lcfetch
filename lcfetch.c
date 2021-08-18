@@ -28,10 +28,10 @@ static char *get_title(char *accent_color) {
     // reduce the maximum size for the title components so we don't over-fill
     // the string
     char hostname[BUF_SIZE / 3];
-    status = gethostname(hostname, BUF_SIZE / 3);
+    gethostname(hostname, BUF_SIZE / 3);
 
     char username[BUF_SIZE / 3];
-    status = getlogin_r(username, BUF_SIZE / 3);
+    getlogin_r(username, BUF_SIZE / 3);
 
     char *title = xmalloc(BUF_SIZE);
     // Calculate the length of hostname + @ + username
