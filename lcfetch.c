@@ -183,6 +183,35 @@ static char *get_terminal() {
     return terminal;
 }
 
+static char *get_memory() {
+    char *line = xmalloc(BUF_SIZE);
+    char *memory = xmalloc(BUF_SIZE);
+    int total_memory, used_memory;
+    int total, shared, memfree, buffers, cached, reclaimable;
+    size_t len;
+
+    FILE *meminfo = fopen("/proc/meminfo", "r");
+    while (getline(&line, &len, meminfo) != -1) {
+        /* if sscanf doesn't find a match, pointer is untouched */
+        sscanf(line, "MemTotal: %d", &total);
+        sscanf(line, "Shmem: %d", &shared);
+        sscanf(line, "MemFree: %d", &memfree);
+        sscanf(line, "Buffers: %d", &buffers);
+        sscanf(line, "Cached: %d", &cached);
+        sscanf(line, "SReclaimable: %d", &reclaimable);
+    }
+    free(line);
+    fclose(meminfo);
+
+    // we're using same calculation as neofetch
+    used_memory = (total + shared - memfree - buffers - cached - reclaimable) / 1024;
+    total_memory = total / 1024;
+
+    snprintf(memory, BUF_SIZE, "%dMiB / %dMiB", used_memory, total_memory);
+
+    return memory;
+}
+
 static char *get_colors_dark() {
     char *dark_colors = xmalloc(BUF_SIZE);
     char *str = dark_colors;
@@ -293,6 +322,11 @@ void print_info() {
                             } else if (strcasecmp(field, "Terminal") == 0) {
                                 function = get_terminal();
                                 field_message = get_option_string("terminal_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
+                            } else if (strcasecmp(field, "Memory") == 0) {
+                                function = get_memory();
+                                field_message = get_option_string("memory_message");
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                                 xfree(function);
                             } else {

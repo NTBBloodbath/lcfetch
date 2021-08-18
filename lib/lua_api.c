@@ -125,9 +125,9 @@ void init_options(void) {
     // set_subtable_string("enabled_fields", ""); // Newline
     set_subtable_string("enabled_fields", "Shell");
     set_subtable_string("enabled_fields", "Terminal");
-    // set_subtable_string("enabled_fields", ""); // Newline
+    set_subtable_string("enabled_fields", ""); // Newline
     // set_subtable_string("enabled_fields", "CPU");
-    // set_subtable_string("enabled_fields", "Memory");
+    set_subtable_string("enabled_fields", "Memory");
     set_subtable_string("enabled_fields", ""); // Newline
     set_subtable_string("enabled_fields", "Colors");
 }
