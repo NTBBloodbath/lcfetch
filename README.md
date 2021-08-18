@@ -41,6 +41,12 @@ apt install lua5.3 liblua5.3-dev libx11-dev libreadline-dev
 dnf install lua lua-devel libX11-devel readline-devel
 ```
 
+#### Arch
+
+```sh
+pacman -S lua53 libx11 readline
+```
+
 > **NOTE**: isn't your distro covered here but you know the exact packages names? Please
 > send a Pull Request!
 
@@ -134,7 +140,7 @@ completely remove them.
 
 ## Todo
 
-- [ ] Support for some missing fields (e.g. `Packages` and `DE`/`WM`)
+- [ ] Support for some missing essential fields (e.g. `Packages` and `DE`/`WM`)
 - [ ] Stop hardcoding the ASCII distro logo and accent color
 - [ ] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
