@@ -6,6 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta3] - 2021-08-18
+
+### Added
+
+- Support for CPU field
+- Support for memory field
+- Option to choose whether showing memory in GiB or MiB
+- Better error handling when opening system files like `/proc/cpuinfo`
+
+### Changed
+
+- Updated default configurations
+- Third party dependencies are now handled by our Makefile, no more submodules!
+
+### Fixed
+
+- Fixed a segfault caused if the gap option was equal to 0
+- Logo and information will not wrap anymore on small terminals or resize
+- If the logo was completely rendered but there is missing information (still not rendered)
+    lcfetch will also render this information, as it should be
+
 ## [0.1.0-beta2] - 2021-08-17
 
 ### Added
@@ -29,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta2...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3...HEAD
+[0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta2..v0.1.0-beta3
 [0.1.0-beta2]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta1..v0.1.0-beta2
 [0.1.0-beta1]: https://github.com/NTBBloodbath/lcfetch/releases/tag/v0.1.0-beta1
