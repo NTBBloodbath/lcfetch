@@ -271,9 +271,14 @@ void print_info() {
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
+        // Get the logo length
+        int logo_length = (strlen(linux_logo[0]) - strlen("\e[1;30m") - strlen("\e[0m"));
         // Get the gap that should be between the logo and the information
         int gap_size = get_option_number("gap");
-        char *gap = repeat_string(" ", gap_size);
+        char *gap_logo_info = repeat_string(" ", gap_size);
+        // This gap is specially used when there's more information but the
+        // logo is already complete
+        char *gap_logo = repeat_string(" ", logo_length);
 
         for (int i = 0; i < COUNT(linux_logo); i++) {
             // Count two extra fields for (user@host and the separator)
@@ -284,19 +289,19 @@ void print_info() {
             } else {
                 if (i == 0) {
                     char *title = get_title(linux_accent);
-                    printf("%s%s%s", linux_logo[i], gap, title);
+                    printf("%s%s%s", linux_logo[i], gap_logo_info, title);
                     xfree(title);
                 } else if (i == 1) {
                     char *separator = get_separator();
-                    printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap, separator);
+                    printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap_logo_info, separator);
                     xfree(separator);
                 } else {
                     const char *field = get_subtable_string("enabled_fields", i - 1);
                     if (strcasecmp(field, "colors") == 0) {
                         char *dark_colors = get_colors_dark();
                         char *bright_colors = get_colors_bright();
-                        printf("%s%s%s\n", linux_logo[i], gap, dark_colors);
-                        printf("%s%s%s\n", linux_logo[i], gap, bright_colors);
+                        printf("%s%s%s\n", linux_logo[i], gap_logo_info, dark_colors);
+                        printf("%s%s%s\n", gap_logo, gap_logo_info, bright_colors);
                         xfree(dark_colors);
                         xfree(bright_colors);
                     } else {
@@ -343,16 +348,19 @@ void print_info() {
                                 field_message = (char *)field;
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             }
-                            printf("%s%s%s%s\n", linux_logo[i], gap, linux_accent, message);
+                            printf("%s%s%s%s\n", linux_logo[i], gap_logo_info, linux_accent, message);
                             xfree(message);
                         }
                     }
                 }
             }
         }
+        // If the gap between the logo and the information was higher than 0
+        // then we will need to free it
         if (gap_size >= 1) {
-            xfree(gap);
+            xfree(gap_logo_info);
         }
+        xfree(gap_logo);
     } else {
         for (int i = 0; i <= (enabled_fields + 1); i++) {
             // Count two extra fields for (user@host and the separator)
