@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/github/license/NTBBloodbath/lcfetch?style=flat-square)
 [![build](https://github.com/NTBBloodbath/lcfetch/actions/workflows/build.yml/badge.svg)](https://github.com/NTBBloodbath/lcfetch/actions/workflows/build.yml)
 
-![lcfetch demo](https://user-images.githubusercontent.com/36456999/129816212-c4f72dee-9494-4697-b0f2-4a6ee1e88b09.png)
+![lcfetch demo](https://user-images.githubusercontent.com/36456999/129816791-da247c21-c412-48d0-9add-c35f7a74d36b.png)
 
 </div>
 
