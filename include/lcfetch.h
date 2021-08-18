@@ -1,6 +1,5 @@
 #include <lua.h>
 #include <lualib.h>
-
 #ifndef LCFETCH_H
 #define LCFETCH_H
 
