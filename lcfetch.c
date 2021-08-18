@@ -24,22 +24,6 @@ struct sysinfo sys_info;
 Display *display;
 int title_length, status;
 
-char *repeat_string(char *str, int times) {
-    if (times < 1) {
-        return str;
-    }
-
-    char *result = xmalloc(BUF_SIZE);
-    char *repeated = result;
-
-    for (int i = 0; i < times; i++) {
-        *(repeated++) = *str;
-    }
-    *repeated = '\0';
-
-    return result;
-}
-
 static char *get_title(char *accent_color) {
     // reduce the maximum size for the title components so we don't over-fill
     // the string
@@ -193,6 +177,87 @@ static char *get_terminal() {
     return terminal;
 }
 
+static char *get_cpu() {
+    char *line = NULL;
+    char *cpu = xmalloc(BUF_SIZE);
+    char *cpu_model = xmalloc(BUF_SIZE / 2);
+    int num_cores = 0;
+    int cpu_freq = 0;
+    int prec = 3;
+    double freq;
+    char freq_unit[] = "GHz";
+    size_t len;
+
+    FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
+    if (cpuinfo == NULL) {
+        log_error("Unable to open /proc/cpuinfo");
+    }
+    while (getline(&line, &len, cpuinfo) != -1) {
+        num_cores += sscanf(line, "model name : %[^\n@]", cpu_model);
+    }
+    fclose(cpuinfo);
+    xfree(line);
+
+    line = NULL;
+    FILE *cpufreq = fopen("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", "r");
+    // If /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq file exists
+    // then read the CPU frequency from it. Otherwise, fallback to /proc/cpuinfo
+    if (cpufreq) {
+        // cpuinfo_max_freq has only a line so we don't need a while loop
+        if (getline(&line, &len, cpufreq) != -1) {
+            sscanf(line, "%d", &cpu_freq);
+            // KHz / 1000 = MHz
+            cpu_freq /= 1000;
+        }
+    } else {
+        cpufreq = fopen("/proc/cpuinfo", "r");
+        if (cpufreq == NULL) {
+            log_error("Unable to open /proc/cpuinfo");
+        }
+        while (getline(&line, &len, cpufreq) != -1) {
+            if (sscanf(line, "cpu MHz: %lf", &freq) > 0) {
+                break;
+            }
+        }
+        // Convert frequency to integer, e.g. 1483
+        cpu_freq = (int)freq;
+    }
+    fclose(cpufreq);
+    xfree(line);
+
+    // If the cpu frequency is lower than 1000 then it makes no sense
+    // to render it as GHz so we will change it to MHz
+    if (cpu_freq < 1000) {
+        freq = (double)cpu_freq;
+        freq_unit[0] = 'M';
+        prec = 0; // Show freq as integer
+    } else {
+        // MHz / 1000 / GHz
+        freq = cpu_freq / 1000.0;
+
+        while (cpu_freq % 10 == 0) {
+            prec--;
+            cpu_freq /= 10;
+        }
+    }
+
+    // e.g. Intel i5 760 (4) @ 2.8GHz
+    snprintf(cpu, BUF_SIZE, "%s (%d) @ %.*f%s", cpu_model, num_cores, prec, freq, freq_unit);
+    xfree(cpu_model);
+
+    // Remove unneeded information
+    cpu = remove_substr(remove_substr(remove_substr(cpu, "(R)"), "(TM)"), "CPU");
+
+    // Remove the annoying whitespaces between characters in the string
+    truncate_whitespaces(cpu);
+
+    if (num_cores == 0) {
+        *cpu = '\0';
+    }
+
+    return cpu;
+}
+
 static char *get_memory() {
     char *line = NULL;
     char *memory = xmalloc(BUF_SIZE);
@@ -224,8 +289,8 @@ static char *get_memory() {
     total_memory = total / 1024;
     if (memory_in_gib) {
         // MiB / 1024 = GiB
-        float used_memory_gib = (float)used_memory / (float)1024;
-        float total_memory_gib = (float)total_memory / (float)1024;
+        float used_memory_gib = (double)used_memory / (double)1024;
+        float total_memory_gib = (double)total_memory / (double)1024;
         snprintf(memory, BUF_SIZE, "%.2f GiB / %.2f GiB", used_memory_gib, total_memory_gib);
     } else {
         snprintf(memory, BUF_SIZE, "%d MiB / %d MiB", used_memory, total_memory);
@@ -314,8 +379,10 @@ void print_info() {
                     printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap_logo_info, separator);
                     xfree(separator);
                 } else {
+                    displayed_info++;
+
                     const char *field = get_subtable_string("enabled_fields", i - 1);
-                    if (strcasecmp(field, "colors") == 0) {
+                    if (strcasecmp(field, "Colors") == 0) {
                         char *dark_colors = get_colors_dark();
                         char *bright_colors = get_colors_bright();
                         printf("%s%s%s\n", linux_logo[i], gap_logo_info, dark_colors);
@@ -356,6 +423,11 @@ void print_info() {
                                 field_message = get_option_string("terminal_message");
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                                 xfree(function);
+                            } else if (strcasecmp(field, "CPU") == 0) {
+                                function = get_cpu();
+                                field_message = get_option_string("cpu_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Memory") == 0) {
                                 function = get_memory();
                                 field_message = get_option_string("memory_message");
@@ -372,12 +444,11 @@ void print_info() {
                     }
                 }
             }
-            displayed_info++;
         }
         // If there's still information that needs to be rendered then let's render them
         // leaving a padding from the logo
         if (displayed_info < enabled_fields) {
-            for (int i = displayed_info; i <= (enabled_fields + 1); i++) {
+            for (int i = displayed_info + 2; i <= (enabled_fields + 1); i++) {
                 const char *field = get_subtable_string("enabled_fields", i - 1);
                 if (strcasecmp(field, "colors") == 0) {
                     char *dark_colors = get_colors_dark();
@@ -418,6 +489,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Terminal") == 0) {
                             function = get_terminal();
                             field_message = get_option_string("terminal_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "CPU") == 0) {
+                            function = get_cpu();
+                            field_message = get_option_string("cpu_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else if (strcasecmp(field, "Memory") == 0) {
@@ -496,6 +572,16 @@ void print_info() {
                         } else if (strcasecmp(field, "Terminal") == 0) {
                             function = get_terminal();
                             field_message = get_option_string("terminal_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "CPU") == 0) {
+                            function = get_cpu();
+                            field_message = get_option_string("cpu_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Memory") == 0) {
+                            function = get_memory();
+                            field_message = get_option_string("memory_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else {

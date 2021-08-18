@@ -31,6 +31,11 @@ void xfree(void *ptr);
 void version(void);
 void help(void);
 
+/* utils.c */
+char *repeat_string(char *str, int times);
+void truncate_whitespaces(char *str);
+char *remove_substr(char *str, const char *sub);
+
 /* lua_api.c */
 void start_lua(const char *config_file_path);
 void stop_lua(void);
