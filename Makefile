@@ -45,7 +45,7 @@ endif
 
 fmt:
 	@echo -e "$(LOG_INFO) Formatting source code ..."
-	$(CCF) -style=file --sort-includes -i $(INC_DIR)/*.h $(LIB_DIR)/*.c
+	$(CCF) -style=file --sort-includes -i lcfetch.c $(INC_DIR)/*.h $(LIB_DIR)/*.c
 
 
 docs:
