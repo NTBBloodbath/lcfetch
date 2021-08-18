@@ -139,6 +139,7 @@ completely remove them.
 - [ ] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
 - [ ] Add support for MacOS (probably the last thing to be done?)
+- [ ] Add support for images (we can use icat, üzerbug or kitty protocols)
 
 ## License
 
