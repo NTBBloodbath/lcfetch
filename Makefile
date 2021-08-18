@@ -1,4 +1,5 @@
 LUA=lua
+SHELL:=/bin/bash
 
 PREFIX=$(HOME)/.local
 CONFIG_DIR=$(HOME)/.config/lcfetch
