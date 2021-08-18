@@ -47,7 +47,7 @@ _clone_deps:
 
 build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
-	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
+	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) -L $(TP_DIR)/lua-5.3.6/src $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
 	strip $(BIN_DIR)/lcfetch
 
 
