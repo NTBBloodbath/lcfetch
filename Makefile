@@ -25,14 +25,26 @@ PANDOC=pandoc
 
 LOG_INFO=$(shell date +"%H:%M:%S") \e[1;32mINFO\e[0m
 
-.PHONY: clean fmt build run docs
-.SILENT: clean run
+.PHONY: _echo_info clean fmt build run install docs
+.SILENT: _echo_info clean run
 .DEFAULT_GOAL := all
 
 all: build
 
 
-_clone_deps:
+_echo_info:
+	echo -e "$(LOG_INFO) Displaying build configuration ..."
+	echo -e "\e[1mLUA\e[0m=$(LUA)"
+	echo -e "\e[1mUSE_SYSTEM_LUA\e[0m=$(USE_SYSTEM_LUA)"
+	echo -e "\e[1mSHELL\e[0m=$(SHELL)"
+	echo -e "\e[1mPREFIX\e[0m=$(PREFIX)"
+	echo -e "\e[1mLUA_INC_DIR\e[0m=$(LUA_INC_DIR)"
+	echo -e "\e[1mCC\e[0m=$(CC)"
+	echo -e "\e[1mCFLAGS\e[0m=$(CFLAGS)"
+	echo -e "\e[1mLDFLAGS\e[0m=$(LDFLAGS)\n"
+
+
+_clone_deps: _echo_info
 	@if [[ -z "$(shell ls $(TP_DIR))" || "$(shell ls $(TP_DIR) | wc -l)" -lt 2 ]]; then \
 		echo -e "$(LOG_INFO) Downloading third-party dependencies ..."; \
 	fi
