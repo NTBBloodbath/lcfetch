@@ -29,6 +29,9 @@ You will also need to install `lua5.3` if you do not have it installed.
 
 #### Installing dependencies
 
+The Lua packages listed below are optional because lcfetch will download `Lua 5.3.6` locally
+by default in order to avoid installing extra stuff in your system.
+
 ##### Ubuntu
 
 ```sh
@@ -52,7 +55,7 @@ pacman -S lua53 libx11 readline
 
 ---
 
-Now that you have the dependencies you can proceed to build and install lcfetch!
+Now that you have the system-wide dependencies you can proceed to build and install lcfetch!
 
 ```sh
 git clone --depth 1 https://github.com/NTBBloodbath/lcfetch.git \
@@ -61,9 +64,15 @@ git clone --depth 1 https://github.com/NTBBloodbath/lcfetch.git \
 
 For speeding up things, you can simply use our [Makefile](./Makefile).
 
+The Makefile `build` target (the default one) will automatically download the required
+third-party dependencies for building lcfetch (`log.c` and `Lua 5.3.6`).
+
 ```sh
 # For only building lcfetch, produced binary will be located at 'bin/lcfetch'
-make build
+make
+
+# If you want to compile using your system's Lua version
+make USE_SYSTEM_LUA=1
 
 # For building and installing lcfetch, lcfetch will be installed at '~/.local/bin'
 make install
