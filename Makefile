@@ -1,6 +1,6 @@
 LUA=lua
 USE_SYSTEM_LUA=0
-SHELL:=/bin/bash
+SHELL:=/usr/bin/env bash
 
 PREFIX=$(HOME)/.local
 CONFIG_DIR=$(HOME)/.config/lcfetch
@@ -33,13 +33,15 @@ all: build
 
 
 _clone_deps:
-	@echo -e "$(LOG_INFO) Downloading third-party dependencies if needed ...\n"
-	@if [ ! -d "$(TP_DIR)/log.c" ]; then \
+	@if [[ -z "$(shell ls $(TP_DIR))" || "$(shell ls $(TP_DIR) | wc -l)" -lt 2 ]]; then \
+		echo -e "$(LOG_INFO) Downloading third-party dependencies ..."; \
+	fi
+	@if [[ ! -d "$(TP_DIR)/log.c" ]]; then \
 		echo -e "$(LOG_INFO) Cloning log.c ..."; \
 		git clone --depth 1 https://github.com/rxi/log.c.git $(TP_DIR)/log.c; \
 		echo ""; \
 	fi
-	@if [ ! -d "$(TP_DIR)/lua-5.3.6" ] && [ $(USE_SYSTEM_LUA) -eq 0 ]; then \
+	@if [[ ! -d "$(TP_DIR)/lua-5.3.6" && $(USE_SYSTEM_LUA) -eq 0 ]]; then \
 		echo -e "$(LOG_INFO) Downloading lua-5.3.6.tar.gz ..."; \
 		pushd $(TP_DIR); \
 		curl -R -O http://www.lua.org/ftp/lua-5.3.6.tar.gz; \
@@ -69,11 +71,11 @@ install: build
 
 uninstall:
 	@echo -e "$(LOG_INFO) Uninstalling lcfetch ..."
-	@if [ -f "$(PREFIX)/bin/lcfetch" ]; then \
+	@if [[ -f "$(PREFIX)/bin/lcfetch" ]]; then \
 		rm "$(PREFIX)/bin/lcfetch"; \
 	fi
 	@echo -e "$(LOG_INFO) Removing lcfetch man pages ..."
-	@if [ -f "$(PREFIX)/share/man/man1/lcfetch.1" ]; then \
+	@if [[ -f "$(PREFIX)/share/man/man1/lcfetch.1" ]]; then \
 		rm "$(PREFIX)/share/man/man1/lcfetch.1"; \
 		mandb -pu; \
 	fi
