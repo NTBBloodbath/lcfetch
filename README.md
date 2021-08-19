@@ -84,7 +84,7 @@ make install
 #### Troubleshooting
 
 1. If you're getting errors regarding to missing Lua headers (e.g. `lauxlib.h`)
-    change the `LUA variable when running `make` to match your Lua `include/` path,
+    change the `LUA` variable when running `make` to match your Lua `include/` path,
     e.g. `LUA=lua5.3` for `/usr/include/lua5.3`.
 
 2. If you're getting errors regarding to `ld` and `-llua` you will need to change the
