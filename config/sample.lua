@@ -73,11 +73,20 @@
 -- NOTE: default is true
 -- options.display_logo = true
 
--- The gap between the ASCII distro logo and the
+-- The gap between the ASCII distro logo / terminal left border and the
 -- information fields
 --
 -- NOTE: by default is 3
 -- options.gap = 3
+
+-- If the CPU information should be short or include extra information, e.g.
+--   when true:
+--     Intel i5 760 (4) @ 2.8Ghz
+--   when false:
+--     Intel(R) Core(TM) i5 760 (4) @ 2.8Ghz
+--
+-- NOTE: by default is true
+-- options.short_cpu_info = true
 
 -- If the memory should be printed as GiB instead of MiB
 --

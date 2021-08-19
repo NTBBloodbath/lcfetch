@@ -98,6 +98,7 @@ void init_options(void) {
     // Set the default basic types options (strings, numbers, booleans)
     set_table_string("ascii_distro", "tux");
     set_table_string("colors_style", "classic");
+    set_table_boolean("short_cpu_info", 1);
     set_table_boolean("memory_in_gib", 0);
     set_table_boolean("display_logo", 1);
     set_table_number("gap", 3);

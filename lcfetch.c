@@ -246,7 +246,11 @@ static char *get_cpu() {
     xfree(cpu_model);
 
     // Remove unneeded information
-    cpu = remove_substr(remove_substr(remove_substr(cpu, "(R)"), "(TM)"), "CPU");
+    int short_cpu_info = get_option_boolean("short_cpu_info");
+    if (short_cpu_info) {
+        cpu = remove_substr(remove_substr(cpu, "(R)"), "Core(TM)");
+    }
+    cpu = remove_substr(cpu, "CPU");
 
     // Remove the annoying whitespaces between characters in the string
     truncate_whitespaces(cpu);
