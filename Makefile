@@ -1,4 +1,5 @@
 LUA=lua
+USE_SYSTEM_LUA=0
 SHELL:=/bin/bash
 
 PREFIX=$(HOME)/.local
@@ -12,8 +13,13 @@ LUA_INC_DIR=/usr/include/$(LUA)
 
 CC=clang
 CCF=clang-format
-CFLAGS=-I $(TP_DIR)/lua-5.3.6/src -O2 -Wall -Wextra
+CFLAGS=-O2 -Wall -Wextra
 LDFLAGS=$(shell pkg-config --libs $(LUA)) -lX11
+ifeq (1,$(USE_SYSTEM_LUA))
+	CFLAGS+=-I $(LUA_INC_DIR) -DUSE_SYSTEM_LUA
+else
+	CFLAGS+=-I $(TP_DIR)/lua-5.3.6/src
+endif
 
 PANDOC=pandoc
 
@@ -33,7 +39,7 @@ _clone_deps:
 		git clone --depth 1 https://github.com/rxi/log.c.git $(TP_DIR)/log.c; \
 		echo ""; \
 	fi
-	@if [ ! -d "$(TP_DIR)/lua-5.3.6" ]; then \
+	@if [ ! -d "$(TP_DIR)/lua-5.3.6" ] && [ $(USE_SYSTEM_LUA) -eq 0 ]; then \
 		echo -e "$(LOG_INFO) Downloading lua-5.3.6.tar.gz ..."; \
 		pushd $(TP_DIR); \
 		curl -R -O http://www.lua.org/ftp/lua-5.3.6.tar.gz; \

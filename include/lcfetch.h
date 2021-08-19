@@ -1,5 +1,11 @@
+#ifdef USE_SYSTEM_LUA
+#include <lua.h>
+#include <lualib.h>
+#else
 #include "../third-party/lua-5.3.6/src/lua.h"
 #include "../third-party/lua-5.3.6/src/lualib.h"
+#endif
+
 #ifndef LCFETCH_H
 #define LCFETCH_H
 
