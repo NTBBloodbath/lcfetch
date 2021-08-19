@@ -28,7 +28,7 @@ jobs:
       - name: Build lcfetch
         run: |
           cd ./lcfetch
-          make LUA=lua5.3
+          make USE_SYSTEM_LUA=1 LUA=lua5.3
 
       - name: Upload produced binary
         uses: actions/upload-artifact@v2
