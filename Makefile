@@ -14,7 +14,7 @@ LUA_INC_DIR=/usr/include/$(LUA)
 CC=clang
 CCF=clang-format
 CFLAGS=-O2 -Wall -Wextra
-LDFLAGS=$(shell pkg-config --libs $(LUA)) -lX11
+LDFLAGS=$(shell pkg-config --libs $(LUA) || echo "-llua -lm -ldl") -lX11
 ifeq (1,$(USE_SYSTEM_LUA))
 	CFLAGS+=-I $(LUA_INC_DIR) -DUSE_SYSTEM_LUA
 else
@@ -67,15 +67,6 @@ _clone_deps: _echo_info
 
 
 build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
-	@if [[ ! "$(LDFLAGS)" =~ "llua" ]]; then \
-		LDFLAGS+="-llua "; \
-	fi
-	@if [[ ! "$(LDFLAGS)" =~ "ldl" ]]; then \
-		LDFLAGS+="-ldl "; \
-	fi
-	@if [[ ! "$(LDFLAGS)" =~ "lm" ]]; then \
-		LDFLAGS+="-lm "; \
-	fi
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
 	strip --strip-unneeded $(BIN_DIR)/lcfetch
