@@ -180,7 +180,7 @@ static char *get_terminal() {
 static char *get_packages() {
     char *pkg_managers[] = {"apt", "dnf", "rpm", "pacman", "apk", "xbps-query", "flatpak"};
     char *packages = xmalloc(BUF_SIZE * 2);
-    int apt, rpm, dnf, pacman, apk, xbps, flatpak = 0;
+    int apt, rpm, dnf, pacman, aur, apk, xbps, flatpak = 0;
 
     // Add an initial empty string to our packages characters array to be able
     // to use snprintf() for append to it later
@@ -226,9 +226,15 @@ static char *get_packages() {
                 FILE *pacman_packages = popen("pacman -Qq 2> /dev/null | wc -l", "r");
                 fscanf(pacman_packages, "%d", &pacman);
                 pclose(pacman_packages);
+                FILE *aur_packages = popen("pacman -Qqm 2> /dev/null | wc -l", "r");
+                fscanf(aur_packages, "%d", &aur);
+                pclose(aur_packages);
                 if (pacman > 0) {
                     snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", pacman, pkg_manager);
                 }
+                if (aur > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", aur, "AUR");
+                } 
             } else if (strcmp(pkg_manager, "apk") == 0) {
                 FILE *apk_packages = popen("apk info 2> /dev/null | wc -l", "r");
                 fscanf(apk_packages, "%d", &apk);
