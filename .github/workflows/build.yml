@@ -18,17 +18,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update -q
-          sudo apt install -y -q build-essential libreadline-dev lua5.3 liblua5.3-dev libx11-dev
-
-      - name: Link Lua libraries
-        run: |
-          sudo mkdir -p /usr/lib/x86_64-linux-gnu/lib/
-          sudo ln -s /usr/lib/x86_64-linux-gnu/liblua5.3.so /usr/lib/x86_64-linux-gnu/lib/liblua.so
+          sudo apt install -y -q build-essential libreadline-dev libx11-dev
 
       - name: Build lcfetch
         run: |
           cd ./lcfetch
-          make USE_SYSTEM_LUA=1 LUA=lua5.3
+          make
 
       - name: Upload produced binary
         uses: actions/upload-artifact@v2
