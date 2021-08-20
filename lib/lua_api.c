@@ -98,6 +98,8 @@ void init_options(void) {
     // Set the default basic types options (strings, numbers, booleans)
     set_table_string("ascii_distro", "tux");
     set_table_string("colors_style", "classic");
+    set_table_string("delimiter", ":");
+    set_table_boolean("show_arch", 1);
     set_table_boolean("display_refresh_rate", 0);
     set_table_boolean("short_cpu_info", 1);
     set_table_boolean("memory_in_gib", 1);
@@ -110,8 +112,8 @@ void init_options(void) {
     set_table_string("uptime_message", "Uptime");
     set_table_string("packages_message", "Packages");
     set_table_string("resolution_message", "Resolution");
-    // set_table_string("de_message", "DE");
-    // set_table_string("wm_message", "WM");
+    set_table_string("de_message", "DE");
+    set_table_string("wm_message", "WM");
     set_table_string("shell_message", "Shell");
     set_table_string("terminal_message", "Terminal");
     set_table_string("cpu_message", "CPU");

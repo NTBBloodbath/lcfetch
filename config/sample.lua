@@ -56,6 +56,14 @@ options.memory_message = "Memory"
 ----                                         ----
 -----]]-----------------------------------[[-----
 
+-- The delimiter shown between the field message and the information, e.g.
+-- OS: Fedora 34 (KDE Plasma) x86_64
+--   ^
+-- delimiter
+--
+-- NOTE: by default is ":", change it to "" for disabling it
+options.delimiter = ":"
+
 -- The terminal colors style
 -- Available styles:
 --   * classic
@@ -79,6 +87,12 @@ options.display_logo = true
 --
 -- NOTE: by default is 3
 options.gap = 3
+
+-- If the OS architecture should be shown at the right side of the OS name or not,
+-- e.g. Fedora x86_64
+--
+-- NOTE: by default is true
+options.show_arch = true
 
 -- If the screen refresh rate should be shown when displaying the
 -- screen resolution

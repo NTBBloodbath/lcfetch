@@ -50,6 +50,7 @@ static char *get_os(int pretty_name) {
     char *os = xmalloc(BUF_SIZE);
     char *name = xmalloc(BUF_SIZE);
     char *line = NULL;
+    int show_arch = get_option_boolean("show_arch");
     size_t len;
 
     FILE *os_release = fopen("/etc/os-release", "r");
@@ -69,8 +70,12 @@ static char *get_os(int pretty_name) {
     }
     xfree(line);
     fclose(os_release);
-    if (pretty_name) {
-        snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
+    if (pretty_name && show_arch) {
+        // if (show_arch) {
+            snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
+        // } else {
+            // snprintf(os, BUF_SIZE, "%s", name);
+        // }
     } else {
         snprintf(os, BUF_SIZE, "%s", name);
     }
@@ -505,6 +510,11 @@ static char *get_colors_bright() {
 void print_info() {
     // If the ASCII distro logo should be printed
     int display_logo = get_option_boolean("display_logo");
+    // The delimiter shown between the field message and the information, e.g.
+    // OS: Fedora 34 (KDE Plasma) x86_64
+    //   ^
+    // delimiter
+    const char *delimiter = get_option_string("delimiter");
 
     // Get the accent color
     // NOTE: delete this after setting the dynamic coloring using the ASCII
@@ -567,51 +577,51 @@ void print_info() {
                             if (strcasecmp(field, "OS") == 0) {
                                 function = get_os(1);
                                 field_message = get_option_string("os_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Kernel") == 0) {
                                 function = get_kernel();
                                 field_message = get_option_string("kernel_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             } else if (strcasecmp(field, "Uptime") == 0) {
                                 function = get_uptime();
                                 field_message = get_option_string("uptime_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Packages") == 0) {
                                 function = get_packages();
                                 field_message = get_option_string("packages_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Resolution") == 0) {
                                 function = get_resolution();
                                 field_message = get_option_string("resolution_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Shell") == 0) {
                                 function = get_shell();
                                 field_message = get_option_string("shell_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Terminal") == 0) {
                                 function = get_terminal();
                                 field_message = get_option_string("terminal_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "CPU") == 0) {
                                 function = get_cpu();
                                 field_message = get_option_string("cpu_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else if (strcasecmp(field, "Memory") == 0) {
                                 function = get_memory();
                                 field_message = get_option_string("memory_message");
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
                             } else {
                                 function = "Not implemented yet (maybe?)";
                                 field_message = (char *)field;
-                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             }
                             printf("%s%s%s%s\n", linux_logo[i], gap_logo_info, linux_accent, message);
                             xfree(message);
@@ -645,51 +655,51 @@ void print_info() {
                         if (strcasecmp(field, "OS") == 0) {
                             function = get_os(1);
                             field_message = get_option_string("os_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Kernel") == 0) {
                             function = get_kernel();
                             field_message = get_option_string("kernel_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         } else if (strcasecmp(field, "Uptime") == 0) {
                             function = get_uptime();
                             field_message = get_option_string("uptime_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Resolution") == 0) {
                             function = get_resolution();
                             field_message = get_option_string("resolution_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
                             function = get_shell();
                             field_message = get_option_string("shell_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Terminal") == 0) {
                             function = get_terminal();
                             field_message = get_option_string("terminal_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "CPU") == 0) {
                             function = get_cpu();
                             field_message = get_option_string("cpu_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Memory") == 0) {
                             function = get_memory();
                             field_message = get_option_string("memory_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else {
                             function = "Not implemented yet (maybe?)";
                             field_message = (char *)field;
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
                         printf("%s%s%s%s\n", gap_logo, gap_logo_info, linux_accent, message);
                         xfree(message);
@@ -746,52 +756,52 @@ void print_info() {
                         if (strcasecmp(field, "OS") == 0) {
                             function = get_os(1);
                             field_message = get_option_string("os_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Kernel") == 0) {
                             function = get_kernel();
                             field_message = get_option_string("kernel_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             // xfree(function);
                         } else if (strcasecmp(field, "Uptime") == 0) {
                             function = get_uptime();
                             field_message = get_option_string("uptime_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Resolution") == 0) {
                             function = get_resolution();
                             field_message = get_option_string("resolution_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
                             function = get_shell();
                             field_message = get_option_string("shell_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Terminal") == 0) {
                             function = get_terminal();
                             field_message = get_option_string("terminal_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "CPU") == 0) {
                             function = get_cpu();
                             field_message = get_option_string("cpu_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Memory") == 0) {
                             function = get_memory();
                             field_message = get_option_string("memory_message");
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else {
                             function = "Not implemented yet (maybe?)";
                             field_message = (char *)field;
-                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
                         printf("%s%s%s\n", gap_term_info, linux_accent, message);
                         xfree(message);
