@@ -247,8 +247,9 @@ static char *get_packages() {
                 // NOTE: it seems that flatpak does not like to be called from a popen so it fails in
                 // a really stupid way sending a non-sense error, that is why we are not using 'flatpak list'
                 // for getting the flatpak packages at the moment
-                FILE *flatpak_packages = popen(
-                    "echo \"$(( $(ls /var/lib/flatpak/app 2> /dev/null | wc -l) + $(ls /var/lib/flatpak/runtime 2> /dev/null | wc -l) ))\"", "r");
+                FILE *flatpak_packages = popen("echo \"$(( $(ls /var/lib/flatpak/app 2> /dev/null | wc -l) + $(ls "
+                                               "/var/lib/flatpak/runtime 2> /dev/null | wc -l) ))\"",
+                                               "r");
                 fscanf(flatpak_packages, "%d", &flatpak);
                 pclose(flatpak_packages);
                 if (flatpak > 0) {
