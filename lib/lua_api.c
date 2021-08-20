@@ -99,7 +99,7 @@ void init_options(void) {
     set_table_string("ascii_distro", "tux");
     set_table_string("colors_style", "classic");
     set_table_boolean("short_cpu_info", 1);
-    set_table_boolean("memory_in_gib", 0);
+    set_table_boolean("memory_in_gib", 1);
     set_table_boolean("display_logo", 1);
     set_table_number("gap", 3);
 
@@ -124,7 +124,7 @@ void init_options(void) {
     set_subtable_string("enabled_fields", "OS");
     set_subtable_string("enabled_fields", "Kernel");
     set_subtable_string("enabled_fields", "Uptime");
-    // set_subtable_string("enabled_fields", "Packages");
+    set_subtable_string("enabled_fields", "Packages");
     set_subtable_string("enabled_fields", ""); // Newline
     // set_subtable_string("enabled_fields", "DE");
     // set_subtable_string("enabled_fields", "WM");

@@ -10,6 +10,7 @@
 --   * OS
 --   * Kernel
 --   * Uptime
+--   * Packages
 --   * Shell
 --   * Terminal
 --   * CPU
@@ -17,14 +18,11 @@
 --   * Colors
 --
 -- NOTE: fields are case-insensitive
---[[ options.enabled_fields = {
+options.enabled_fields = {
   "OS",
   "Kernel",
   "Uptime",
   "Packages",
-  "",
-  "DE",
-  "WM",
   "",
   "Shell",
   "Terminal",
@@ -33,20 +31,20 @@
   "Memory",
   "",
   "Colors",
-} ]]
+}
 
 ----- DEFAULT FIELDS MESSAGES -------------------
 -------------------------------------------------
--- options.os_message = "OS"
--- options.kernel_message = "Kernel"
--- options.uptime_message = "Uptime"
--- options.packages_message = "Packages"
+options.os_message = "OS"
+options.kernel_message = "Kernel"
+options.uptime_message = "Uptime"
+options.packages_message = "Packages"
 -- options.de_message = "DE"
 -- options.wm_message = "WM"
--- options.shell_message = "Shell"
--- options.terminal_message = "Terminal"
--- options.cpu_message = "CPU"
--- options.memory_message = "Memory"
+options.shell_message = "Shell"
+options.terminal_message = "Terminal"
+options.cpu_message = "CPU"
+options.memory_message = "Memory"
 
 
 -----[[-----------------------------------]]-----
@@ -61,23 +59,23 @@
 --   * circles
 --
 -- NOTE: default is "classic"
--- options.colors_style = "classic"
+options.colors_style = "classic"
 
--- ASCII distro logo to be printed
+-- ASCII distro logo to be printed, unused at the moment
 --
 -- NOTE: by default the ASCII distro logo is automatically detected (WIP)
--- options.ascii_distro = ""
+options.ascii_distro = ""
 
 -- If the ASCII distro logo should be printed
 --
 -- NOTE: default is true
--- options.display_logo = true
+options.display_logo = true
 
 -- The gap between the ASCII distro logo / terminal left border and the
 -- information fields
 --
 -- NOTE: by default is 3
--- options.gap = 3
+options.gap = 3
 
 -- If the CPU information should be short or include extra information, e.g.
 --   when true:
@@ -86,9 +84,9 @@
 --     Intel(R) Core(TM) i5 760 (4) @ 2.8Ghz
 --
 -- NOTE: by default is true
--- options.short_cpu_info = true
+options.short_cpu_info = true
 
 -- If the memory should be printed as GiB instead of MiB
 --
--- NOTE: by default is false
--- options.memory_in_gib = false
+-- NOTE: by default is true
+options.memory_in_gib = true
