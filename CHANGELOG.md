@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta4] - 2021-08-20
+
+### Added
+
+- Support for packages field
+- Option to choose whether showing extra information when printing CPU field
+    or keep it short
+
+### Changed
+
+- Releases now have Lua embedded
+- Lua 5.3.6 will now be optionally downloaded when building
+- Allow using gap when using minimal mode (not displaying logo)
+- Updated default configurations
+
 ## [0.1.0-beta3] - 2021-08-18
 
 ### Added
@@ -50,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4...HEAD
+[0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3..v0.1.0-beta4
 [0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta2..v0.1.0-beta3
 [0.1.0-beta2]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta1..v0.1.0-beta2
 [0.1.0-beta1]: https://github.com/NTBBloodbath/lcfetch/releases/tag/v0.1.0-beta1
