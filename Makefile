@@ -67,6 +67,15 @@ _clone_deps: _echo_info
 
 
 build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
+	@if [[ ! "$(LDFLAGS)" =~ "llua" ]]; then \
+		LDFLAGS+="-llua "; \
+	fi
+	@if [[ ! "$(LDFLAGS)" =~ "ldl" ]]; then \
+		LDFLAGS+="-ldl "; \
+	fi
+	@if [[ ! "$(LDFLAGS)" =~ "lm" ]]; then \
+		LDFLAGS+="-lm "; \
+	fi
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
 	strip --strip-unneeded $(BIN_DIR)/lcfetch
