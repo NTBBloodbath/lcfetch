@@ -194,7 +194,7 @@ static char *get_packages() {
         char *which_command = xmalloc(BUF_SIZE);
         snprintf(which_command, BUF_SIZE, "which %s >/dev/null 2>&1", pkg_manager);
         // If the package manager is installed
-        if (system(which_command) != -1) {
+        if (system(which_command) == 0) {
             if (strcmp(pkg_manager, "apt") == 0) {
                 FILE *dpkg_packages = popen("dpkg --list 2> /dev/null | grep -c ^ii", "r");
                 fscanf(dpkg_packages, "%d", &apt);
