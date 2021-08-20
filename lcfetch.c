@@ -186,6 +186,8 @@ static char *get_packages() {
     // to use snprintf() for append to it later
     snprintf(packages, BUF_SIZE, "");
 
+    // Store a count of the displayed package managers so we can dynamically add the commas on them
+    int displayed_pkg_managers = 0;
     for (int i = 0; i < COUNT(pkg_managers); i++) {
         char *pkg_manager = pkg_managers[i];
         // Set the which command to run later
@@ -201,7 +203,12 @@ static char *get_packages() {
                 // NOTE: this is for avoiding values like "0 (foo)" because you can install
                 // APT and others packages managers in almost any distro.
                 if (apt > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", apt, "dpkg");
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", apt, "dpkg");
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", apt, "dpkg");
+                    }
+                    displayed_pkg_managers++;
                 }
             } else if (strcmp(pkg_manager, "dnf") == 0) {
                 // Using DNF package cache is much faster than RPM
@@ -210,7 +217,12 @@ static char *get_packages() {
                 fscanf(dnf_packages, "%d", &dnf);
                 pclose(dnf_packages);
                 if (dnf > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", dnf, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", dnf, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", dnf, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
             } else if ((strcmp(pkg_manager, "rpm") == 0) && (dnf == 0)) {
                 // If the current package manager is RPM and DNF packages count is zero
@@ -220,7 +232,12 @@ static char *get_packages() {
                 fscanf(rpm_packages, "%d", &rpm);
                 pclose(rpm_packages);
                 if (rpm > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", rpm, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", rpm, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", rpm, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
             } else if (strcmp(pkg_manager, "pacman") == 0) {
                 FILE *pacman_packages = popen("pacman -Qq 2> /dev/null | wc -l", "r");
@@ -230,24 +247,40 @@ static char *get_packages() {
                 fscanf(aur_packages, "%d", &aur);
                 pclose(aur_packages);
                 if (pacman > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", pacman, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", pacman, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", pacman, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
                 if (aur > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", aur, "AUR");
+                    snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", aur, "AUR");
+                    displayed_pkg_managers++;
                 } 
             } else if (strcmp(pkg_manager, "apk") == 0) {
                 FILE *apk_packages = popen("apk info 2> /dev/null | wc -l", "r");
                 fscanf(apk_packages, "%d", &apk);
                 pclose(apk_packages);
                 if (apk > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", apk, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", apk, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", apk, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
             } else if (strcmp(pkg_manager, "xbps-query") == 0) {
                 FILE *xbps_packages = popen("xbps-query -l 2> /dev/null | wc -l", "r");
                 fscanf(xbps_packages, "%d", &xbps);
                 pclose(xbps_packages);
                 if (xbps > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", xbps, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", xbps, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", xbps, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
             } else if (strcmp(pkg_manager, "flatpak") == 0) {
                 // NOTE: it seems that flatpak does not like to be called from a popen so it fails in
@@ -259,7 +292,12 @@ static char *get_packages() {
                 fscanf(flatpak_packages, "%d", &flatpak);
                 pclose(flatpak_packages);
                 if (flatpak > 0) {
-                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", flatpak, pkg_manager);
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", flatpak, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", flatpak, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
                 }
             }
         }
