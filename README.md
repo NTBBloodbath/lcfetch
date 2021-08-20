@@ -33,19 +33,19 @@ by default in order to avoid installing extra stuff in your system.
 ##### Ubuntu
 
 ```sh
-apt install lua5.3 liblua5.3-dev libx11-dev libreadline-dev
+apt install lua5.3 liblua5.3-dev libx11-dev libxrandr-dev libreadline-dev
 ```
 
 ##### Fedora
 
 ```sh
-dnf install lua lua-devel libX11-devel readline-devel
+dnf install lua lua-devel libX11-devel libXrandr-devel readline-devel
 ```
 
 #### Arch
 
 ```sh
-pacman -S lua53 libx11 readline
+pacman -S lua53 libx11 libxrandr readline
 ```
 
 > **NOTE**: isn't your distro covered here but you know the exact packages names? Please

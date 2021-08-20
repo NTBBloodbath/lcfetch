@@ -1,6 +1,7 @@
 /* C stdlib */
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -104,6 +105,30 @@ static char *get_uptime() {
     // null-terminate at the trailing comma
     uptime[len - 2] = '\0';
     return uptime;
+}
+
+static char *get_resolution() {
+    char *res = xmalloc(BUF_SIZE);
+
+    if (display != NULL) {
+        Screen *screen = DefaultScreenOfDisplay(display);
+        int display_refresh_rate = get_option_boolean("display_refresh_rate");
+
+        snprintf(res, BUF_SIZE, "%dx%d", screen->width, screen->height);
+        if (display_refresh_rate) {
+            Window root = RootWindow(display, 0);
+            XRRScreenConfiguration *conf = XRRGetScreenInfo(display, root);
+            snprintf(res + strlen(res), BUF_SIZE, " @ %dHz", XRRConfigCurrentRate(conf));
+        }
+    }
+
+    // If we were unable to detect the screen resolution then send an error message
+    // in the information field
+    if (res == NULL) {
+        snprintf(res, BUF_SIZE, "lcfetch was not able to recognize your screen resolution");
+    }
+
+    return res;
 }
 
 static char *get_shell() {
@@ -558,6 +583,11 @@ void print_info() {
                                 field_message = get_option_string("packages_message");
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                                 xfree(function);
+                            } else if (strcasecmp(field, "Resolution") == 0) {
+                                function = get_resolution();
+                                field_message = get_option_string("resolution_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Shell") == 0) {
                                 function = get_shell();
                                 field_message = get_option_string("shell_message");
@@ -629,6 +659,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Resolution") == 0) {
+                            function = get_resolution();
+                            field_message = get_option_string("resolution_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
@@ -726,6 +761,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Resolution") == 0) {
+                            function = get_resolution();
+                            field_message = get_option_string("resolution_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {

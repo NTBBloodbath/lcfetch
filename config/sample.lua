@@ -11,6 +11,7 @@
 --   * Kernel
 --   * Uptime
 --   * Packages
+--   * Resolution
 --   * Shell
 --   * Terminal
 --   * CPU
@@ -24,6 +25,7 @@ options.enabled_fields = {
   "Uptime",
   "Packages",
   "",
+  "Resolution",
   "Shell",
   "Terminal",
   "",
@@ -39,6 +41,7 @@ options.os_message = "OS"
 options.kernel_message = "Kernel"
 options.uptime_message = "Uptime"
 options.packages_message = "Packages"
+options.resolution_message = "Resolution"
 -- options.de_message = "DE"
 -- options.wm_message = "WM"
 options.shell_message = "Shell"
@@ -76,6 +79,12 @@ options.display_logo = true
 --
 -- NOTE: by default is 3
 options.gap = 3
+
+-- If the screen refresh rate should be shown when displaying the
+-- screen resolution
+--
+-- NOTE: by default is false
+options.display_refresh_rate = false
 
 -- If the CPU information should be short or include extra information, e.g.
 --   when true:
