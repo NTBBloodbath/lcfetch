@@ -66,6 +66,7 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     - OS
     - Kernel
     - Uptime
+    - Packages
     - Shell
     - Terminal
     - CPU
@@ -140,6 +141,9 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 
 **gap**
 : The gap between the ASCII distro logo and the information fields.
+
+**short_cpu_info**
+: If the CPU information should be short or include extra information.
 
 **memory_in_gib**
 : If the memory should be printed as GiB instead of MiB.
