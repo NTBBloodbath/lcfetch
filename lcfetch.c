@@ -72,9 +72,9 @@ static char *get_os(int pretty_name) {
     fclose(os_release);
     if (pretty_name && show_arch) {
         // if (show_arch) {
-            snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
+        snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
         // } else {
-            // snprintf(os, BUF_SIZE, "%s", name);
+        // snprintf(os, BUF_SIZE, "%s", name);
         // }
     } else {
         snprintf(os, BUF_SIZE, "%s", name);
