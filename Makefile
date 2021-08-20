@@ -66,7 +66,7 @@ _clone_deps: _echo_info
 	fi
 
 
-build: clean _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
+build: _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
 	@echo -e "$(LOG_INFO) Building lcfetch.c ..."
 	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
 	strip --strip-unneeded $(BIN_DIR)/lcfetch
@@ -94,9 +94,15 @@ uninstall:
 
 
 clean:
-ifneq (,$(wildcard $(BIN_DIR)/lcfetch))
-	rm $(BIN_DIR)/lcfetch
-endif
+	if [[ -f "$(BIN_DIR)/lcfetch" ]]; then \
+		rm "$(BIN_DIR)/lcfetch"; \
+	fi
+	if [[ -d "$(TP_DIR)/log.c" ]]; then \
+		rm -rf "$(TP_DIR)/log.c"; \
+	fi
+	if [[ -d "$(TP_DIR)/lua-5.3.6" ]]; then \
+		rm -rf "$(TP_DIR)/lua-5.3.6"; \
+	fi
 
 
 fmt:
