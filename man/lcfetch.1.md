@@ -67,6 +67,7 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     - Kernel
     - Uptime
     - Packages
+    - Resolution
     - Shell
     - Terminal
     - CPU
@@ -80,50 +81,84 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 
     Type: string
 
+    Default: "OS"
+
 **kernel_message**
 : The Kernel field message.
 
     Type: string
+
+    Default: "Kernel"
 
 **uptime_message**
 : The Uptime field message.
 
     Type: string
 
+    Default: "Uptime"
+
 **packages_message**
 : The Packages field message.
 
     Type: string
+
+    Default: "Packages"
+
+**resolution_message**
+: The Resolution field message.
+
+    Type: string
+
+    Default: "Resolution"
 
 **de_message**
 : The DE field message.
 
     Type: string
 
+    Default: "DE"
+
 **wm_message**
 : The WM field message.
 
     Type: string
+
+    Default: "WM"
 
 **shell_message**
 : The Shell field message.
 
     Type: string
 
+    Default: "Shell"
+
 **terminal_message**
 : The Terminal field message.
 
     Type: string
+
+    Default: "Terminal"
 
 **cpu_message**
 : The CPU field message.
 
     Type: string
 
+    Default: "CPU"
+
 **memory_message**
 : The Memory field message.
 
     Type: string
+
+    Default: "Memory"
+
+**delimiter**
+: The delimiter shown between the field message and the information
+
+    Type: string
+
+    Default: ":"
 
 **colors_style**
 : The terminal colors style.
@@ -133,20 +168,49 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     - classic
     - circles
 
+    Default: "classic"
+
 **ascii_distro**
 : ASCII distro logo to be printed (does nothing at the moment).
+
+    Type: string
+
+    Default: ""
 
 **display_logo**
 : If the ASCII distro logo should be printed.
 
+    Type: boolean
+
+    Default: true
+
 **gap**
 : The gap between the ASCII distro logo and the information fields.
+
+    Type: number
+
+    Default: 3
+
+**display_refresh_rate**
+: If the screen refresh rate should be shown when displaying the screen resolution
+
+    Type: boolean
+
+    Default: false
 
 **short_cpu_info**
 : If the CPU information should be short or include extra information.
 
+    Type: boolean
+
+    Default: true
+
 **memory_in_gib**
 : If the memory should be printed as GiB instead of MiB.
+
+    Type: boolean
+
+    Default: true
 
 # AUTHORS
 
