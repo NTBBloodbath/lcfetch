@@ -257,7 +257,7 @@ static char *get_packages() {
                 if (aur > 0) {
                     snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", aur, "AUR");
                     displayed_pkg_managers++;
-                } 
+                }
             } else if (strcmp(pkg_manager, "apk") == 0) {
                 FILE *apk_packages = popen("apk info 2> /dev/null | wc -l", "r");
                 fscanf(apk_packages, "%d", &apk);
