@@ -177,6 +177,97 @@ static char *get_terminal() {
     return terminal;
 }
 
+static char *get_packages() {
+    char *pkg_managers[] = {"apt", "dnf", "rpm", "pacman", "apk", "xbps-query", "flatpak"};
+    char *packages = xmalloc(BUF_SIZE * 2);
+    int apt, rpm, dnf, pacman, apk, xbps, flatpak = 0;
+
+    // Add an initial empty string to our packages characters array to be able
+    // to use snprintf() for append to it later
+    snprintf(packages, BUF_SIZE, "");
+
+    for (int i = 0; i < COUNT(pkg_managers); i++) {
+        char *pkg_manager = pkg_managers[i];
+        // Set the which command to run later
+        char *which_command = xmalloc(BUF_SIZE);
+        snprintf(which_command, BUF_SIZE, "which %s >/dev/null 2>&1", pkg_manager);
+        // If the package manager is installed
+        if (system(which_command) != -1) {
+            if (strcmp(pkg_manager, "apt") == 0) {
+                FILE *dpkg_packages = popen("dpkg --list 2> /dev/null | grep -c ^ii", "r");
+                fscanf(dpkg_packages, "%d", &apt);
+                pclose(dpkg_packages);
+                // If there are packages installed then let's print the packages count
+                // NOTE: this is for avoiding values like "0 (foo)" because you can install
+                // APT and others packages managers in almost any distro.
+                if (apt > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", apt, "dpkg");
+                }
+            } else if (strcmp(pkg_manager, "dnf") == 0) {
+                // Using DNF package cache is much faster than RPM
+                FILE *dnf_packages =
+                    popen("sqlite3 /var/cache/dnf/packages.db 'SELECT count(pkg) FROM installed'", "r");
+                fscanf(dnf_packages, "%d", &dnf);
+                pclose(dnf_packages);
+                if (dnf > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", dnf, pkg_manager);
+                }
+            } else if ((strcmp(pkg_manager, "rpm") == 0) && (dnf == 0)) {
+                // If the current package manager is RPM and DNF packages count is zero
+                // because if we already scanned the packages with DNF it makes no sense
+                // to scan them again
+                FILE *rpm_packages = popen("rpm -qa 2> /dev/null | wc -l", "r");
+                fscanf(rpm_packages, "%d", &rpm);
+                pclose(rpm_packages);
+                if (rpm > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", rpm, pkg_manager);
+                }
+            } else if (strcmp(pkg_manager, "pacman") == 0) {
+                FILE *pacman_packages = popen("pacman -Qq 2> /dev/null | wc -l", "r");
+                fscanf(pacman_packages, "%d", &pacman);
+                pclose(pacman_packages);
+                if (pacman > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", pacman, pkg_manager);
+                }
+            } else if (strcmp(pkg_manager, "apk") == 0) {
+                FILE *apk_packages = popen("apk info 2> /dev/null | wc -l", "r");
+                fscanf(apk_packages, "%d", &apk);
+                pclose(apk_packages);
+                if (apk > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", apk, pkg_manager);
+                }
+            } else if (strcmp(pkg_manager, "xbps-query") == 0) {
+                FILE *xbps_packages = popen("xbps-query -l 2> /dev/null | wc -l", "r");
+                fscanf(xbps_packages, "%d", &xbps);
+                pclose(xbps_packages);
+                if (xbps > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", xbps, pkg_manager);
+                }
+            } else if (strcmp(pkg_manager, "flatpak") == 0) {
+                // NOTE: it seems that flatpak does not like to be called from a popen so it fails in
+                // a really stupid way sending a non-sense error, that is why we are not using 'flatpak list'
+                // for getting the flatpak packages at the moment
+                FILE *flatpak_packages = popen(
+                    "echo \"$(( $(ls /var/lib/flatpak/app 2> /dev/null | wc -l) + $(ls /var/lib/flatpak/runtime 2> /dev/null | wc -l) ))\"", "r");
+                fscanf(flatpak_packages, "%d", &flatpak);
+                pclose(flatpak_packages);
+                if (flatpak > 0) {
+                    snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s) ", flatpak, pkg_manager);
+                }
+            }
+        }
+        xfree(which_command);
+    }
+
+    // If the packages weren't calculated because the package manager is not supported then
+    // return an error message that actually makes sense
+    if (strcmp(packages, "") == 0) {
+        strncat(packages, "lcfetch was not able to recognize your system package manager", BUF_SIZE);
+    }
+
+    return packages;
+}
+
 static char *get_cpu() {
     char *line = NULL;
     char *cpu = xmalloc(BUF_SIZE);
@@ -417,6 +508,11 @@ void print_info() {
                                 field_message = get_option_string("uptime_message");
                                 snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                                 xfree(function);
+                            } else if (strcasecmp(field, "Packages") == 0) {
+                                function = get_packages();
+                                field_message = get_option_string("packages_message");
+                                snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Shell") == 0) {
                                 function = get_shell();
                                 field_message = get_option_string("shell_message");
@@ -483,6 +579,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Uptime") == 0) {
                             function = get_uptime();
                             field_message = get_option_string("uptime_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Packages") == 0) {
+                            function = get_packages();
+                            field_message = get_option_string("packages_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
@@ -575,6 +676,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Uptime") == 0) {
                             function = get_uptime();
                             field_message = get_option_string("uptime_message");
+                            snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "Packages") == 0) {
+                            function = get_packages();
+                            field_message = get_option_string("packages_message");
                             snprintf(message, BUF_SIZE, "%s%s: %s", field_message, "\e[0m", function);
                             xfree(function);
                         } else if (strcasecmp(field, "Shell") == 0) {
