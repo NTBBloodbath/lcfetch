@@ -18,8 +18,8 @@
 #include "include/logos/debian.h"
 #include "include/logos/fedora.h"
 #include "include/logos/gentoo.h"
-#include "include/logos/nixos.h"
 #include "include/logos/linux.h"
+#include "include/logos/nixos.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
