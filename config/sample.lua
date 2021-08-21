@@ -75,8 +75,11 @@ options.colors_style = "classic"
 -- ASCII distro logo to be printed
 -- Available logos:
 --   * tux
+--   * arch
+--   * nixos
 --   * fedora
 --   * gentoo
+--   * debian
 --
 -- NOTE: by default the ASCII distro logo is automatically detected
 options.ascii_distro = ""
