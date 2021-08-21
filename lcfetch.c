@@ -15,8 +15,10 @@
 #include "third-party/log.c/src/log.h"
 /* ASCII logos */
 #include "include/logos/arch.h"
+#include "include/logos/debian.h"
 #include "include/logos/fedora.h"
 #include "include/logos/gentoo.h"
+#include "include/logos/nixos.h"
 #include "include/logos/linux.h"
 
 struct utsname os_uname;
@@ -204,9 +206,9 @@ static char *get_terminal() {
 }
 
 static char *get_packages() {
-    char *pkg_managers[] = {"apt", "dnf", "rpm", "pacman", "apk", "xbps-query", "flatpak"};
+    char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "pacman", "apk", "xbps-query", "flatpak"};
     char *packages = xmalloc(BUF_SIZE * 2);
-    int apt, rpm, dnf, pacman, aur, apk, xbps, flatpak = 0;
+    int apt, rpm, dnf, pacman, aur, nix, apk, xbps, flatpak = 0;
 
     // Add an initial empty string to our packages characters array to be able
     // to use snprintf() for append to it later
@@ -282,6 +284,21 @@ static char *get_packages() {
                 }
                 if (aur > 0) {
                     snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", aur, "AUR");
+                    displayed_pkg_managers++;
+                }
+            } else if (strcmp(pkg_manager, "nix") == 0) {
+                FILE *nix_current_system = popen("nix-store -q --requisites /run/current-system/sw", "r");
+                fscanf(nix_current_system, "%d", &nix);
+                pclose(nix_current_system);
+                FILE *nix_profile = popen("nix-store -q --requisites ~/.nix-profile", "r");
+                fscanf(nix_profile, "%d", &nix);
+                pclose(nix_profile);
+                if (dnf > 0) {
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", dnf, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", dnf, pkg_manager);
+                    }
                     displayed_pkg_managers++;
                 }
             } else if (strcmp(pkg_manager, "apk") == 0) {
@@ -513,7 +530,7 @@ void print_info() {
     const char *delimiter = get_option_string("delimiter");
 
     // Get the accent color and logo for the current distro
-    char **logo = xmalloc(BUF_SIZE);
+    char **logo;
     int logo_rows;
     char *accent_color = xmalloc(BUF_SIZE);
     char *current_distro = get_os(0);
@@ -534,6 +551,14 @@ void print_info() {
         logo = arch;
         logo_rows = LEN(arch);
         strncpy(accent_color, arch_accent, BUF_SIZE);
+    } else if (strcasecmp(current_distro, "debian") == 0) {
+        logo = debian;
+        logo_rows = LEN(debian);
+        strncpy(accent_color, debian_accent, BUF_SIZE);
+    } else if (strcasecmp(current_distro, "nixos") == 0) {
+        logo = nixos;
+        logo_rows = LEN(nixos);
+        strncpy(accent_color, nixos_accent, BUF_SIZE);
     } else {
         logo = linux_logo;
         logo_rows = LEN(linux_logo);
@@ -551,6 +576,14 @@ void print_info() {
         logo = arch;
         logo_rows = LEN(arch);
         strncpy(accent_color, arch_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "debian") == 0) {
+        logo = debian;
+        logo_rows = LEN(debian);
+        strncpy(accent_color, debian_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "nixos") == 0) {
+        logo = nixos;
+        logo_rows = LEN(nixos);
+        strncpy(accent_color, nixos_accent, BUF_SIZE);
     } else if (strcasecmp(custom_distro_logo, "tux") == 0) {
         logo = linux_logo;
         logo_rows = LEN(linux_logo);
@@ -846,7 +879,6 @@ void print_info() {
             }
         }
     }
-
     xfree(accent_color);
 }
 
