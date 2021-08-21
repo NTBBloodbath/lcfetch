@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta5] - 2021-08-21
+
+### Added
+
+- Support for resolution field
+- Support for dynamic distribution ASCII logos
+- Option to set a custom delimiter between the field message and the information
+- Option to choose if the OS architecture should be shown at the right side of the OS name or not
+- Support for Nix package manager
+- ASCII logos:
+  - Arch
+  - Debian
+  - NixOS (seems to be buggy for me)
+
+### Fixed
+
+- packages field will not try to use non installed managers anymore
+
 ## [0.1.0-beta4] - 2021-08-20
 
 ### Added
@@ -65,8 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4...HEAD
-[0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3..v0.1.0-beta4
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta5...HEAD
+[0.1.0-beta5]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4..v0.1.0-beta5
+[0.1.0-beta4]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3..v0.1.0-beta4
 [0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta2..v0.1.0-beta3
 [0.1.0-beta2]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta1..v0.1.0-beta2
 [0.1.0-beta1]: https://github.com/NTBBloodbath/lcfetch/releases/tag/v0.1.0-beta1
