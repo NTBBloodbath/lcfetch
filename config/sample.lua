@@ -72,9 +72,13 @@ options.delimiter = ":"
 -- NOTE: default is "classic"
 options.colors_style = "classic"
 
--- ASCII distro logo to be printed, unused at the moment
+-- ASCII distro logo to be printed
+-- Available logos:
+--   * tux
+--   * fedora
+--   * gentoo
 --
--- NOTE: by default the ASCII distro logo is automatically detected (WIP)
+-- NOTE: by default the ASCII distro logo is automatically detected
 options.ascii_distro = ""
 
 -- If the ASCII distro logo should be printed

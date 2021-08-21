@@ -150,11 +150,11 @@ completely remove them.
 ## Todo
 
 - [ ] Support for some missing essential fields (e.g. `Packages` and `DE`/`WM`)
-- [ ] Stop hardcoding the ASCII distro logo and accent color
+- [x] Stop hardcoding the ASCII distro logo and accent color
 - [ ] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
 - [ ] Add support for MacOS (probably the last thing to be done?)
-- [ ] Add support for images (we can use icat, üzerbug or kitty protocols)
+- [ ] Add support for images (we can use icat, uberzug or kitty protocols)
 
 ## License
 

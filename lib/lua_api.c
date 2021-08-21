@@ -96,7 +96,7 @@ void init_options(void) {
     lua_newtable(lua);
 
     // Set the default basic types options (strings, numbers, booleans)
-    set_table_string("ascii_distro", "tux");
+    set_table_string("ascii_distro", "");
     set_table_string("colors_style", "classic");
     set_table_string("delimiter", ":");
     set_table_boolean("show_arch", 1);

@@ -27,6 +27,7 @@
 /* lcfetch.c */
 #define BUF_SIZE 150
 #define COUNT(x) (int)(sizeof x / sizeof *x)
+#define LEN(arr) ((int) (sizeof(arr) / sizeof(arr[0])))
 
 /* memory.c */
 void *xmalloc(size_t size);

@@ -14,10 +14,10 @@
 #include "include/lcfetch.h"
 #include "third-party/log.c/src/log.h"
 /* ASCII logos */
+#include "include/logos/arch.h"
 #include "include/logos/linux.h"
-// TODO: find the way to dynamically set the logo array in C
-// #include "include/logos/gentoo.h"
-// #include "include/logos/fedora.h"
+#include "include/logos/gentoo.h"
+#include "include/logos/fedora.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
@@ -71,11 +71,7 @@ static char *get_os(int pretty_name) {
     xfree(line);
     fclose(os_release);
     if (pretty_name && show_arch) {
-        // if (show_arch) {
         snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
-        // } else {
-        // snprintf(os, BUF_SIZE, "%s", name);
-        // }
     } else {
         snprintf(os, BUF_SIZE, "%s", name);
     }
@@ -516,17 +512,58 @@ void print_info() {
     // delimiter
     const char *delimiter = get_option_string("delimiter");
 
-    // Get the accent color
-    // NOTE: delete this after setting the dynamic coloring using the ASCII
-    // distro
-    // const char *accent_color = get_option_string("accent_color");
+    // Get the accent color and logo for the current distro
+    char **logo = xmalloc(BUF_SIZE);
+    int logo_rows;
+    char *accent_color = xmalloc(BUF_SIZE);
+    char *current_distro = get_os(0);
+    const char *custom_distro_logo = get_option_string("ascii_distro");
+
+    // Compare the current distribution first so we can override the information later
+    // with the custom ascii distro logo
+    // TODO: find a better way, this one is not the most efficient and can have a high cost
+    if (strcasecmp(current_distro, "fedora") == 0) {
+        logo = fedora;
+        logo_rows = LEN(fedora);
+        strncpy(accent_color, fedora_accent, BUF_SIZE);
+    } else if (strcasecmp(current_distro, "gentoo") == 0) {
+        logo = gentoo;
+        logo_rows = LEN(gentoo);
+        strncpy(accent_color, gentoo_accent, BUF_SIZE);
+    } else if (strcasecmp(current_distro, "arch") == 0) {
+        logo = arch;
+        logo_rows = LEN(arch);
+        strncpy(accent_color, arch_accent, BUF_SIZE);
+    } else {
+        logo = linux_logo;
+        logo_rows = LEN(linux_logo);
+        strncpy(accent_color, linux_accent, BUF_SIZE);
+    }
+    if (strcasecmp(custom_distro_logo, "fedora") == 0) {
+        logo = fedora;
+        logo_rows = LEN(fedora);
+        strncpy(accent_color, fedora_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "gentoo") == 0) {
+        logo = gentoo;
+        logo_rows = LEN(gentoo);
+        strncpy(accent_color, gentoo_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "arch") == 0) {
+        logo = arch;
+        logo_rows = LEN(arch);
+        strncpy(accent_color, arch_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "tux") == 0) {
+        logo = linux_logo;
+        logo_rows = LEN(linux_logo);
+        strncpy(accent_color, linux_accent, BUF_SIZE);
+    }
+    xfree(current_distro);
 
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
         // Get the logo length, substracting the ANSI escapes length
         // NOTE: this should be refactored once we manage to dynamically change the logo (maybe)
-        int logo_length = (strlen(linux_logo[0]) - strlen("\e[1;00m") - strlen("\e[0m"));
+        int logo_length = (strlen(logo[0]) - strlen("\e[1;00m"));
         // Get the gap that should be between the logo and the information
         int gap_size = get_option_number("gap");
         char *gap_logo_info = repeat_string(" ", gap_size);
@@ -537,21 +574,20 @@ void print_info() {
         // Store the amount of displayed information so we can determine if there is still information
         // that needs to be rendered after the logo finishes
         int displayed_info = 0;
-
-        for (int i = 0; i < COUNT(linux_logo); i++) {
+        for (int i = 0; i < logo_rows; i++) {
             // Count two extra fields for (user@host and the separator)
             if (i >= enabled_fields + 2) {
                 // If we've run out of information to show then we will
                 // just print the next logo line
-                printf("%s%s%s\n", linux_accent, linux_logo[i], "\e[0m");
+                printf("%s%s%s\n", accent_color, logo[i], "\e[0m");
             } else {
                 if (i == 0) {
-                    char *title = get_title(linux_accent);
-                    printf("%s%s%s", linux_logo[i], gap_logo_info, title);
+                    char *title = get_title(accent_color);
+                    printf("%s%s%s", logo[i], gap_logo_info, title);
                     xfree(title);
                 } else if (i == 1) {
                     char *separator = get_separator();
-                    printf("%s%s%s%s\n", linux_logo[i], "\e[0m", gap_logo_info, separator);
+                    printf("%s%s%s%s\n", logo[i], "\e[0m", gap_logo_info, separator);
                     xfree(separator);
                 } else {
                     displayed_info++;
@@ -560,8 +596,8 @@ void print_info() {
                     if (strcasecmp(field, "Colors") == 0) {
                         char *dark_colors = get_colors_dark();
                         char *bright_colors = get_colors_bright();
-                        printf("%s%s%s\n", linux_logo[i], gap_logo_info, dark_colors);
-                        printf("%s%s%s\n", gap_logo, gap_logo_info, bright_colors);
+                        printf("%s%s%s\n", logo[i], gap_logo_info, dark_colors);
+                        printf("%s%s%s\n", logo[i], gap_logo_info, bright_colors);
                         xfree(dark_colors);
                         xfree(bright_colors);
                     } else {
@@ -571,7 +607,7 @@ void print_info() {
                         const char *field_message = NULL;
                         // If we should draw an empty line as a separator
                         if (strcmp(field, "") == 0) {
-                            printf("%s%s\n", linux_logo[i], "\e[0m");
+                            printf("%s%s\n", logo[i], "\e[0m");
                         } else {
                             char *message = xmalloc(BUF_SIZE);
                             if (strcasecmp(field, "OS") == 0) {
@@ -623,7 +659,7 @@ void print_info() {
                                 field_message = (char *)field;
                                 snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             }
-                            printf("%s%s%s%s\n", linux_logo[i], gap_logo_info, linux_accent, message);
+                            printf("%s%s%s%s\n", logo[i], gap_logo_info, accent_color, message);
                             xfree(message);
                         }
                     }
@@ -701,7 +737,7 @@ void print_info() {
                             field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
-                        printf("%s%s%s%s\n", gap_logo, gap_logo_info, linux_accent, message);
+                        printf("%s%s%s%s\n", gap_logo, gap_logo_info, accent_color, message);
                         xfree(message);
                     }
                 }
@@ -803,13 +839,15 @@ void print_info() {
                             field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
-                        printf("%s%s%s\n", gap_term_info, linux_accent, message);
+                        printf("%s%s%s\n", gap_term_info, accent_color, message);
                         xfree(message);
                     }
                 }
             }
         }
     }
+
+    xfree(accent_color);
 }
 
 int main(int argc, char *argv[]) {
