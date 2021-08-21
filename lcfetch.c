@@ -15,9 +15,9 @@
 #include "third-party/log.c/src/log.h"
 /* ASCII logos */
 #include "include/logos/arch.h"
-#include "include/logos/linux.h"
-#include "include/logos/gentoo.h"
 #include "include/logos/fedora.h"
+#include "include/logos/gentoo.h"
+#include "include/logos/linux.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
