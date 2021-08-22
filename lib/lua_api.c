@@ -309,7 +309,7 @@ int set_subtable_string(const char *table, const char *key) {
         lua_rawseti(lua, -2, table_length + 1);
         lua_pop(lua, 1);
     }
-    lua_pop(lua, 2);
+    lua_pop(lua, 3);
 
     return 0;
 }
