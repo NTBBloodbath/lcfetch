@@ -547,7 +547,7 @@ void print_info() {
         logo = gentoo;
         logo_rows = LEN(gentoo);
         strncpy(accent_color, gentoo_accent, BUF_SIZE);
-    } else if (strcasecmp(current_distro, "arch linux") == 0) {
+    } else if (strstr(current_distro, "arch")) {
         logo = arch;
         logo_rows = LEN(arch);
         strncpy(accent_color, arch_accent, BUF_SIZE);
