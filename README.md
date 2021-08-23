@@ -134,7 +134,7 @@ completely remove them.
 ## Acknowledgements
 
 - [dylanaraps](https://github.com/dylanaraps), creator of `neofetch`. We _will_
-  extract the ASCII distribution logos from `neofetch`.
+  extract some ASCII distribution logos from `neofetch`.
 - [rxi](https://github.com/rxi), lcfetch is using his [log.c](https://github.com/rxi/log.c)
   library for providing error logs in a fancy way.
 - All the amazing people who helped me to test stuff :heart:.
