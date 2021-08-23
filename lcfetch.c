@@ -152,55 +152,31 @@ static char *get_shell() {
 }
 
 static char *get_terminal() {
+    unsigned char *property;
     char *terminal = xmalloc(BUF_SIZE);
-    int *terminal_pid = xmalloc(BUF_SIZE);
-    char *terminal_pid_path = xmalloc(BUF_SIZE);
-    char *terminal_child_pid_path = xmalloc(BUF_SIZE);
-    char *line = NULL;
-    size_t len;
 
     // Check if we are running in a TTY or a graphical X interface
     if (display != NULL) {
-        pid_t ppid;
-        // Get parent lcfetch process ID (shell)
-        ppid = getppid();
-        snprintf(terminal_child_pid_path, BUF_SIZE, "/proc/%d/status", ppid);
+        // Get the current window
+        unsigned long _, window = RootWindow(display, XDefaultScreen(display));
+        // Get the active window and the window class name
+        Atom a, active_win = XInternAtom(display, "_NET_ACTIVE_WINDOW", 1),
+                win_class = XInternAtom(display, "WM_CLASS", 1);
 
-        // Get parent shell process ID (terminal)
-        FILE *terminal_child_pid = fopen(terminal_child_pid_path, "r");
-        if (terminal_child_pid == NULL) {
-            log_error("Unable to open %s", terminal_child_pid_path);
-        }
-        while (getline(&line, &len, terminal_child_pid) != -1) {
-            if (sscanf(line, "PPid: %d", terminal_pid) > 0) {
-                break;
-            }
-        }
-        fclose(terminal_child_pid);
+        XGetWindowProperty(display, window, active_win, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+        window = (property[3] << 24) + (property[2] << 16) + (property[1] << 8) + property[0];
+        xfree(property);
 
-        // Get terminal name
-        snprintf(terminal_pid_path, BUF_SIZE, "/proc/%d/status", *terminal_pid);
-        FILE *terminal_name = fopen(terminal_pid_path, "r");
-        if (terminal_name == NULL) {
-            log_error("Unable to open /proc/%d/status", *terminal_pid);
-        }
-        while (getline(&line, &len, terminal_name) != -1) {
-            if (sscanf(line, "Name: %s", terminal) > 0) {
-                break;
-            }
-        }
-        fclose(terminal_name);
+        XGetWindowProperty(display, window, win_class, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+
+        snprintf(terminal, BUF_SIZE, "%s", property);
+        xfree(property);
     } else {
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
         if (strcmp(terminal, "linux") == 0) {
             strncpy(terminal, ttyname(STDIN_FILENO), BUF_SIZE);
         }
     }
-
-    xfree(line);
-    xfree(terminal_pid);
-    xfree(terminal_pid_path);
-    xfree(terminal_child_pid_path);
 
     return terminal;
 }
