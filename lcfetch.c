@@ -772,7 +772,7 @@ void print_info() {
         for (int i = 0; i <= (enabled_fields + 1); i++) {
             // Count two extra fields for (user@host and the separator)
             if (i == 0) {
-                char *title = get_title(linux_accent);
+                char *title = get_title(accent_color);
                 printf("%s%s", gap_term_info, title);
                 xfree(title);
             } else if (i == 1) {
