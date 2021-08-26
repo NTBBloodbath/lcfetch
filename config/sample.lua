@@ -80,6 +80,7 @@ options.colors_style = "classic"
 --   * fedora
 --   * gentoo
 --   * debian
+--   * ubuntu
 --
 -- NOTE: by default the ASCII distro logo is automatically detected
 options.ascii_distro = ""

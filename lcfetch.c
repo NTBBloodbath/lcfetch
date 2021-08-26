@@ -20,6 +20,7 @@
 #include "include/logos/gentoo.h"
 #include "include/logos/linux.h"
 #include "include/logos/nixos.h"
+#include "include/logos/ubuntu.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
@@ -531,6 +532,10 @@ void print_info() {
         logo = debian;
         logo_rows = LEN(debian);
         strncpy(accent_color, debian_accent, BUF_SIZE);
+    } else if (strcasecmp(current_distro, "ubuntu") == 0) {
+        logo = ubuntu;
+        logo_rows = LEN(ubuntu);
+        strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(current_distro, "nixos") == 0) {
         logo = nixos;
         logo_rows = LEN(nixos);
@@ -556,6 +561,10 @@ void print_info() {
         logo = debian;
         logo_rows = LEN(debian);
         strncpy(accent_color, debian_accent, BUF_SIZE);
+    } else if (strcasecmp(custom_distro_logo, "ubuntu") == 0) {
+        logo = ubuntu;
+        logo_rows = LEN(ubuntu);
+        strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(custom_distro_logo, "nixos") == 0) {
         logo = nixos;
         logo_rows = LEN(nixos);
@@ -606,9 +615,10 @@ void print_info() {
                         char *dark_colors = get_colors_dark();
                         char *bright_colors = get_colors_bright();
                         printf("%s%s%s\n", logo[i], gap_logo_info, dark_colors);
-                        printf("%s%s%s\n", logo[i], gap_logo_info, bright_colors);
+                        printf("%s%s%s\n", logo[i + 1], gap_logo_info, bright_colors);
                         xfree(dark_colors);
                         xfree(bright_colors);
+                        i++;
                     } else {
                         // Set the function that will be used for getting the field
                         // value

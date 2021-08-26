@@ -3,7 +3,7 @@ title: lcfetch
 section: 1
 header: lcfetch user manual
 footer: lcfetch 0.1.0-beta5
-date: August 21, 2021
+date: August 25, 2021
 ---
 
 # NAME
@@ -174,6 +174,16 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 : ASCII distro logo to be printed (does nothing at the moment).
 
     Type: string
+
+    Available logos:
+
+    - tux
+    - arch
+    - nixos
+    - fedora
+    - gentoo
+    - debian
+    - ubuntu
 
     Default: ""
 

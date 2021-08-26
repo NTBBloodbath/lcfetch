@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta6] - 2021-08-25
+
+### Added
+
+- ASCII logos:
+  - Ubuntu
+
+### Fixed
+
+- Reverted commit [f7f715e](https://github.com/NTBBloodbath/lcfetch/commit/f7f715e19f7274526052632f37912f185a259327), configurations should
+    work as expected now
+- Fixed Arch logo detection
+- Use the current distro accent when the logo is not displayed
+- Logo lines will not be duplicated anymore when rendering the color palette
+
 ## [0.1.0-beta5] - 2021-08-21
 
 ### Added
@@ -83,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta5...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta6...HEAD
+[0.1.0-beta6]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta5..v0.1.0-beta6
 [0.1.0-beta5]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4..v0.1.0-beta5
 [0.1.0-beta4]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3..v0.1.0-beta4
 [0.1.0-beta3]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta2..v0.1.0-beta3
