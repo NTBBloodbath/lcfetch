@@ -155,8 +155,10 @@ static char *get_shell() {
 static char *get_terminal() {
     unsigned char *property;
     char *terminal = xmalloc(BUF_SIZE);
+    // Windows Terminal session, we will use it for WSL detection
+    char *wt_session = getenv("WT_SESSION");
 
-    // Check if we are running in a TTY or a graphical X interface
+    // Check if we are running in a TTY, a graphical X interface or WSL
     if (display != NULL) {
         // Get the current window
         unsigned long _, window = RootWindow(display, XDefaultScreen(display));
@@ -172,6 +174,9 @@ static char *get_terminal() {
 
         snprintf(terminal, BUF_SIZE, "%s", property);
         xfree(property);
+    } else if (wt_session != NULL) {
+        terminal = "Windows Terminal";
+        xfree(wt_session);
     } else {
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
         if (strcmp(terminal, "linux") == 0) {
