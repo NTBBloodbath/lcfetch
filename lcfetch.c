@@ -176,7 +176,6 @@ static char *get_terminal() {
         xfree(property);
     } else if (wt_session != NULL) {
         terminal = "Windows Terminal";
-        xfree(wt_session);
     } else {
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
         if (strcmp(terminal, "linux") == 0) {
