@@ -29,15 +29,15 @@ Display *display;
 int title_length, status;
 
 static char *get_title(char *accent_color) {
+    char *title = xmalloc(BUF_SIZE);
+
     // reduce the maximum size for the title components so we don't over-fill
     // the string
     char hostname[BUF_SIZE / 3];
     gethostname(hostname, BUF_SIZE / 3);
 
-    char username[BUF_SIZE / 3];
-    getlogin_r(username, BUF_SIZE / 3);
+    char *username = getenv("USER");
 
-    char *title = xmalloc(BUF_SIZE);
     // Calculate the length of hostname + @ + username
     title_length = strlen(hostname) + strlen(username) + 1;
 
