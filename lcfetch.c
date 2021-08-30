@@ -277,11 +277,11 @@ static char *get_packages() {
                 FILE *nix_profile = popen("nix-store -q --requisites ~/.nix-profile", "r");
                 fscanf(nix_profile, "%d", &nix);
                 pclose(nix_profile);
-                if (dnf > 0) {
+                if (nix > 0) {
                     if (displayed_pkg_managers >= 1) {
-                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", dnf, pkg_manager);
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", nix, pkg_manager);
                     } else {
-                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", dnf, pkg_manager);
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", nix, pkg_manager);
                     }
                     displayed_pkg_managers++;
                 }
