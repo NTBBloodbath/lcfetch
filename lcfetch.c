@@ -160,22 +160,25 @@ static char *get_terminal() {
 
     // Check if we are running in a TTY, a graphical X interface or WSL
     if (display != NULL) {
-        // Get the current window
-        unsigned long _, window = RootWindow(display, XDefaultScreen(display));
-        // Get the active window and the window class name
-        Atom a, active_win = XInternAtom(display, "_NET_ACTIVE_WINDOW", 1),
-                win_class = XInternAtom(display, "WM_CLASS", 1);
+        // Check if we are running on WSL
+        if (wt_session != NULL) {
+            terminal = "Windows Terminal";
+        } else {
+            // Get the current window
+            unsigned long _, window = RootWindow(display, XDefaultScreen(display));
+            // Get the active window and the window class name
+            Atom a, active_win = XInternAtom(display, "_NET_ACTIVE_WINDOW", 1),
+                    win_class = XInternAtom(display, "WM_CLASS", 1);
 
-        XGetWindowProperty(display, window, active_win, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
-        window = (property[3] << 24) + (property[2] << 16) + (property[1] << 8) + property[0];
-        xfree(property);
+            XGetWindowProperty(display, window, active_win, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+            window = (property[3] << 24) + (property[2] << 16) + (property[1] << 8) + property[0];
+            xfree(property);
 
-        XGetWindowProperty(display, window, win_class, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+            XGetWindowProperty(display, window, win_class, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
 
-        snprintf(terminal, BUF_SIZE, "%s", property);
-        xfree(property);
-    } else if (wt_session != NULL) {
-        terminal = "Windows Terminal";
+            snprintf(terminal, BUF_SIZE, "%s", property);
+            xfree(property);
+        }
     } else {
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
         if (strcmp(terminal, "linux") == 0) {
