@@ -162,7 +162,7 @@ static char *get_terminal() {
     if (display != NULL) {
         // Check if we are running on WSL
         if (wt_session != NULL) {
-            terminal = "Windows Terminal";
+            strncpy(terminal, "Windows Terminal", BUF_SIZE);
         } else {
             // Get the current window
             unsigned long _, window = RootWindow(display, XDefaultScreen(display));
