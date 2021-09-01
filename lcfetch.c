@@ -26,7 +26,7 @@ struct utsname os_uname;
 struct sysinfo sys_info;
 
 Display *display;
-int title_length, status;
+int title_length;
 
 static char *get_title(char *accent_color) {
     char *title = xmalloc(BUF_SIZE);
