@@ -153,15 +153,19 @@ static char *get_shell() {
 }
 
 static char *get_terminal() {
+    // NOTE: remove the debugging logs later
     unsigned char *property;
     char *terminal = xmalloc(BUF_SIZE);
     // Windows Terminal session, we will use it for WSL detection
     char *wt_session = getenv("WT_SESSION");
+    // Get the TERM environment variable, we will use it for TTY detection
+    char *environment_term = getenv("TERM");
 
     // Check if we are running in a TTY, a graphical X interface or WSL
     if (display != NULL) {
         // Check if we are running on WSL
         if (wt_session != NULL) {
+            log_debug("WT session: %s\n", wt_session);
             strncpy(terminal, "Windows Terminal", BUF_SIZE);
         } else {
             // Get the current window
@@ -180,8 +184,9 @@ static char *get_terminal() {
             xfree(property);
         }
     } else {
+        log_debug("DEBUG: display not found, falling back to TTY");
         // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
-        if (strcmp(terminal, "linux") == 0) {
+        if (strcmp(environment_term, "linux") == 0) {
             strncpy(terminal, ttyname(STDIN_FILENO), BUF_SIZE);
         }
     }
