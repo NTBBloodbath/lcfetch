@@ -395,7 +395,7 @@ static char *get_cpu() {
         freq_unit[0] = 'M';
         prec = 0; // Show freq as integer
     } else {
-        // MHz / 1000 / GHz
+        // MHz / 1000 = GHz
         freq = cpu_freq / 1000.0;
 
         while (cpu_freq % 10 == 0) {
