@@ -12,6 +12,7 @@ void *xmalloc(size_t size) {
     void *ptr = malloc(size);
     if (ptr == NULL) {
         log_fatal("allocating memory; %s\n", strerror(errno));
+        exit(errno);
     }
 
     return ptr;
@@ -23,6 +24,7 @@ void *xmalloc(size_t size) {
 void xfree(void *ptr) {
     if (ptr == NULL) {
         log_fatal("allocating memory; %s\n", strerror(errno));
+        exit(errno);
     }
 
     free(ptr);

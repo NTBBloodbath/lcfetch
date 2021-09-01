@@ -58,7 +58,8 @@ static char *get_os(int pretty_name) {
 
     FILE *os_release = fopen("/etc/os-release", "r");
     if (os_release == NULL) {
-        log_error("Unable to open /etc/os-release");
+        log_fatal("Unable to open /etc/os-release");
+        exit(1);
     }
     while (getline(&line, &len, os_release) != -1) {
         // NOTE: the 'NAME' field will be used later for determining the
@@ -73,6 +74,7 @@ static char *get_os(int pretty_name) {
     }
     xfree(line);
     fclose(os_release);
+
     if (pretty_name && show_arch) {
         snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
     } else {
@@ -358,7 +360,8 @@ static char *get_cpu() {
 
     FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
     if (cpuinfo == NULL) {
-        log_error("Unable to open /proc/cpuinfo");
+        log_fatal("Unable to open /proc/cpuinfo");
+        exit(1);
     }
     while (getline(&line, &len, cpuinfo) != -1) {
         num_cores += sscanf(line, "model name : %[^\n@]", cpu_model);
@@ -380,7 +383,8 @@ static char *get_cpu() {
     } else {
         cpufreq = fopen("/proc/cpuinfo", "r");
         if (cpufreq == NULL) {
-            log_error("Unable to open /proc/cpuinfo");
+            log_fatal("Unable to open /proc/cpuinfo");
+            exit(1);
         }
         while (getline(&line, &len, cpufreq) != -1) {
             if (sscanf(line, "cpu MHz: %lf", &freq) > 0) {
@@ -441,7 +445,8 @@ static char *get_memory() {
 
     FILE *meminfo = fopen("/proc/meminfo", "r");
     if (meminfo == NULL) {
-        log_error("Unable to open /proc/meminfo");
+        log_fatal("Unable to open /proc/meminfo");
+        exit(1);
     }
     while (getline(&line, &len, meminfo) != -1) {
         /* if sscanf doesn't find a match, pointer is untouched */
