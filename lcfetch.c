@@ -458,9 +458,9 @@ static char *get_memory() {
         // MiB / 1024 = GiB
         float used_memory_gib = (double)used_memory / (double)1024;
         float total_memory_gib = (double)total_memory / (double)1024;
-        snprintf(memory, BUF_SIZE, "%.2f GiB / %.2f GiB", used_memory_gib, total_memory_gib);
+        snprintf(memory, BUF_SIZE, "%.2fGiB / %.2fGiB", used_memory_gib, total_memory_gib);
     } else {
-        snprintf(memory, BUF_SIZE, "%d MiB / %d MiB", used_memory, total_memory);
+        snprintf(memory, BUF_SIZE, "%dMiB / %dMiB", used_memory, total_memory);
     }
 
     return memory;
