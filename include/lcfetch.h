@@ -25,7 +25,7 @@
     "GNU General Public License for more details.\n"
 
 /* lcfetch.c */
-#define BUF_SIZE 150
+#define BUF_SIZE 256
 #define COUNT(x) (int)(sizeof x / sizeof *x)
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr[0])))
 
