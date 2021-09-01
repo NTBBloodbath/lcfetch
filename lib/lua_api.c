@@ -208,7 +208,6 @@ int get_option_boolean(const char *opt) {
     // Pop options global
     lua_pop(lua, 1);
 
-
     return bool_opt;
 }
 
@@ -270,7 +269,6 @@ const char *get_subtable_string(const char *table, int index) {
     }
     // Pop options global
     lua_pop(lua, 1);
-
 
     return value;
 }
