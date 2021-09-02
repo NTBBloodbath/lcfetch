@@ -163,33 +163,31 @@ static char *get_terminal() {
     // Get the TERM environment variable, we will use it for TTY detection
     char *environment_term = getenv("TERM");
 
-    // Check if we are running in a TTY, a graphical X interface or WSL
+    // Check if we are running in a TTY, a graphical X interface or WSL (on Windows Terminal)
     if (display != NULL) {
-        // Check if we are running on WSL
+        // Get the current window
+        unsigned long _, window = RootWindow(display, XDefaultScreen(display));
+        // Get the active window and the window class name
+        Atom a, active_win = XInternAtom(display, "_NET_ACTIVE_WINDOW", 1),
+                win_class = XInternAtom(display, "WM_CLASS", 1);
+
+        XGetWindowProperty(display, window, active_win, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+        window = (property[3] << 24) + (property[2] << 16) + (property[1] << 8) + property[0];
+        xfree(property);
+
+        XGetWindowProperty(display, window, win_class, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
+
+        snprintf(terminal, BUF_SIZE, "%s", property);
+        xfree(property);
+    } else {
+        // Check if we are running on WSL inside the Windows Terminal
         if (wt_session != NULL) {
-            log_debug("WT session: %s\n", wt_session);
             strncpy(terminal, "Windows Terminal", BUF_SIZE);
         } else {
-            // Get the current window
-            unsigned long _, window = RootWindow(display, XDefaultScreen(display));
-            // Get the active window and the window class name
-            Atom a, active_win = XInternAtom(display, "_NET_ACTIVE_WINDOW", 1),
-                    win_class = XInternAtom(display, "WM_CLASS", 1);
-
-            XGetWindowProperty(display, window, active_win, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
-            window = (property[3] << 24) + (property[2] << 16) + (property[1] << 8) + property[0];
-            xfree(property);
-
-            XGetWindowProperty(display, window, win_class, 0, 64, 0, 0, &a, (int *)&_, &_, &_, &property);
-
-            snprintf(terminal, BUF_SIZE, "%s", property);
-            xfree(property);
-        }
-    } else {
-        log_debug("DEBUG: display not found, falling back to TTY");
-        // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
-        if (strcmp(environment_term, "linux") == 0) {
-            strncpy(terminal, ttyname(STDIN_FILENO), BUF_SIZE);
+            // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
+            if (strcmp(environment_term, "linux") == 0) {
+                strncpy(terminal, ttyname(STDIN_FILENO), BUF_SIZE);
+            }
         }
     }
 
