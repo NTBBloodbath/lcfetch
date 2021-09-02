@@ -126,11 +126,9 @@ static char *get_resolution() {
             XRRScreenConfiguration *conf = XRRGetScreenInfo(display, root);
             snprintf(res + strlen(res), BUF_SIZE, " @ %dHz", XRRConfigCurrentRate(conf));
         }
-    }
-
-    // If we were unable to detect the screen resolution then send an error message
-    // in the information field
-    if (res == NULL) {
+    } else {
+        // If we were unable to detect the screen resolution then send an error message
+        // in the information field
         snprintf(res, BUF_SIZE, "lcfetch was not able to recognize your screen resolution");
     }
 
@@ -155,7 +153,6 @@ static char *get_shell() {
 }
 
 static char *get_terminal() {
-    // NOTE: remove the debugging logs later
     unsigned char *property;
     char *terminal = xmalloc(BUF_SIZE);
     // Windows Terminal session, we will use it for WSL detection
