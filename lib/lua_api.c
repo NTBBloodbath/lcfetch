@@ -151,8 +151,6 @@ int get_table_size(const char *table) {
 
     lua_getglobal(lua, "options");
     if (luaL_getsubtable(lua, -1, table)) {
-        // Pop the subtable
-        lua_pop(lua, 1);
         // Push the table length
         lua_len(lua, -1);
         table_length = luaL_checknumber(lua, -1);
@@ -171,15 +169,13 @@ int table_contains_string(const char *table, const char *key) {
 
     lua_getglobal(lua, "options");
     if (luaL_getsubtable(lua, -1, table)) {
-        // Pop the subtable
-        lua_pop(lua, 1);
         int table_length = get_table_size(table);
         // Iterate over all the table elements
         for (int i = 1; i <= table_length; i++) {
             // Get and store the current index value in the table
             lua_rawgeti(lua, -1, i);
             value = luaL_checkstring(lua, -1);
-            // Pop the value
+            // Remove the value from the stack
             lua_pop(lua, 1);
             // If the wanted value is in the table (case-insensitive)
             // then let's return 1 and break the bucle
@@ -188,8 +184,7 @@ int table_contains_string(const char *table, const char *key) {
             }
         }
     }
-    // Pop options global
-    lua_pop(lua, 1);
+    lua_pop(lua, 2);
 
     return 0;
 }
@@ -203,10 +198,7 @@ int get_option_boolean(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     bool_opt = lua_toboolean(lua, -1);
-    // Pop bool_opt
-    lua_pop(lua, 1);
-    // Pop options global
-    lua_pop(lua, 1);
+    lua_pop(lua, 2);
 
     return bool_opt;
 }
@@ -220,10 +212,7 @@ const char *get_option_string(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     str = lua_tostring(lua, -1);
-    // Pop str
-    lua_pop(lua, 1);
-    // Pop options global
-    lua_pop(lua, 1);
+    lua_pop(lua, 2);
 
     return str;
 }
@@ -237,10 +226,7 @@ lua_Number get_option_number(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     number = lua_tonumber(lua, -1);
-    // Pop number
-    lua_pop(lua, 1);
-    // Pop options global
-    lua_pop(lua, 1);
+    lua_pop(lua, 2);
 
     return number;
 }
@@ -253,22 +239,17 @@ const char *get_subtable_string(const char *table, int index) {
 
     lua_getglobal(lua, "options");
     if (luaL_getsubtable(lua, -1, table)) {
-        // Pop the subtable
-        lua_pop(lua, 1);
         int table_length = get_table_size(table);
         // If the wanted index is higher than the table length then return NULL
         if (table_length < index) {
-            // Pop options global
-            lua_pop(lua, 1);
+            lua_pop(lua, 2);
             return value;
         }
         lua_rawgeti(lua, -1, index);
         value = luaL_checkstring(lua, -1);
-        // Pop the subtable string
         lua_pop(lua, 1);
     }
-    // Pop options global
-    lua_pop(lua, 1);
+    lua_pop(lua, 2);
 
     return value;
 }
@@ -322,16 +303,12 @@ int set_table_subtable(const char *key) {
 int set_subtable_string(const char *table, const char *key) {
     lua_getglobal(lua, "options");
     if (luaL_getsubtable(lua, -1, table)) {
-        // Pop the subtable
-        lua_pop(lua, 1);
         int table_length = get_table_size(table);
         // Push the new value
         lua_pushstring(lua, key);
         lua_rawseti(lua, -2, table_length + 1);
-        // Pop the new value
         lua_pop(lua, 1);
     }
-    // Pop options global
     lua_pop(lua, 1);
 
     return 0;
