@@ -137,6 +137,8 @@ completely remove them.
   extract some ASCII distribution logos from `neofetch`.
 - [rxi](https://github.com/rxi), lcfetch is using his [log.c](https://github.com/rxi/log.c)
   library for providing error logs in a fancy way.
+- [wmctrl](http://tripie.sweb.cz/utils/wmctrl/) creator (I don't know who is),
+  I extracted the window manager name logic from his awesome program.
 - All the amazing people who helped me to test stuff :heart:.
 
 ## Contribute

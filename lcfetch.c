@@ -1,6 +1,7 @@
 /* C stdlib */
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/extensions/Xrandr.h>
 #include <errno.h>
 #include <getopt.h>
@@ -111,6 +112,73 @@ static char *get_uptime() {
     // null-terminate at the trailing comma
     uptime[len - 2] = '\0';
     return uptime;
+}
+
+static char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size) {
+    Atom xa_prop_name;
+    Atom xa_ret_type;
+    int ret_format;
+    unsigned long ret_nitems;
+    unsigned long ret_bytes_after;
+    unsigned long tmp_size;
+    unsigned char *ret_prop;
+    char *ret = NULL;
+
+    xa_prop_name = XInternAtom(disp, prop_name, 0);
+
+    if (XGetWindowProperty(disp, win, xa_prop_name, 0, BUF_SIZE, 0, xa_prop_type, &xa_ret_type, &ret_format,
+                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
+        log_warn("Cannot get %s property.\n", prop_name);
+        return NULL;
+    }
+
+    if (xa_ret_type != xa_prop_type) {
+        log_warn("Invalid type of %s property.\n", prop_name);
+        XFree(ret_prop);
+        return NULL;
+    }
+
+    /* null terminate the result to make string handling easier */
+    tmp_size = (ret_format / (32 / sizeof(long))) * ret_nitems;
+    ret = xmalloc(tmp_size + 1); 
+    memmove(ret, ret_prop, tmp_size);
+    ret[tmp_size] = '\0';
+
+    if (size) {
+        *size = tmp_size;
+    }
+
+    XFree(ret_prop);
+    return ret;
+}
+
+static char *get_wm() {
+    Window *top_win = NULL;
+    char *wm_name = NULL;
+
+    if (!(top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_WINDOW, "_NET_SUPPORTING_WM_CHECK",
+                                           NULL))) {
+        if (!(top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_CARDINAL,
+                                               "_WIN_SUPPORTING_WM_CHECK", NULL))) {
+            log_debug("Cannot get window manager required properties."
+                      "(_NET_SUPPORTING_WM_CHECK or _WIN_SUPPORTING_WM_CHECK)\n",
+                      stderr);
+            XFree(top_win);
+            return "lcfetch was not able to recognize your window manager";
+        }
+    }
+
+    if (!(wm_name =
+              get_property(display, *top_win, XInternAtom(display, "UTF8_STRING", 0), "_NET_WM_NAME", NULL))) {
+        if (!(wm_name = get_property(display, *top_win, XA_STRING, "_NET_WM_NAME", NULL))) {
+            log_debug("Cannot get name of the window manager (_NET_WM_NAME).\n");
+            xfree(wm_name);
+            return "lcfetch was not able to recognize your window manager";
+        }
+    }
+
+    XFree(top_win);
+    return wm_name;
 }
 
 static char *get_resolution() {
@@ -660,6 +728,11 @@ void print_info() {
                                 field_message = get_option_string("packages_message");
                                 snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                                 xfree(function);
+                            } else if (strcasecmp(field, "WM") == 0) {
+                                function = get_wm();
+                                field_message = get_option_string("wm_message");
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                                xfree(function);
                             } else if (strcasecmp(field, "Resolution") == 0) {
                                 function = get_resolution();
                                 field_message = get_option_string("resolution_message");
@@ -736,6 +809,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "WM") == 0) {
+                            function = get_wm();
+                            field_message = get_option_string("wm_message");
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Resolution") == 0) {
@@ -838,6 +916,11 @@ void print_info() {
                         } else if (strcasecmp(field, "Packages") == 0) {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "WM") == 0) {
+                            function = get_wm();
+                            field_message = get_option_string("wm_message");
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             xfree(function);
                         } else if (strcasecmp(field, "Resolution") == 0) {

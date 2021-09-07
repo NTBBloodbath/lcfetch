@@ -25,7 +25,9 @@ options.enabled_fields = {
   "Uptime",
   "Packages",
   "",
+  "WM",
   "Resolution",
+  "",
   "Shell",
   "Terminal",
   "",
@@ -43,7 +45,7 @@ options.uptime_message = "Uptime"
 options.packages_message = "Packages"
 options.resolution_message = "Resolution"
 -- options.de_message = "DE"
--- options.wm_message = "WM"
+options.wm_message = "WM"
 options.shell_message = "Shell"
 options.terminal_message = "Terminal"
 options.cpu_message = "CPU"

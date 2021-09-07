@@ -130,10 +130,10 @@ void init_options(void) {
     set_subtable_string("enabled_fields", "Uptime");
     set_subtable_string("enabled_fields", "Packages");
     set_subtable_string("enabled_fields", ""); // Newline
-    set_subtable_string("enabled_fields", "Resolution");
     // set_subtable_string("enabled_fields", "DE");
-    // set_subtable_string("enabled_fields", "WM");
-    // set_subtable_string("enabled_fields", ""); // Newline
+    set_subtable_string("enabled_fields", "WM");
+    set_subtable_string("enabled_fields", "Resolution");
+    set_subtable_string("enabled_fields", ""); // Newline
     set_subtable_string("enabled_fields", "Shell");
     set_subtable_string("enabled_fields", "Terminal");
     set_subtable_string("enabled_fields", ""); // Newline
