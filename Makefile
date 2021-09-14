@@ -13,7 +13,7 @@ LUA_INC_DIR=/usr/include/$(LUA)
 
 CC=clang
 CCF=clang-format
-CFLAGS=-O2 -Wall -Wextra
+CFLAGS=-Ofast -Wall -Wextra
 LDFLAGS=$(shell pkg-config --libs $(LUA) || echo "-llua -lm -ldl") -lX11 -lXrandr
 ifeq (1,$(USE_SYSTEM_LUA))
 	CFLAGS+=-I $(LUA_INC_DIR) -DUSE_SYSTEM_LUA
