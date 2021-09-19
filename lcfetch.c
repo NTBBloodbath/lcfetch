@@ -558,6 +558,7 @@ void print_info() {
     // Get the accent color and logo for the current distro
     char *current_distro = get_os(0);
     const char *custom_distro_logo = get_option_string("ascii_distro");
+    const char *custom_accent_color = get_option_string("accent_color");
     // Compare the current distribution first so we can override the information later
     // with the custom ascii distro logo
     char **logo = get_distro_logo(current_distro);
@@ -567,6 +568,9 @@ void print_info() {
         logo = get_distro_logo((char *)custom_distro_logo);
         logo_rows = get_distro_logo_rows((char *)custom_distro_logo);
         accent_color = get_distro_accent((char *)custom_distro_logo);
+    }
+    if (strlen(custom_accent_color) > 0) {
+        accent_color = get_custom_accent((char *)custom_accent_color);
     }
     xfree(current_distro);
 

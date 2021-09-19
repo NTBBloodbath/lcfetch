@@ -79,6 +79,20 @@ options.separator = "-"
 -- NOTE: default is "classic"
 options.colors_style = "classic"
 
+-- Accent color for the fields
+-- Available colors:
+--   * black
+--   * red
+--   * green
+--   * yellow
+--   * blue
+--   * purple
+--   * cyan
+--   * white
+--
+-- NOTE: by default is the ASCII distro accent color. Colors are case-insensitive
+options.accent_color = ""
+
 -- ASCII distro logo to be printed
 -- Available logos:
 --   * tux

@@ -136,6 +136,39 @@ char *get_distro_accent(char *distro) {
     return accent_color;
 }
 
+char *get_custom_accent(char *color) {
+    /*
+    * This wraps human-readable colors to terminal ANSI colors, where
+    * black  = 0
+    * red    = 1
+    * green  = 2
+    * yellow = 3
+    * blue   = 4
+    * purple = 5
+    * cyan   = 6
+    * white  = 7
+    * */
+    char *accent_color = xmalloc(BUF_SIZE);
+    if (strcasecmp(color, "black") == 0) {
+        strncpy(accent_color, "\e[1;30m", BUF_SIZE);
+    } else if (strcasecmp(color, "red") == 0) {
+        strncpy(accent_color, "\e[1;31m", BUF_SIZE);
+    } else if (strcasecmp(color, "green") == 0) {
+        strncpy(accent_color, "\e[1;32m", BUF_SIZE);
+    } else if (strcasecmp(color, "yellow") == 0) {
+        strncpy(accent_color, "\e[1;33m", BUF_SIZE);
+    } else if (strcasecmp(color, "blue") == 0) {
+        strncpy(accent_color, "\e[1;34m", BUF_SIZE);
+    } else if (strcasecmp(color, "purple") == 0) {
+        strncpy(accent_color, "\e[1;35m", BUF_SIZE);
+    } else if (strcasecmp(color, "cyan") == 0) {
+        strncpy(accent_color, "\e[1;36m", BUF_SIZE);
+    } else if (strcasecmp(color, "white") == 0) {
+        strncpy(accent_color, "\e[1;37m", BUF_SIZE);
+    }
+    return accent_color;
+}
+
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {
     // NOTE: colors field requires a special treatment so we don't use print_info on it
 

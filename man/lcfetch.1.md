@@ -2,8 +2,8 @@
 title: lcfetch
 section: 1
 header: lcfetch user manual
-footer: lcfetch 0.1.0-beta5
-date: August 25, 2021
+footer: lcfetch 0.1.0-beta6
+date: September 19, 2021
 ---
 
 # NAME
@@ -171,8 +171,26 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 
     Default: "classic"
 
+**accent_color**
+: Accent color for the fields.
+
+    Type: string
+
+    Available colors:
+
+    - black
+    - red
+    - green
+    - yellow
+    - blue
+    - purple
+    - cyan
+    - white
+
+    Default: ""
+
 **ascii_distro**
-: ASCII distro logo to be printed (does nothing at the moment).
+: ASCII distro logo to be printed.
 
     Type: string
 
