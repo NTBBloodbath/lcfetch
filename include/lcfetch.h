@@ -1,5 +1,6 @@
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <stdbool.h>
 #ifdef USE_SYSTEM_LUA
 #include <lua.h>
 #include <lualib.h>
@@ -32,7 +33,7 @@
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr[0])))
 char *get_title(char *accent_color);
 char *get_separator();
-char *get_os(int pretty_name);
+char *get_os(bool pretty_name);
 char *get_kernel();
 char *get_uptime();
 char *get_wm();
@@ -69,16 +70,16 @@ void start_lua(const char *config_file_path);
 void stop_lua(void);
 char *get_configuration_file_path(void);
 int get_table_size(const char *table);
-int table_contains_string(const char *table, const char *key);
+bool table_contains_string(const char *table, const char *key);
 
 // Get options
-int get_option_boolean(const char *opt);
+bool get_option_boolean(const char *opt);
 const char *get_option_string(const char *opt);
 lua_Number get_option_number(const char *opt);
 const char *get_subtable_string(const char *table, int index);
 
 // Set options
-int set_table_boolean(const char *key, int value);
+int set_table_boolean(const char *key, bool value);
 int set_table_string(const char *key, const char *value);
 int set_table_number(const char *key, lua_Number value);
 int set_table_subtable(const char *key);

@@ -1,4 +1,5 @@
 /* C stdlib */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -163,7 +164,7 @@ int get_table_size(const char *table) {
 /**
  * Check if a given string is in the given table
  */
-int table_contains_string(const char *table, const char *key) {
+bool table_contains_string(const char *table, const char *key) {
     const char *value = NULL;
 
     lua_getglobal(lua, "options");
@@ -179,20 +180,20 @@ int table_contains_string(const char *table, const char *key) {
             // If the wanted value is in the table (case-insensitive)
             // then let's return 1 and break the bucle
             if (strcasecmp(value, key) == 0) {
-                return 1;
+                return true;
             }
         }
     }
     lua_pop(lua, 2);
 
-    return 0;
+    return false;
 }
 
 /**
  * Get a boolean option from the configuration file
  */
-int get_option_boolean(const char *opt) {
-    int bool_opt;
+bool get_option_boolean(const char *opt) {
+    bool bool_opt;
 
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
@@ -256,7 +257,7 @@ const char *get_subtable_string(const char *table, int index) {
 /**
  * Set a boolean value in a table element
  */
-int set_table_boolean(const char *key, int value) {
+int set_table_boolean(const char *key, bool value) {
     lua_pushstring(lua, key);
     lua_pushboolean(lua, value);
     lua_settable(lua, -3);

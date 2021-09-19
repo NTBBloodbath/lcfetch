@@ -177,7 +177,6 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
     xfree(field_message);
 
     if ((strcasecmp(field_name, "kernel") != 0)) {
-        // printf("DEBUG: freeing '%s' field function\n", field_name);
         xfree(field_function);
     }
 

@@ -5,6 +5,7 @@
 #include <X11/extensions/Xrandr.h>
 #include <errno.h>
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,11 +46,11 @@ char *get_separator() {
     return repeat_string((char *)separator, title_length);
 }
 
-char *get_os(int pretty_name) {
+char *get_os(bool return_pretty_name) {
     char *os = xmalloc(BUF_SIZE);
     char *name = xmalloc(BUF_SIZE);
     char *line = NULL;
-    int show_arch = get_option_boolean("show_arch");
+    bool show_arch = get_option_boolean("show_arch");
     size_t len;
 
     FILE *os_release = fopen("/etc/os-release", "r");
@@ -60,18 +61,18 @@ char *get_os(int pretty_name) {
     while (getline(&line, &len, os_release) != -1) {
         // NOTE: the 'NAME' field will be used later for determining the
         // distribution ASCII logo and accent color
-        if ((!pretty_name) && (sscanf(line, "NAME=%s", name) > 0)) {
+        if ((!return_pretty_name) && (sscanf(line, "NAME=%s", name) > 0)) {
             break;
-        } else if ((!pretty_name) && (sscanf(line, "NAME=\"%[^\"]+", name) > 0)) {
+        } else if ((!return_pretty_name) && (sscanf(line, "NAME=\"%[^\"]+", name) > 0)) {
             break;
-        } else if ((pretty_name) && (sscanf(line, "PRETTY_NAME=\"%[^\"]+", name) > 0)) {
+        } else if ((return_pretty_name) && (sscanf(line, "PRETTY_NAME=\"%[^\"]+", name) > 0)) {
             break;
         }
     }
     xfree(line);
     fclose(os_release);
 
-    if (pretty_name && show_arch) {
+    if (return_pretty_name && show_arch) {
         snprintf(os, BUF_SIZE, "%s %s", name, os_uname.machine);
     } else {
         snprintf(os, BUF_SIZE, "%s", name);
@@ -154,7 +155,7 @@ char *get_resolution() {
 
     if (display != NULL) {
         Screen *screen = DefaultScreenOfDisplay(display);
-        int display_refresh_rate = get_option_boolean("display_refresh_rate");
+        bool display_refresh_rate = get_option_boolean("display_refresh_rate");
 
         snprintf(res, BUF_SIZE, "%dx%d", screen->width, screen->height);
         if (display_refresh_rate) {
@@ -449,8 +450,8 @@ char *get_cpu() {
     xfree(cpu_model);
 
     // Remove unneeded information
-    int short_cpu_info = get_option_boolean("short_cpu_info");
-    if (short_cpu_info) {
+    bool return_short_cpu_info = get_option_boolean("short_cpu_info");
+    if (return_short_cpu_info) {
         cpu = remove_substr(remove_substr(cpu, "(R)"), "Core(TM)");
     }
     cpu = remove_substr(cpu, "CPU");
@@ -468,7 +469,7 @@ char *get_cpu() {
 char *get_memory() {
     char *line = NULL;
     char *memory = xmalloc(BUF_SIZE);
-    int memory_in_gib = get_option_boolean("memory_in_gib");
+    bool display_memory_in_gib = get_option_boolean("memory_in_gib");
 
     int total_memory, used_memory;
     int total, shared, memfree, buffers, cached, reclaimable;
@@ -495,7 +496,7 @@ char *get_memory() {
     // KiB / 1024 = MiB
     used_memory = (total + shared - memfree - buffers - cached - reclaimable) / 1024;
     total_memory = total / 1024;
-    if (memory_in_gib) {
+    if (display_memory_in_gib) {
         // MiB / 1024 = GiB
         float used_memory_gib = (double)used_memory / (double)1024;
         float total_memory_gib = (double)total_memory / (double)1024;
@@ -547,7 +548,7 @@ char *get_colors_bright() {
 
 void print_info() {
     // If the ASCII distro logo should be printed
-    int display_logo = get_option_boolean("display_logo");
+    bool display_logo = get_option_boolean("display_logo");
     // The delimiter shown between the field message and the information, e.g.
     // OS: Fedora 34 (KDE Plasma) x86_64
     //   ^
