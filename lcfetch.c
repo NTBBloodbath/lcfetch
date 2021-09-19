@@ -14,14 +14,6 @@
 /* Custom headers */
 #include "include/lcfetch.h"
 #include "third-party/log.c/src/log.h"
-/* ASCII logos */
-#include "include/logos/arch.h"
-#include "include/logos/debian.h"
-#include "include/logos/fedora.h"
-#include "include/logos/gentoo.h"
-#include "include/logos/linux.h"
-#include "include/logos/nixos.h"
-#include "include/logos/ubuntu.h"
 
 struct utsname os_uname;
 struct sysinfo sys_info;
@@ -629,77 +621,31 @@ void print_info() {
     const char *delimiter = get_option_string("delimiter");
 
     // Get the accent color and logo for the current distro
-    char **logo;
-    int logo_rows;
-    char *accent_color = xmalloc(BUF_SIZE);
     char *current_distro = get_os(0);
     const char *custom_distro_logo = get_option_string("ascii_distro");
-
     // Compare the current distribution first so we can override the information later
     // with the custom ascii distro logo
-    // TODO: find a better way, this one is not the most efficient and can have a high cost
-    if (strstr(current_distro, "fedora") == 0) {
-        logo = fedora;
-        logo_rows = LEN(fedora);
-        strncpy(accent_color, fedora_accent, BUF_SIZE);
-    } else if (strcasecmp(current_distro, "gentoo") == 0) {
-        logo = gentoo;
-        logo_rows = LEN(gentoo);
-        strncpy(accent_color, gentoo_accent, BUF_SIZE);
-    } else if (strstr(current_distro, "Arch")) {
-        logo = arch;
-        logo_rows = LEN(arch);
-        strncpy(accent_color, arch_accent, BUF_SIZE);
-    } else if (strcasecmp(current_distro, "debian") == 0) {
-        logo = debian;
-        logo_rows = LEN(debian);
-        strncpy(accent_color, debian_accent, BUF_SIZE);
-    } else if (strstr(current_distro, "ubuntu") == 0) {
-        logo = ubuntu;
-        logo_rows = LEN(ubuntu);
-        strncpy(accent_color, ubuntu_accent, BUF_SIZE);
-    } else if (strcasecmp(current_distro, "nixos") == 0) {
-        logo = nixos;
-        logo_rows = LEN(nixos);
-        strncpy(accent_color, nixos_accent, BUF_SIZE);
-    } else {
-        logo = linux_logo;
-        logo_rows = LEN(linux_logo);
-        strncpy(accent_color, linux_accent, BUF_SIZE);
-    }
-    if (strcasecmp(custom_distro_logo, "fedora") == 0) {
-        logo = fedora;
-        logo_rows = LEN(fedora);
-        strncpy(accent_color, fedora_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "gentoo") == 0) {
-        logo = gentoo;
-        logo_rows = LEN(gentoo);
-        strncpy(accent_color, gentoo_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "arch") == 0) {
-        logo = arch;
-        logo_rows = LEN(arch);
-        strncpy(accent_color, arch_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "debian") == 0) {
-        logo = debian;
-        logo_rows = LEN(debian);
-        strncpy(accent_color, debian_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "ubuntu") == 0) {
-        logo = ubuntu;
-        logo_rows = LEN(ubuntu);
-        strncpy(accent_color, ubuntu_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "nixos") == 0) {
-        logo = nixos;
-        logo_rows = LEN(nixos);
-        strncpy(accent_color, nixos_accent, BUF_SIZE);
-    } else if (strcasecmp(custom_distro_logo, "tux") == 0) {
-        logo = linux_logo;
-        logo_rows = LEN(linux_logo);
-        strncpy(accent_color, linux_accent, BUF_SIZE);
+    char **logo = get_distro_logo(current_distro);
+    int logo_rows = get_distro_logo_rows(current_distro);
+    char *accent_color = get_distro_accent(current_distro);
+    if (strlen(custom_distro_logo) > 0) {
+        logo = get_distro_logo((char*)custom_distro_logo);
+        logo_rows = get_distro_logo_rows((char*)custom_distro_logo);
+        accent_color = get_distro_accent((char*)custom_distro_logo);
     }
     xfree(current_distro);
 
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
+    // Set the function that will be used for getting the field
+    // value
+    char *function = NULL;
+    const char *field_message = NULL;
+    // If the field should be ignored, used for fields that can return
+    // empty values like DE, we don't want to print an empty DE field
+    // if the end user is runnning a TWM
+    int skip_field = 0;
+
     if (display_logo) {
         // Get the logo length, substracting the ANSI escapes length
         // NOTE: this should be refactored once we manage to dynamically change the logo (maybe)
@@ -742,15 +688,6 @@ void print_info() {
                         xfree(bright_colors);
                         i++;
                     } else {
-                        // Set the function that will be used for getting the field
-                        // value
-                        char *function = NULL;
-                        const char *field_message = NULL;
-                        // If the field should be ignored, used for fields that can return
-                        // empty values like DE, we don't want to print an empty DE field
-                        // if the end user is runnning a TWM
-                        int skip_field = 0;
-
                         // If we should draw an empty line as a separator
                         if (strcmp(field, "") == 0) {
                             printf("%s%s\n", logo[i], "\e[0m");
@@ -841,15 +778,6 @@ void print_info() {
                     xfree(dark_colors);
                     xfree(bright_colors);
                 } else {
-                    // Set the function that will be used for getting the field
-                    // value
-                    char *function = NULL;
-                    const char *field_message = NULL;
-                    // If the field should be ignored, used for fields that can return
-                    // empty values like DE, we don't want to print an empty DE field
-                    // if the end user is runnning a TWM
-                    int skip_field = 0;
-
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
                         printf("%s\n", gap_logo);
@@ -963,15 +891,6 @@ void print_info() {
                     xfree(dark_colors);
                     xfree(bright_colors);
                 } else {
-                    // Set the function that will be used for getting the field
-                    // value
-                    char *function = NULL;
-                    const char *field_message = NULL;
-                    // If the field should be ignored, used for fields that can return
-                    // empty values like DE, we don't want to print an empty DE field
-                    // if the end user is runnning a TWM
-                    int skip_field = 0;
-
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
                         printf("\n");

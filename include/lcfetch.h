@@ -41,6 +41,9 @@ void help(void);
 char *repeat_string(char *str, int times);
 void truncate_whitespaces(char *str);
 char *remove_substr(char *str, const char *sub);
+char **get_distro_logo(char *distro);
+int get_distro_logo_rows(char *distro);
+char *get_distro_accent(char *distro);
 
 /* lua_api.c */
 void start_lua(const char *config_file_path);
