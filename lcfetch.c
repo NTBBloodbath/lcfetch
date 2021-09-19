@@ -629,9 +629,9 @@ void print_info() {
     int logo_rows = get_distro_logo_rows(current_distro);
     char *accent_color = get_distro_accent(current_distro);
     if (strlen(custom_distro_logo) > 0) {
-        logo = get_distro_logo((char*)custom_distro_logo);
-        logo_rows = get_distro_logo_rows((char*)custom_distro_logo);
-        accent_color = get_distro_accent((char*)custom_distro_logo);
+        logo = get_distro_logo((char *)custom_distro_logo);
+        logo_rows = get_distro_logo_rows((char *)custom_distro_logo);
+        accent_color = get_distro_accent((char *)custom_distro_logo);
     }
     xfree(current_distro);
 
