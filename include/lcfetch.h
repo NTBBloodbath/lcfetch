@@ -36,7 +36,6 @@ char *get_os(int pretty_name);
 char *get_kernel();
 char *get_uptime();
 char *get_wm();
-char *get_de();
 char *get_resolution();
 char *get_shell();
 char *get_terminal();
@@ -62,8 +61,8 @@ char *str_to_lower(char *str);
 char **get_distro_logo(char *distro);
 int get_distro_logo_rows(char *distro);
 char *get_distro_accent(char *distro);
-char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name);
+char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);
 
 /* lua_api.c */
 void start_lua(const char *config_file_path);

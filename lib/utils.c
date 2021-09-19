@@ -136,6 +136,61 @@ char *get_distro_accent(char *distro) {
     return accent_color;
 }
 
+void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {
+    // NOTE: colors field requires a special treatment so we don't use print_info on it
+
+    char *message = xmalloc(BUF_SIZE);
+    // Set the function that will be used for getting the field value
+    char *field_function = NULL;
+    char *field_message = xmalloc(BUF_SIZE);
+
+    // Get the fields data
+    if (strcasecmp(field_name, "os") == 0) {
+        field_function = get_os(1);
+    } else if (strcasecmp(field_name, "kernel") == 0) {
+        field_function = get_kernel();
+    } else if (strcasecmp(field_name, "uptime") == 0) {
+        field_function = get_uptime();
+    } else if (strcasecmp(field_name, "packages") == 0) {
+        field_function = get_packages();
+    } else if (strcasecmp(field_name, "wm") == 0) {
+        field_function = get_wm();
+    } else if (strcasecmp(field_name, "resolution") == 0) {
+        field_function = get_resolution();
+    } else if (strcasecmp(field_name, "shell") == 0) {
+        field_function = get_shell();
+    } else if (strcasecmp(field_name, "terminal") == 0) {
+        field_function = get_terminal();
+    } else if (strcasecmp(field_name, "cpu") == 0) {
+        field_function = get_cpu();
+    } else if (strcasecmp(field_name, "memory") == 0) {
+        field_function = get_memory();
+    } else {
+        log_error("Field '%s' doesn't exists", field_name);
+        xfree(field_message);
+        xfree(message);
+        exit(1);
+    }
+    snprintf(field_message, BUF_SIZE, "%s_message", str_to_lower((char *)field_name));
+    snprintf(field_message, BUF_SIZE, "%s", get_option_string(field_message));
+    snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, field_function);
+    xfree(field_message);
+
+    if ((strcasecmp(field_name, "kernel") != 0)) {
+        // printf("DEBUG: freeing '%s' field function\n", field_name);
+        xfree(field_function);
+    }
+
+    // Print field information
+    if (logo_part == NULL) {
+        // When using minimal mode (without displaying logo)
+        printf("%s%s%s\n", gap, accent, message);
+    } else {
+        printf("%s%s%s%s\n", logo_part, gap, accent, message);
+    }
+    xfree(message);
+}
+
 char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size) {
     Atom xa_prop_name;
     Atom xa_ret_type;
@@ -173,72 +228,3 @@ char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name
     return ret;
 }
 
-void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {
-    // NOTE: colors field requires a special treatment so we don't use print_info on it
-
-    char *message = xmalloc(BUF_SIZE);
-    // Set the function that will be used for getting the field value
-    char *field_function = NULL;
-    char *field_message = xmalloc(BUF_SIZE);
-    // If the field should be ignored, used for fields that can return
-    // empty values like DE, we don't want to print an empty DE field
-    // if the end user is runnning a TWM
-    int skip_field = 0;
-
-    // Get the fields data
-    if (strcasecmp(field_name, "os") == 0) {
-        field_function = get_os(1);
-    } else if (strcasecmp(field_name, "kernel") == 0) {
-        field_function = get_kernel();
-    } else if (strcasecmp(field_name, "uptime") == 0) {
-        field_function = get_uptime();
-    } else if (strcasecmp(field_name, "packages") == 0) {
-        field_function = get_packages();
-    } else if (strcasecmp(field_name, "de") == 0) {
-        field_function = get_de();
-        if (strlen(field_function) == 0) {
-            skip_field = 1;
-        }
-    } else if (strcasecmp(field_name, "wm") == 0) {
-        field_function = get_wm();
-    } else if (strcasecmp(field_name, "resolution") == 0) {
-        field_function = get_resolution();
-    } else if (strcasecmp(field_name, "shell") == 0) {
-        field_function = get_shell();
-    } else if (strcasecmp(field_name, "terminal") == 0) {
-        field_function = get_terminal();
-    } else if (strcasecmp(field_name, "cpu") == 0) {
-        field_function = get_cpu();
-    } else if (strcasecmp(field_name, "memory") == 0) {
-        field_function = get_memory();
-    } else {
-        log_error("Field '%s' doesn't exists", field_name);
-        xfree(field_message);
-        xfree(message);
-        exit(1);
-    }
-    snprintf(field_message, BUF_SIZE, "%s_message", str_to_lower((char *)field_name));
-    snprintf(field_message, BUF_SIZE, "%s", get_option_string(field_message));
-    snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, field_function);
-    xfree(field_message);
-
-    if (strcasecmp(field_name, "kernel") != 0) {
-        xfree(field_function);
-    }
-
-    // Print field information
-    if (logo_part == NULL) {
-        // When using minimal mode (without displaying logo)
-        if (skip_field == 0) {
-            printf("%s%s%s\n", gap, accent, message);
-        }
-    } else {
-        if (skip_field == 0) {
-            printf("%s%s%s%s\n", logo_part, gap, accent, message);
-        }
-    }
-    if (skip_field) {
-        skip_field = 0;
-    }
-    xfree(message);
-}

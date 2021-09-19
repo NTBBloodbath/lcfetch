@@ -113,7 +113,6 @@ void init_options(void) {
     set_table_string("uptime_message", "Uptime");
     set_table_string("packages_message", "Packages");
     set_table_string("resolution_message", "Resolution");
-    set_table_string("de_message", "DE");
     set_table_string("wm_message", "WM");
     set_table_string("shell_message", "Shell");
     set_table_string("terminal_message", "Terminal");
@@ -131,7 +130,6 @@ void init_options(void) {
     set_subtable_string("enabled_fields", "Uptime");
     set_subtable_string("enabled_fields", "Packages");
     set_subtable_string("enabled_fields", ""); // Newline
-    set_subtable_string("enabled_fields", "DE");
     set_subtable_string("enabled_fields", "WM");
     set_subtable_string("enabled_fields", "Resolution");
     set_subtable_string("enabled_fields", ""); // Newline

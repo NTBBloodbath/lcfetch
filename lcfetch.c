@@ -149,34 +149,6 @@ char *get_wm() {
     return wm_name;
 }
 
-char *get_de() {
-    char *de_name = xmalloc(BUF_SIZE);
-    char *xdg_desktop = getenv("XDG_CURRENT_DESKTOP");
-    char *desktop_session = getenv("DESKTOP_SESSION");
-    char *session_name = strrchr(getenv("DESKTOP_SESSION"), '/');
-
-    if (xdg_desktop != NULL) {
-        snprintf(de_name, BUF_SIZE, "%s", xdg_desktop);
-    }
-
-    if (de_name == NULL) {
-        if (session_name == NULL) {
-            snprintf(de_name, BUF_SIZE, "%s", desktop_session);
-        } else {
-            snprintf(de_name, BUF_SIZE, "%s", session_name + 1);
-        }
-    }
-
-    // Get the WM name so if DE name is equal to WM name, we will skip DE
-    char *wm_name = get_wm();
-    if (strcasecmp(wm_name, de_name) == 0) {
-        return NULL;
-    }
-    xfree(wm_name);
-
-    return de_name;
-}
-
 char *get_resolution() {
     char *res = xmalloc(BUF_SIZE);
 

@@ -67,6 +67,7 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     - Kernel
     - Uptime
     - Packages
+    - WM
     - Resolution
     - Shell
     - Terminal
@@ -110,13 +111,6 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     Type: string
 
     Default: "Resolution"
-
-**de_message**
-: The DE field message.
-
-    Type: string
-
-    Default: "DE"
 
 **wm_message**
 : The WM field message.
