@@ -1,3 +1,5 @@
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
 #ifdef USE_SYSTEM_LUA
 #include <lua.h>
 #include <lualib.h>
@@ -28,6 +30,21 @@
 #define BUF_SIZE 256
 #define COUNT(x) (int)(sizeof x / sizeof *x)
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr[0])))
+char *get_title(char *accent_color);
+char *get_separator();
+char *get_os(int pretty_name);
+char *get_kernel();
+char *get_uptime();
+char *get_wm();
+char *get_de();
+char *get_resolution();
+char *get_shell();
+char *get_terminal();
+char *get_packages();
+char *get_cpu();
+char *get_memory();
+char *get_colors_dark();
+char *get_colors_bright();
 
 /* memory.c */
 void *xmalloc(size_t size);
@@ -41,9 +58,12 @@ void help(void);
 char *repeat_string(char *str, int times);
 void truncate_whitespaces(char *str);
 char *remove_substr(char *str, const char *sub);
+char *str_to_lower(char *str);
 char **get_distro_logo(char *distro);
 int get_distro_logo_rows(char *distro);
 char *get_distro_accent(char *distro);
+char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);
+void print_field(char *logo_part, char *gap, const char* delimiter, char *accent, const char *field_name);
 
 /* lua_api.c */
 void start_lua(const char *config_file_path);

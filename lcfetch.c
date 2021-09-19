@@ -21,45 +21,7 @@ struct sysinfo sys_info;
 Display *display;
 int title_length;
 
-static char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size) {
-    Atom xa_prop_name;
-    Atom xa_ret_type;
-    int ret_format;
-    unsigned long ret_nitems;
-    unsigned long ret_bytes_after;
-    unsigned long tmp_size;
-    unsigned char *ret_prop;
-    // char *ret = NULL;
-
-    xa_prop_name = XInternAtom(disp, prop_name, 0);
-
-    if (XGetWindowProperty(disp, win, xa_prop_name, 0, BUF_SIZE, 0, xa_prop_type, &xa_ret_type, &ret_format,
-                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
-        log_warn("Cannot get %s property.\n", prop_name);
-        return NULL;
-    }
-
-    if (xa_ret_type != xa_prop_type) {
-        log_warn("Invalid type of %s property.\n", prop_name);
-        XFree(ret_prop);
-        return NULL;
-    }
-
-    /* null terminate the result to make string handling easier */
-    tmp_size = (ret_format / (64 / sizeof(long))) * ret_nitems;
-    char *ret = xmalloc(tmp_size + 1);
-    memmove(ret, ret_prop, tmp_size);
-    ret[tmp_size] = '\0';
-
-    if (size) {
-        *size = tmp_size;
-    }
-
-    XFree(ret_prop);
-    return ret;
-}
-
-static char *get_title(char *accent_color) {
+char *get_title(char *accent_color) {
     char *title = xmalloc(BUF_SIZE);
 
     // reduce the maximum size for the title components so we don't over-fill
@@ -78,12 +40,12 @@ static char *get_title(char *accent_color) {
     return title;
 }
 
-static char *get_separator() {
+char *get_separator() {
     const char *separator = get_option_string("separator");
     return repeat_string((char *)separator, title_length);
 }
 
-static char *get_os(int pretty_name) {
+char *get_os(int pretty_name) {
     char *os = xmalloc(BUF_SIZE);
     char *name = xmalloc(BUF_SIZE);
     char *line = NULL;
@@ -119,9 +81,9 @@ static char *get_os(int pretty_name) {
     return os;
 }
 
-static char *get_kernel() { return os_uname.release; }
+char *get_kernel() { return os_uname.release; }
 
-static char *get_uptime() {
+char *get_uptime() {
     long seconds = sys_info.uptime;
     struct {
         char *name;
@@ -147,7 +109,7 @@ static char *get_uptime() {
     return uptime;
 }
 
-static char *get_wm() {
+char *get_wm() {
     char *wm_name = NULL;
 
     if (display != NULL) {
@@ -187,7 +149,7 @@ static char *get_wm() {
     return wm_name;
 }
 
-static char *get_de() {
+char *get_de() {
     char *de_name = xmalloc(BUF_SIZE);
     char *xdg_desktop = getenv("XDG_CURRENT_DESKTOP");
     char *desktop_session = getenv("DESKTOP_SESSION");
@@ -215,7 +177,7 @@ static char *get_de() {
     return de_name;
 }
 
-static char *get_resolution() {
+char *get_resolution() {
     char *res = xmalloc(BUF_SIZE);
 
     if (display != NULL) {
@@ -237,7 +199,7 @@ static char *get_resolution() {
     return res;
 }
 
-static char *get_shell() {
+char *get_shell() {
     char *shell = xmalloc(BUF_SIZE);
     char *shell_path = getenv("SHELL");
     char *shell_name = strrchr(getenv("SHELL"), '/');
@@ -254,7 +216,7 @@ static char *get_shell() {
     return shell;
 }
 
-static char *get_terminal() {
+char *get_terminal() {
     unsigned char *property;
     char *terminal = xmalloc(BUF_SIZE);
     // Windows Terminal session, we will use it for WSL detection
@@ -293,7 +255,7 @@ static char *get_terminal() {
     return terminal;
 }
 
-static char *get_packages() {
+char *get_packages() {
     char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "pacman", "apk", "xbps-query", "flatpak"};
     char *packages = xmalloc(BUF_SIZE * 2);
     int apt, rpm, dnf, pacman, aur, nix, apk, xbps, flatpak = 0;
@@ -444,7 +406,7 @@ static char *get_packages() {
     return packages;
 }
 
-static char *get_cpu() {
+char *get_cpu() {
     char *line = NULL;
     char *cpu = xmalloc(BUF_SIZE);
     char *cpu_model = xmalloc(BUF_SIZE / 2);
@@ -531,7 +493,7 @@ static char *get_cpu() {
     return cpu;
 }
 
-static char *get_memory() {
+char *get_memory() {
     char *line = NULL;
     char *memory = xmalloc(BUF_SIZE);
     int memory_in_gib = get_option_boolean("memory_in_gib");
@@ -573,7 +535,7 @@ static char *get_memory() {
     return memory;
 }
 
-static char *get_colors_dark() {
+char *get_colors_dark() {
     char *dark_colors = xmalloc(BUF_SIZE);
     char *str = dark_colors;
     const char *colors_style = get_option_string("colors_style");
@@ -592,7 +554,7 @@ static char *get_colors_dark() {
     return dark_colors;
 }
 
-static char *get_colors_bright() {
+char *get_colors_bright() {
     char *bright_colors = xmalloc(BUF_SIZE);
     char *str = bright_colors;
     const char *colors_style = get_option_string("colors_style");
@@ -637,15 +599,6 @@ void print_info() {
 
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
-    // Set the function that will be used for getting the field
-    // value
-    char *function = NULL;
-    const char *field_message = NULL;
-    // If the field should be ignored, used for fields that can return
-    // empty values like DE, we don't want to print an empty DE field
-    // if the end user is runnning a TWM
-    int skip_field = 0;
-
     if (display_logo) {
         // Get the logo length, substracting the ANSI escapes length
         // NOTE: this should be refactored once we manage to dynamically change the logo (maybe)
@@ -692,74 +645,7 @@ void print_info() {
                         if (strcmp(field, "") == 0) {
                             printf("%s%s\n", logo[i], "\e[0m");
                         } else {
-                            char *message = xmalloc(BUF_SIZE);
-                            if (strcasecmp(field, "OS") == 0) {
-                                function = get_os(1);
-                                field_message = get_option_string("os_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Kernel") == 0) {
-                                function = get_kernel();
-                                field_message = get_option_string("kernel_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            } else if (strcasecmp(field, "Uptime") == 0) {
-                                function = get_uptime();
-                                field_message = get_option_string("uptime_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Packages") == 0) {
-                                function = get_packages();
-                                field_message = get_option_string("packages_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "DE") == 0) {
-                                function = get_de();
-                                field_message = get_option_string("de_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                if (strlen(function) == 0) {
-                                    skip_field = 1;
-                                }
-                                xfree(function);
-                            } else if (strcasecmp(field, "WM") == 0) {
-                                function = get_wm();
-                                field_message = get_option_string("wm_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Resolution") == 0) {
-                                function = get_resolution();
-                                field_message = get_option_string("resolution_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Shell") == 0) {
-                                function = get_shell();
-                                field_message = get_option_string("shell_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Terminal") == 0) {
-                                function = get_terminal();
-                                field_message = get_option_string("terminal_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "CPU") == 0) {
-                                function = get_cpu();
-                                field_message = get_option_string("cpu_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else if (strcasecmp(field, "Memory") == 0) {
-                                function = get_memory();
-                                field_message = get_option_string("memory_message");
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                                xfree(function);
-                            } else {
-                                function = "Not implemented yet (maybe?)";
-                                field_message = (char *)field;
-                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            }
-                            if (skip_field == 0) {
-                                printf("%s%s%s%s\n", logo[i], gap_logo_info, accent_color, message);
-                            }
-                            skip_field = 0;
-                            xfree(message);
+                            print_field(logo[i], gap_logo_info, delimiter, accent_color, field);
                         }
                     }
                 }
@@ -782,74 +668,7 @@ void print_info() {
                     if (strcmp(field, "") == 0) {
                         printf("%s\n", gap_logo);
                     } else {
-                        char *message = xmalloc(BUF_SIZE);
-                        if (strcasecmp(field, "OS") == 0) {
-                            function = get_os(1);
-                            field_message = get_option_string("os_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Kernel") == 0) {
-                            function = get_kernel();
-                            field_message = get_option_string("kernel_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                        } else if (strcasecmp(field, "Uptime") == 0) {
-                            function = get_uptime();
-                            field_message = get_option_string("uptime_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Packages") == 0) {
-                            function = get_packages();
-                            field_message = get_option_string("packages_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "DE") == 0) {
-                            function = get_de();
-                            field_message = get_option_string("de_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            if (strlen(function) == 0) {
-                                skip_field = 1;
-                            }
-                            xfree(function);
-                        } else if (strcasecmp(field, "WM") == 0) {
-                            function = get_wm();
-                            field_message = get_option_string("wm_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Resolution") == 0) {
-                            function = get_resolution();
-                            field_message = get_option_string("resolution_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Shell") == 0) {
-                            function = get_shell();
-                            field_message = get_option_string("shell_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Terminal") == 0) {
-                            function = get_terminal();
-                            field_message = get_option_string("terminal_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "CPU") == 0) {
-                            function = get_cpu();
-                            field_message = get_option_string("cpu_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Memory") == 0) {
-                            function = get_memory();
-                            field_message = get_option_string("memory_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else {
-                            function = "Not implemented yet (maybe?)";
-                            field_message = (char *)field;
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                        }
-                        if (skip_field == 0) {
-                            printf("%s%s%s%s\n", gap_logo, gap_logo_info, accent_color, message);
-                        }
-                        skip_field = 0;
-                        xfree(message);
+                        print_field(gap_logo, gap_logo_info, delimiter, accent_color, field);
                     }
                 }
             }
@@ -895,75 +714,7 @@ void print_info() {
                     if (strcmp(field, "") == 0) {
                         printf("\n");
                     } else {
-                        char *message = xmalloc(BUF_SIZE);
-                        if (strcasecmp(field, "OS") == 0) {
-                            function = get_os(1);
-                            field_message = get_option_string("os_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Kernel") == 0) {
-                            function = get_kernel();
-                            field_message = get_option_string("kernel_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            // xfree(function);
-                        } else if (strcasecmp(field, "Uptime") == 0) {
-                            function = get_uptime();
-                            field_message = get_option_string("uptime_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Packages") == 0) {
-                            function = get_packages();
-                            field_message = get_option_string("packages_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "DE") == 0) {
-                            function = get_de();
-                            field_message = get_option_string("de_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            if (strlen(function) == 0) {
-                                skip_field = 1;
-                            }
-                            xfree(function);
-                        } else if (strcasecmp(field, "WM") == 0) {
-                            function = get_wm();
-                            field_message = get_option_string("wm_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Resolution") == 0) {
-                            function = get_resolution();
-                            field_message = get_option_string("resolution_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Shell") == 0) {
-                            function = get_shell();
-                            field_message = get_option_string("shell_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Terminal") == 0) {
-                            function = get_terminal();
-                            field_message = get_option_string("terminal_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "CPU") == 0) {
-                            function = get_cpu();
-                            field_message = get_option_string("cpu_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else if (strcasecmp(field, "Memory") == 0) {
-                            function = get_memory();
-                            field_message = get_option_string("memory_message");
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                            xfree(function);
-                        } else {
-                            function = "Not implemented yet (maybe?)";
-                            field_message = (char *)field;
-                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
-                        }
-                        if (skip_field == 0) {
-                            printf("%s%s%s\n", gap_term_info, accent_color, message);
-                        }
-                        skip_field = 0;
-                        xfree(message);
+                        print_field(NULL, gap_term_info, delimiter, accent_color, field);
                     }
                 }
             }
