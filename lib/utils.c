@@ -173,7 +173,7 @@ char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name
     return ret;
 }
 
-void print_field(char *logo_part, char *gap, const char* delimiter, char *accent, const char *field_name) {
+void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {
     // NOTE: colors field requires a special treatment so we don't use print_info on it
 
     char *message = xmalloc(BUF_SIZE);
@@ -184,7 +184,6 @@ void print_field(char *logo_part, char *gap, const char* delimiter, char *accent
     // empty values like DE, we don't want to print an empty DE field
     // if the end user is runnning a TWM
     int skip_field = 0;
-
 
     // Get the fields data
     if (strcasecmp(field_name, "os") == 0) {
