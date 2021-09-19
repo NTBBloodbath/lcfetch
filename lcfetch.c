@@ -55,7 +55,7 @@ static char *get_property(Display *disp, Window win, Atom xa_prop_type, char *pr
 
     /* null terminate the result to make string handling easier */
     tmp_size = (ret_format / (64 / sizeof(long))) * ret_nitems;
-    char *ret = xmalloc(tmp_size + 1); 
+    char *ret = xmalloc(tmp_size + 1);
     memmove(ret, ret_prop, tmp_size);
     ret[tmp_size] = '\0';
 
@@ -88,7 +88,7 @@ static char *get_title(char *accent_color) {
 
 static char *get_separator() {
     const char *separator = get_option_string("separator");
-    return repeat_string((char*)separator, title_length);
+    return repeat_string((char *)separator, title_length);
 }
 
 static char *get_os(int pretty_name) {
@@ -161,9 +161,11 @@ static char *get_wm() {
     if (display != NULL) {
         Window *top_win = NULL;
 
-        top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_WINDOW, "_NET_SUPPORTING_WM_CHECK", NULL);
+        top_win =
+            (Window *)get_property(display, DefaultRootWindow(display), XA_WINDOW, "_NET_SUPPORTING_WM_CHECK", NULL);
         if (!top_win) {
-            top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK", NULL);
+            top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_CARDINAL,
+                                             "_WIN_SUPPORTING_WM_CHECK", NULL);
             if (!top_win) {
                 log_debug("Cannot get window manager required properties."
                           "(_NET_SUPPORTING_WM_CHECK or _WIN_SUPPORTING_WM_CHECK)\n",
@@ -206,7 +208,7 @@ static char *get_de() {
     if (de_name == NULL) {
         if (session_name == NULL) {
             snprintf(de_name, BUF_SIZE, "%s", desktop_session);
-        } else  {
+        } else {
             snprintf(de_name, BUF_SIZE, "%s", session_name + 1);
         }
     }
