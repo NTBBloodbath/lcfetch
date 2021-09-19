@@ -151,7 +151,7 @@ completely remove them.
 
 ## Todo
 
-- [ ] Support for some missing essential fields (e.g. `Packages` and `DE`/`WM`)
+- [x] Support for some missing essential fields (e.g. `Packages`, `WM`)
 - [x] Stop hardcoding the ASCII distro logo and accent color
 - [ ] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
