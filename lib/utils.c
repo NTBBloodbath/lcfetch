@@ -227,4 +227,3 @@ char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name
     XFree(ret_prop);
     return ret;
 }
-
