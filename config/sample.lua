@@ -25,6 +25,7 @@ options.enabled_fields = {
   "Uptime",
   "Packages",
   "",
+  "DE",
   "WM",
   "Resolution",
   "",
@@ -44,7 +45,7 @@ options.kernel_message = "Kernel"
 options.uptime_message = "Uptime"
 options.packages_message = "Packages"
 options.resolution_message = "Resolution"
--- options.de_message = "DE"
+options.de_message = "DE"
 options.wm_message = "WM"
 options.shell_message = "Shell"
 options.terminal_message = "Terminal"
@@ -65,6 +66,11 @@ options.memory_message = "Memory"
 --
 -- NOTE: by default is ":", change it to "" for disabling it
 options.delimiter = ":"
+
+-- The separator shown between your USERNAME@HOSTNAME message
+--
+-- NOTE: default is "-"
+options.separator = "-"
 
 -- The terminal colors style
 -- Available styles:

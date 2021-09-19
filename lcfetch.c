@@ -29,6 +29,44 @@ struct sysinfo sys_info;
 Display *display;
 int title_length;
 
+static char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size) {
+    Atom xa_prop_name;
+    Atom xa_ret_type;
+    int ret_format;
+    unsigned long ret_nitems;
+    unsigned long ret_bytes_after;
+    unsigned long tmp_size;
+    unsigned char *ret_prop;
+    // char *ret = NULL;
+
+    xa_prop_name = XInternAtom(disp, prop_name, 0);
+
+    if (XGetWindowProperty(disp, win, xa_prop_name, 0, BUF_SIZE, 0, xa_prop_type, &xa_ret_type, &ret_format,
+                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
+        log_warn("Cannot get %s property.\n", prop_name);
+        return NULL;
+    }
+
+    if (xa_ret_type != xa_prop_type) {
+        log_warn("Invalid type of %s property.\n", prop_name);
+        XFree(ret_prop);
+        return NULL;
+    }
+
+    /* null terminate the result to make string handling easier */
+    tmp_size = (ret_format / (64 / sizeof(long))) * ret_nitems;
+    char *ret = xmalloc(tmp_size + 1); 
+    memmove(ret, ret_prop, tmp_size);
+    ret[tmp_size] = '\0';
+
+    if (size) {
+        *size = tmp_size;
+    }
+
+    XFree(ret_prop);
+    return ret;
+}
+
 static char *get_title(char *accent_color) {
     char *title = xmalloc(BUF_SIZE);
 
@@ -48,7 +86,10 @@ static char *get_title(char *accent_color) {
     return title;
 }
 
-static char *get_separator() { return repeat_string("-", title_length); }
+static char *get_separator() {
+    const char *separator = get_option_string("separator");
+    return repeat_string((char*)separator, title_length);
+}
 
 static char *get_os(int pretty_name) {
     char *os = xmalloc(BUF_SIZE);
@@ -114,71 +155,70 @@ static char *get_uptime() {
     return uptime;
 }
 
-static char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size) {
-    Atom xa_prop_name;
-    Atom xa_ret_type;
-    int ret_format;
-    unsigned long ret_nitems;
-    unsigned long ret_bytes_after;
-    unsigned long tmp_size;
-    unsigned char *ret_prop;
-    char *ret = NULL;
-
-    xa_prop_name = XInternAtom(disp, prop_name, 0);
-
-    if (XGetWindowProperty(disp, win, xa_prop_name, 0, BUF_SIZE, 0, xa_prop_type, &xa_ret_type, &ret_format,
-                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
-        log_warn("Cannot get %s property.\n", prop_name);
-        return NULL;
-    }
-
-    if (xa_ret_type != xa_prop_type) {
-        log_warn("Invalid type of %s property.\n", prop_name);
-        XFree(ret_prop);
-        return NULL;
-    }
-
-    /* null terminate the result to make string handling easier */
-    tmp_size = (ret_format / (32 / sizeof(long))) * ret_nitems;
-    ret = xmalloc(tmp_size + 1); 
-    memmove(ret, ret_prop, tmp_size);
-    ret[tmp_size] = '\0';
-
-    if (size) {
-        *size = tmp_size;
-    }
-
-    XFree(ret_prop);
-    return ret;
-}
-
 static char *get_wm() {
-    Window *top_win = NULL;
     char *wm_name = NULL;
 
-    if (!(top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_WINDOW, "_NET_SUPPORTING_WM_CHECK",
-                                           NULL))) {
-        if (!(top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_CARDINAL,
-                                               "_WIN_SUPPORTING_WM_CHECK", NULL))) {
-            log_debug("Cannot get window manager required properties."
-                      "(_NET_SUPPORTING_WM_CHECK or _WIN_SUPPORTING_WM_CHECK)\n",
-                      stderr);
-            XFree(top_win);
-            return "lcfetch was not able to recognize your window manager";
+    if (display != NULL) {
+        Window *top_win = NULL;
+
+        top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_WINDOW, "_NET_SUPPORTING_WM_CHECK", NULL);
+        if (!top_win) {
+            top_win = (Window *)get_property(display, DefaultRootWindow(display), XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK", NULL);
+            if (!top_win) {
+                log_debug("Cannot get window manager required properties."
+                          "(_NET_SUPPORTING_WM_CHECK or _WIN_SUPPORTING_WM_CHECK)\n",
+                          stderr);
+                XFree(top_win);
+                return "lcfetch was not able to recognize your window manager";
+            }
         }
+
+        wm_name = get_property(display, *top_win, XInternAtom(display, "UTF8_STRING", 0), "_NET_WM_NAME", NULL);
+        if (!wm_name) {
+            wm_name = get_property(display, *top_win, XA_STRING, "_NET_WM_NAME", NULL);
+            if (!wm_name) {
+                log_debug("Cannot get name of the window manager (_NET_WM_NAME).\n");
+                xfree(wm_name);
+                return "lcfetch was not able to recognize your window manager";
+            }
+        }
+
+        XFree(top_win);
     }
 
-    if (!(wm_name =
-              get_property(display, *top_win, XInternAtom(display, "UTF8_STRING", 0), "_NET_WM_NAME", NULL))) {
-        if (!(wm_name = get_property(display, *top_win, XA_STRING, "_NET_WM_NAME", NULL))) {
-            log_debug("Cannot get name of the window manager (_NET_WM_NAME).\n");
-            xfree(wm_name);
-            return "lcfetch was not able to recognize your window manager";
-        }
+    if (wm_name == NULL) {
+        snprintf(wm_name, BUF_SIZE, "lcfetch was not able to recognize your window manager");
     }
 
-    XFree(top_win);
     return wm_name;
+}
+
+static char *get_de() {
+    char *de_name = xmalloc(BUF_SIZE);
+    char *xdg_desktop = getenv("XDG_CURRENT_DESKTOP");
+    char *desktop_session = getenv("DESKTOP_SESSION");
+    char *session_name = strrchr(getenv("DESKTOP_SESSION"), '/');
+
+    if (xdg_desktop != NULL) {
+        snprintf(de_name, BUF_SIZE, "%s", xdg_desktop);
+    }
+
+    if (de_name == NULL) {
+        if (session_name == NULL) {
+            snprintf(de_name, BUF_SIZE, "%s", desktop_session);
+        } else  {
+            snprintf(de_name, BUF_SIZE, "%s", session_name + 1);
+        }
+    }
+
+    // Get the WM name so if DE name is equal to WM name, we will skip DE
+    char *wm_name = get_wm();
+    if (strcasecmp(wm_name, de_name) == 0) {
+        return NULL;
+    }
+    xfree(wm_name);
+
+    return de_name;
 }
 
 static char *get_resolution() {
@@ -381,7 +421,7 @@ static char *get_packages() {
                 }
             } else if (strcmp(pkg_manager, "flatpak") == 0) {
                 // NOTE: it seems that flatpak does not like to be called from a popen so it fails in
-                // a really stupid way sending a non-sense error, that is why we are not using 'flatpak list'
+                // a really stupid way sending a non-sense error, this is why we are not using 'flatpak list'
                 // for getting the flatpak packages at the moment
                 FILE *flatpak_packages = popen("echo \"$(( $(ls /var/lib/flatpak/app 2> /dev/null | wc -l) + $(ls "
                                                "/var/lib/flatpak/runtime 2> /dev/null | wc -l) ))\"",
@@ -596,7 +636,7 @@ void print_info() {
     // Compare the current distribution first so we can override the information later
     // with the custom ascii distro logo
     // TODO: find a better way, this one is not the most efficient and can have a high cost
-    if (strcasecmp(current_distro, "fedora") == 0) {
+    if (strstr(current_distro, "fedora") == 0) {
         logo = fedora;
         logo_rows = LEN(fedora);
         strncpy(accent_color, fedora_accent, BUF_SIZE);
@@ -612,7 +652,7 @@ void print_info() {
         logo = debian;
         logo_rows = LEN(debian);
         strncpy(accent_color, debian_accent, BUF_SIZE);
-    } else if (strcasecmp(current_distro, "ubuntu") == 0) {
+    } else if (strstr(current_distro, "ubuntu") == 0) {
         logo = ubuntu;
         logo_rows = LEN(ubuntu);
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
@@ -704,6 +744,11 @@ void print_info() {
                         // value
                         char *function = NULL;
                         const char *field_message = NULL;
+                        // If the field should be ignored, used for fields that can return
+                        // empty values like DE, we don't want to print an empty DE field
+                        // if the end user is runnning a TWM
+                        int skip_field = 0;
+
                         // If we should draw an empty line as a separator
                         if (strcmp(field, "") == 0) {
                             printf("%s%s\n", logo[i], "\e[0m");
@@ -727,6 +772,14 @@ void print_info() {
                                 function = get_packages();
                                 field_message = get_option_string("packages_message");
                                 snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                                xfree(function);
+                            } else if (strcasecmp(field, "DE") == 0) {
+                                function = get_de();
+                                field_message = get_option_string("de_message");
+                                snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                                if (strlen(function) == 0) {
+                                    skip_field = 1;
+                                }
                                 xfree(function);
                             } else if (strcasecmp(field, "WM") == 0) {
                                 function = get_wm();
@@ -763,7 +816,10 @@ void print_info() {
                                 field_message = (char *)field;
                                 snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                             }
-                            printf("%s%s%s%s\n", logo[i], gap_logo_info, accent_color, message);
+                            if (skip_field == 0) {
+                                printf("%s%s%s%s\n", logo[i], gap_logo_info, accent_color, message);
+                            }
+                            skip_field = 0;
                             xfree(message);
                         }
                     }
@@ -787,6 +843,11 @@ void print_info() {
                     // value
                     char *function = NULL;
                     const char *field_message = NULL;
+                    // If the field should be ignored, used for fields that can return
+                    // empty values like DE, we don't want to print an empty DE field
+                    // if the end user is runnning a TWM
+                    int skip_field = 0;
+
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
                         printf("%s\n", gap_logo);
@@ -810,6 +871,14 @@ void print_info() {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "DE") == 0) {
+                            function = get_de();
+                            field_message = get_option_string("de_message");
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            if (strlen(function) == 0) {
+                                skip_field = 1;
+                            }
                             xfree(function);
                         } else if (strcasecmp(field, "WM") == 0) {
                             function = get_wm();
@@ -846,7 +915,10 @@ void print_info() {
                             field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
-                        printf("%s%s%s%s\n", gap_logo, gap_logo_info, accent_color, message);
+                        if (skip_field == 0) {
+                            printf("%s%s%s%s\n", gap_logo, gap_logo_info, accent_color, message);
+                        }
+                        skip_field = 0;
                         xfree(message);
                     }
                 }
@@ -893,6 +965,11 @@ void print_info() {
                     // value
                     char *function = NULL;
                     const char *field_message = NULL;
+                    // If the field should be ignored, used for fields that can return
+                    // empty values like DE, we don't want to print an empty DE field
+                    // if the end user is runnning a TWM
+                    int skip_field = 0;
+
                     // If we should draw an empty line as a separator
                     if (strcmp(field, "") == 0) {
                         printf("\n");
@@ -917,6 +994,14 @@ void print_info() {
                             function = get_packages();
                             field_message = get_option_string("packages_message");
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            xfree(function);
+                        } else if (strcasecmp(field, "DE") == 0) {
+                            function = get_de();
+                            field_message = get_option_string("de_message");
+                            snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
+                            if (strlen(function) == 0) {
+                                skip_field = 1;
+                            }
                             xfree(function);
                         } else if (strcasecmp(field, "WM") == 0) {
                             function = get_wm();
@@ -953,7 +1038,10 @@ void print_info() {
                             field_message = (char *)field;
                             snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, function);
                         }
-                        printf("%s%s%s\n", gap_term_info, accent_color, message);
+                        if (skip_field == 0) {
+                            printf("%s%s%s\n", gap_term_info, accent_color, message);
+                        }
+                        skip_field = 0;
                         xfree(message);
                     }
                 }

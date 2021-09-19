@@ -99,6 +99,7 @@ void init_options(void) {
     set_table_string("ascii_distro", "");
     set_table_string("colors_style", "classic");
     set_table_string("delimiter", ":");
+    set_table_string("separator", "-");
     set_table_boolean("show_arch", 1);
     set_table_boolean("display_refresh_rate", 0);
     set_table_boolean("short_cpu_info", 1);
@@ -130,7 +131,7 @@ void init_options(void) {
     set_subtable_string("enabled_fields", "Uptime");
     set_subtable_string("enabled_fields", "Packages");
     set_subtable_string("enabled_fields", ""); // Newline
-    // set_subtable_string("enabled_fields", "DE");
+    set_subtable_string("enabled_fields", "DE");
     set_subtable_string("enabled_fields", "WM");
     set_subtable_string("enabled_fields", "Resolution");
     set_subtable_string("enabled_fields", ""); // Newline
@@ -155,7 +156,7 @@ int get_table_size(const char *table) {
         lua_len(lua, -1);
         table_length = luaL_checknumber(lua, -1);
         // Remove the table length from the stack
-        lua_pop(lua, 1);
+        lua_pop(lua, 2);
     }
 
     return table_length;
@@ -176,7 +177,7 @@ int table_contains_string(const char *table, const char *key) {
             lua_rawgeti(lua, -1, i);
             value = luaL_checkstring(lua, -1);
             // Remove the value from the stack
-            lua_pop(lua, 1);
+            lua_pop(lua, 2);
             // If the wanted value is in the table (case-insensitive)
             // then let's return 1 and break the bucle
             if (strcasecmp(value, key) == 0) {
@@ -242,7 +243,7 @@ const char *get_subtable_string(const char *table, int index) {
         int table_length = get_table_size(table);
         // If the wanted index is higher than the table length then return NULL
         if (table_length < index) {
-            lua_pop(lua, 2);
+            lua_pop(lua, 1);
             return value;
         }
         lua_rawgeti(lua, -1, index);
@@ -307,7 +308,7 @@ int set_subtable_string(const char *table, const char *key) {
         // Push the new value
         lua_pushstring(lua, key);
         lua_rawseti(lua, -2, table_length + 1);
-        lua_pop(lua, 1);
+        lua_pop(lua, 2);
     }
     lua_pop(lua, 1);
 
