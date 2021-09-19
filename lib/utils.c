@@ -138,16 +138,16 @@ char *get_distro_accent(char *distro) {
 
 char *get_custom_accent(char *color) {
     /*
-    * This wraps human-readable colors to terminal ANSI colors, where
-    * black  = 0
-    * red    = 1
-    * green  = 2
-    * yellow = 3
-    * blue   = 4
-    * purple = 5
-    * cyan   = 6
-    * white  = 7
-    * */
+     * This wraps human-readable colors to terminal ANSI colors, where
+     * black  = 0
+     * red    = 1
+     * green  = 2
+     * yellow = 3
+     * blue   = 4
+     * purple = 5
+     * cyan   = 6
+     * white  = 7
+     * */
     char *accent_color = xmalloc(BUF_SIZE);
     if (strcasecmp(color, "black") == 0) {
         strncpy(accent_color, "\e[1;30m", BUF_SIZE);
