@@ -160,6 +160,13 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
 
     Default: ":"
 
+**separator**
+:The separator shown between your USERNAME@HOSTNAME message 
+
+    Type: string
+
+    Default: "-"
+
 **colors_style**
 : The terminal colors style.
 
