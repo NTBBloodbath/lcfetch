@@ -5,12 +5,12 @@
 ![License](https://img.shields.io/github/license/NTBBloodbath/lcfetch?style=flat-square)
 [![build](https://github.com/NTBBloodbath/lcfetch/actions/workflows/build.yml/badge.svg)](https://github.com/NTBBloodbath/lcfetch/actions/workflows/build.yml)
 
-![lcfetch demo](https://user-images.githubusercontent.com/36456999/130305209-4f87523f-202b-4cdc-a2be-ce03b812c7c9.png)
+![lcfetch demo](https://user-images.githubusercontent.com/36456999/133947515-0116a6fe-8e1e-4c23-a181-8d055a0071e2.png)
 
 </div>
 
 A fast and easy to configure alternative to [neofetch](https://github.com/dylanaraps/neofetch)
-written in C and configured using Lua (still in a very early stage)!
+written in C and configured using Lua!
 
 > **IMPORTANT**: I'm a newbie using C and the Lua C API so if you see something wrong
 > please let me know!
@@ -153,7 +153,7 @@ completely remove them.
 
 - [x] Support for some missing essential fields (e.g. `Packages`, `WM`)
 - [x] Stop hardcoding the ASCII distro logo and accent color
-- [ ] Add more configurations
+- [x] Add more configurations
 - [x] Strip content on non-wide terminals if we need to (like neofetch)
 - [ ] Add support for MacOS (probably the last thing to be done?)
 - [ ] Add support for images (we can use icat, uberzug or kitty protocols)
