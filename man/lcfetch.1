@@ -179,34 +179,45 @@ Default: \[lq]Memory\[rq]
 .RE
 .TP
 .B \f[B]delimiter\f[R]
-The delimiter shown between the field message and the information
+The delimiter shown between the field message and the information.
 .RS
 .PP
 Type: string
 .PP
 Default: \[lq]:\[rq]
 .RE
+.TP
+.B \f[B]separator\f[R]
+The separator shown between your USERNAME\[at]HOSTNAME message.
+.RS
 .PP
-\f[B]separator\f[R] :The separator shown between your
-USERNAME\[at]HOSTNAME message
-.IP
-.nf
-\f[C]
 Type: string
-
-Default: \[dq]\-\[dq]
-\f[R]
-.fi
+.PP
+Default: \[lq]\-\[rq]
+.RE
+.TP
+.B \f[B]colors_icon\f[R]
+The terminal colors icon, this option overrides colors_style.
+.RS
+.PP
+Type: string
+.PP
+Default: \[dq]\[dq]
+.RE
 .TP
 .B \f[B]colors_style\f[R]
 The terminal colors style.
 .RS
+.PP
+Type: string
 .PP
 Available styles:
 .IP \[bu] 2
 classic
 .IP \[bu] 2
 circles
+.IP \[bu] 2
+ghosts (requires a patched font like nerd fonts)
 .PP
 Default: \[lq]classic\[rq]
 .RE
