@@ -127,6 +127,8 @@ void init_options(void) {
     // Create a new subtable in the "options" table
     set_table_subtable("enabled_fields");
     // Assign "options.enabled_fields" values
+    set_subtable_string("enabled_fields", "User");
+    set_subtable_string("enabled_fields", "Separator");
     set_subtable_string("enabled_fields", "OS");
     set_subtable_string("enabled_fields", "Kernel");
     set_subtable_string("enabled_fields", "Uptime");
