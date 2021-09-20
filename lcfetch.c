@@ -599,16 +599,16 @@ void print_info() {
     bool is_custom_logo = false;
     struct custom_logo custom_ascii_logo = get_custom_logo();
     if (custom_ascii_logo.cols > 0) {
-        logo = custom_ascii_logo.arr;
+        memmove(logo, custom_ascii_logo.arr, BUF_SIZE);
         logo_rows = custom_ascii_logo.cols;
         is_custom_logo = true;
+        xfree(custom_ascii_logo.arr);
     }
 
     // Get the amount of enabled information fields
     int enabled_fields = get_table_size("enabled_fields");
     if (display_logo) {
         // Get the logo length, substracting the ANSI escapes length
-        // NOTE: this should be refactored once we manage to dynamically change the logo (maybe)
         int logo_length = is_custom_logo ? custom_ascii_logo.rows : (strlen(logo[0]) - strlen("\e[1;00m"));
         // Get the gap that should be between the logo and the information
         int gap_size = get_option_number("gap");

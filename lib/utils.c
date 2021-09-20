@@ -79,6 +79,38 @@ char *remove_substr(char *str, const char *sub) {
     return str;
 }
 
+char *replace_string(char *str, char *pattern, char *new_pattern) {
+    char *new_str;
+    int i = 0, count = 0;
+    int pattern_len = strlen(pattern);
+    int new_pattern_len = strlen(new_pattern);
+
+    // Count the number of times old pattern occurs in the string
+    for (i = 0; str[i] != '\0'; i++) {
+        if (strstr(&str[i], pattern) == &str[i]) {
+            count++;
+
+            i += pattern_len - 1;
+        }
+    }
+    new_str = xmalloc(i + count * (new_pattern_len - pattern_len) + 1);
+
+    i = 0;
+    while (*str) {
+        // Compare the substrings with our result
+        if (strstr(str, pattern) == str) {
+            strcpy(&new_str[i], new_pattern);
+            i += new_pattern_len;
+            str += pattern_len;
+        } else {
+            new_str[i++] = *str++;
+        }
+    }
+
+    new_str[i] = '\0';
+    return new_str;
+}
+
 char *str_to_lower(char *str) {
     for (char *c = str; *c; c++) {
         *c = tolower(*c);
@@ -181,15 +213,42 @@ char *get_custom_accent(char *color) {
 }
 
 custom_ascii_logo get_custom_logo() {
+    // NOTE: the current colors implementation is very tricky, should have a refactor later
+    char *colors[] = {"black", "red", "green", "yellow", "blue", "purple", "cyan", "white"};
+    bool has_accent = false;
+    const char *custom_accent_color = get_option_string("accent_color");
+
     custom_ascii_logo logo;
     int custom_logo_size = get_table_size("custom_ascii_logo");
     if (custom_logo_size > 0) {
         logo.cols = custom_logo_size;
         logo.arr = (char **)xmalloc(BUF_SIZE * logo.cols);
         for (int i = 1; i <= custom_logo_size; i++) {
-            logo.arr[i - 1] = (char *)get_subtable_string("custom_ascii_logo", i);
+            char *logo_line = (char *)get_subtable_string("custom_ascii_logo", i);
+            if (strlen(custom_accent_color) > 0) {
+                char *accent_color = get_custom_accent((char *)custom_accent_color);
+                char *logo_line_fmt = xmalloc(BUF_SIZE);
+                snprintf(logo_line_fmt, BUF_SIZE, "%s%s", accent_color, logo_line);
+                logo.arr[i - 1] = logo_line_fmt;
+                xfree(accent_color);
+                has_accent = true;
+            } else {
+                // Iterate over all possible colors and replace them
+                for (int j = 0; j < LEN(colors); j++) {
+                    char *accent_color = get_custom_accent(colors[j]);
+                    char *logo_line_fmt = replace_string(logo_line, colors[j], accent_color);
+                    logo.arr[i - 1] = logo_line_fmt;
+                    unsigned long logo_fmt_len = strlen(logo_line_fmt);
+                    xfree(accent_color);
+                    if (strlen(logo_line) != logo_fmt_len) {
+                        has_accent = true;
+                        break;
+                    }
+                }
+            }
         }
         logo.rows = utf8len(logo.arr[0]);
+        logo.rows -= has_accent ? strlen("\e[0;00m") : 0;
         return logo;
     }
 
