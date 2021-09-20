@@ -56,7 +56,7 @@ jobs:
 
       - name: Setup Release information
         run: |
-          versionName=`sed '13q;d' ./workspace/include/lcfetch.h | cut -d "\"" -f2 | xargs`
+          versionName=`sed '16q;d' ./workspace/include/lcfetch.h | cut -d "\"" -f2 | xargs`
           export VERSION_NAME=$versionName
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
