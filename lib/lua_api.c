@@ -201,7 +201,7 @@ bool get_option_boolean(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     bool_opt = lua_toboolean(lua, -1);
-    lua_pop(lua, 2);
+    lua_pop(lua, -1);
 
     return bool_opt;
 }
@@ -215,7 +215,7 @@ const char *get_option_string(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     str = lua_tostring(lua, -1);
-    lua_pop(lua, 2);
+    lua_pop(lua, -1);
 
     return str;
 }
@@ -229,7 +229,7 @@ lua_Number get_option_number(const char *opt) {
     lua_getglobal(lua, "options");
     lua_getfield(lua, -1, opt);
     number = lua_tonumber(lua, -1);
-    lua_pop(lua, 2);
+    lua_pop(lua, -1);
 
     return number;
 }

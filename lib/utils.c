@@ -79,7 +79,7 @@ char *str_to_lower(char *str) {
 
 char **get_distro_logo(char *distro) {
     char **logo;
-    if (strstr(distro, "fedora") == 0) {
+    if (strstr(distro, "fedora")) {
         logo = fedora;
     } else if (strcasecmp(distro, "gentoo") == 0) {
         logo = gentoo;
@@ -87,7 +87,7 @@ char **get_distro_logo(char *distro) {
         logo = arch;
     } else if (strcasecmp(distro, "debian") == 0) {
         logo = debian;
-    } else if (strstr(distro, "ubuntu") == 0) {
+    } else if (strstr(distro, "ubuntu")) {
         logo = ubuntu;
     } else if (strcasecmp(distro, "nixos") == 0) {
         logo = nixos;
@@ -99,7 +99,7 @@ char **get_distro_logo(char *distro) {
 
 int get_distro_logo_rows(char *distro) {
     int rows;
-    if (strstr(distro, "fedora") == 0) {
+    if (strstr(distro, "fedora")) {
         rows = LEN(fedora);
     } else if (strcasecmp(distro, "gentoo") == 0) {
         rows = LEN(gentoo);
@@ -107,7 +107,7 @@ int get_distro_logo_rows(char *distro) {
         rows = LEN(arch);
     } else if (strcasecmp(distro, "debian") == 0) {
         rows = LEN(debian);
-    } else if (strstr(distro, "ubuntu") == 0) {
+    } else if (strstr(distro, "ubuntu")) {
         rows = LEN(ubuntu);
     } else if (strcasecmp(distro, "nixos") == 0) {
         rows = LEN(nixos);
@@ -119,7 +119,7 @@ int get_distro_logo_rows(char *distro) {
 
 char *get_distro_accent(char *distro) {
     char *accent_color = xmalloc(BUF_SIZE);
-    if (strstr(distro, "fedora") == 0) {
+    if (strstr(distro, "fedora")) {
         strncpy(accent_color, fedora_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "gentoo") == 0) {
         strncpy(accent_color, gentoo_accent, BUF_SIZE);
@@ -127,7 +127,7 @@ char *get_distro_accent(char *distro) {
         strncpy(accent_color, arch_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "debian") == 0) {
         strncpy(accent_color, debian_accent, BUF_SIZE);
-    } else if (strstr(distro, "ubuntu") == 0) {
+    } else if (strstr(distro, "ubuntu")) {
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "nixos") == 0) {
         strncpy(accent_color, nixos_accent, BUF_SIZE);
@@ -168,6 +168,24 @@ char *get_custom_accent(char *color) {
         strncpy(accent_color, "\e[1;37m", BUF_SIZE);
     }
     return accent_color;
+}
+
+void print_colors(char *logo_part, char *next_logo_part, char *gap_logo, char *gap_info) {
+    char *dark_colors = get_colors_dark();
+    char *bright_colors = get_colors_bright();
+    // if we should add padding instead of the next distro logo line
+    if ((strlen(logo_part) == 0) || (strlen(logo_part) - strlen("\e[1;00m") == 0)) {
+        printf("%s%s%s\n", gap_logo, gap_info, dark_colors);
+    } else {
+        printf("%s%s%s\n", logo_part, gap_info, dark_colors);
+    }
+    if ((strlen(next_logo_part) == 0) || (strlen(next_logo_part) - strlen("\e[1;00m") == 0)) {
+        printf("%s%s%s\n", gap_logo, gap_info, bright_colors);
+    } else {
+        printf("%s%s%s\n", next_logo_part, gap_info, bright_colors);
+    }
+    xfree(dark_colors);
+    xfree(bright_colors);
 }
 
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {

@@ -567,9 +567,11 @@ void print_info() {
     if (strlen(custom_distro_logo) > 0) {
         logo = get_distro_logo((char *)custom_distro_logo);
         logo_rows = get_distro_logo_rows((char *)custom_distro_logo);
+        xfree(accent_color);
         accent_color = get_distro_accent((char *)custom_distro_logo);
     }
     if (strlen(custom_accent_color) > 0) {
+        xfree(accent_color);
         accent_color = get_custom_accent((char *)custom_accent_color);
     }
     xfree(current_distro);
@@ -601,42 +603,28 @@ void print_info() {
 
                 const char *field = get_subtable_string("enabled_fields", i + 1);
                 if (strcasecmp(field, "Colors") == 0) {
-                    char *dark_colors = get_colors_dark();
-                    char *bright_colors = get_colors_bright();
-                    printf("%s%s%s\n", logo[i], gap_logo_info, dark_colors);
-                    printf("%s%s%s\n", logo[i + 1], gap_logo_info, bright_colors);
-                    xfree(dark_colors);
-                    xfree(bright_colors);
+                    print_colors(logo[i], logo[i + 1], gap_logo, gap_logo_info);
                     i++;
-                } else {
+                } else if (strcmp(field, "") == 0) {
                     // If we should draw an empty line as a separator
-                    if (strcmp(field, "") == 0) {
-                        printf("%s%s\n", logo[i], "\e[0m");
-                    } else {
-                        print_field(logo[i], gap_logo_info, delimiter, accent_color, field);
-                    }
+                    printf("%s%s\n", logo[i], "\e[0m");
+                } else {
+                    print_field(logo[i], gap_logo_info, delimiter, accent_color, field);
                 }
             }
         }
         // If there's still information that needs to be rendered then let's render them
         // leaving a padding from the logo
-        if (displayed_info < enabled_fields) {
+        if (displayed_info < enabled_fields + 2) {
             for (int i = displayed_info + 1; i <= enabled_fields; i++) {
                 const char *field = get_subtable_string("enabled_fields", i);
                 if (strcasecmp(field, "colors") == 0) {
-                    char *dark_colors = get_colors_dark();
-                    char *bright_colors = get_colors_bright();
-                    printf("%s%s%s\n", gap_logo, gap_logo_info, dark_colors);
-                    printf("%s%s%s\n", gap_logo, gap_logo_info, bright_colors);
-                    xfree(dark_colors);
-                    xfree(bright_colors);
-                } else {
+                    print_colors("", "", gap_logo, gap_logo_info);
+                } else if (strcmp(field, "") == 0) {
                     // If we should draw an empty line as a separator
-                    if (strcmp(field, "") == 0) {
-                        printf("%s\n", gap_logo);
-                    } else {
-                        print_field(gap_logo, gap_logo_info, delimiter, accent_color, field);
-                    }
+                    printf("%s\n", gap_logo);
+                } else {
+                    print_field(gap_logo, gap_logo_info, delimiter, accent_color, field);
                 }
             }
         }
@@ -660,12 +648,7 @@ void print_info() {
         for (int i = 1; i <= enabled_fields; i++) {
             const char *field = get_subtable_string("enabled_fields", i);
             if (strcasecmp(field, "colors") == 0) {
-                char *dark_colors = get_colors_dark();
-                char *bright_colors = get_colors_bright();
-                printf("%s%s\n", gap_term_info, dark_colors);
-                printf("%s%s\n", gap_term_info, bright_colors);
-                xfree(dark_colors);
-                xfree(bright_colors);
+                print_colors("", "", gap_term_info, "");
             } else {
                 // If we should draw an empty line as a separator
                 if (strcmp(field, "") == 0) {
