@@ -192,7 +192,7 @@ custom_ascii_logo get_custom_logo() {
         logo.rows = utf8len(logo.arr[0]);
         return logo;
     }
-    
+
     logo.cols = logo.rows = 0;
     return logo;
 }
