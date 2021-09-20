@@ -63,6 +63,8 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     Available (working) fields:
 
     - "" (empty string) -> newline
+    - User (JohnDoe@myhost)
+    - Separator
     - OS
     - Kernel
     - Uptime

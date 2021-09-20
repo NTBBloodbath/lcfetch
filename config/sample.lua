@@ -7,6 +7,8 @@
 -- Enabled information fields, the data that will be printed
 -- Available (working) fields:
 --   * "" (empty string) -> newline
+--   * User (JohnDoe@myhost)
+--   * Separator
 --   * OS
 --   * Kernel
 --   * Uptime
@@ -21,6 +23,8 @@
 --
 -- NOTE: fields are case-insensitive
 options.enabled_fields = {
+  "User",
+  "Separator",
   "OS",
   "Kernel",
   "Uptime",

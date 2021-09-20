@@ -1,6 +1,7 @@
 #include "../include/lcfetch.h"
 #include "../third-party/log.c/src/log.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -172,6 +173,10 @@ char *get_custom_accent(char *color) {
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name) {
     // NOTE: colors field requires a special treatment so we don't use print_info on it
 
+    // User information requires a special treatment
+    bool is_user_title = false;
+    bool is_separator = false;
+
     char *message = xmalloc(BUF_SIZE);
     // Set the function that will be used for getting the field value
     char *field_function = NULL;
@@ -198,6 +203,12 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
         field_function = get_cpu();
     } else if (strcasecmp(field_name, "memory") == 0) {
         field_function = get_memory();
+    } else if (strcasecmp(field_name, "user") == 0) {
+        field_function = get_title(accent);
+        is_user_title = true;
+    } else if (strcasecmp(field_name, "separator") == 0) {
+        field_function = get_separator();
+        is_separator = true;
     } else {
         log_error("Field '%s' doesn't exists", field_name);
         xfree(field_message);
@@ -206,7 +217,11 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
     }
     snprintf(field_message, BUF_SIZE, "%s_message", str_to_lower((char *)field_name));
     snprintf(field_message, BUF_SIZE, "%s", get_option_string(field_message));
-    snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, field_function);
+    if (is_user_title || is_separator) {
+        snprintf(message, BUF_SIZE, "%s%s", "\e[0m", field_function);
+    } else {
+        snprintf(message, BUF_SIZE, "%s%s%s %s", field_message, "\e[0m", delimiter, field_function);
+    }
     xfree(field_message);
 
     if ((strcasecmp(field_name, "kernel") != 0)) {
@@ -216,9 +231,17 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
     // Print field information
     if (logo_part == NULL) {
         // When using minimal mode (without displaying logo)
-        printf("%s%s%s\n", gap, accent, message);
+        if (is_user_title) {
+            printf("%s%s%s", gap, accent, message);
+        } else {
+            printf("%s%s%s\n", gap, accent, message);
+        }
     } else {
-        printf("%s%s%s%s\n", logo_part, gap, accent, message);
+        if (is_user_title) {
+            printf("%s%s%s%s", logo_part, gap, accent, message);
+        } else {
+            printf("%s%s%s%s\n", logo_part, gap, accent, message);
+        }
     }
     xfree(message);
 }
