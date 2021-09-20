@@ -99,6 +99,7 @@ void init_options(void) {
     // Set the default basic types options (strings, numbers, booleans)
     set_table_string("accent_color", "");
     set_table_string("ascii_distro", "");
+    set_table_string("colors_icon", "");
     set_table_string("colors_style", "classic");
     set_table_string("delimiter", ":");
     set_table_string("separator", "-");

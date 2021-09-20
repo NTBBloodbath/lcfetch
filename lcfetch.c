@@ -512,14 +512,24 @@ char *get_colors_dark() {
     char *dark_colors = xmalloc(BUF_SIZE);
     char *str = dark_colors;
     const char *colors_style = get_option_string("colors_style");
+    const char *colors_icon = get_option_string("colors_icon");
 
     for (int i = 0; i < 8; i++) {
-        if (strcasecmp(colors_style, "circles") == 0) {
-            sprintf(str, "\e[3%dm⬤  ", i);
-            str += 10;
-        } else if (strcasecmp(colors_style, "classic") == 0) {
-            sprintf(str, "\e[4%dm   ", i);
-            str += 8;
+        if (strlen(colors_icon) > 0) {
+            int color_message_len = snprintf(NULL, 0, "\e[30m%s", colors_icon);
+            sprintf(str, "\e[3%dm%s", i, colors_icon);
+            str += color_message_len;
+        } else {
+            if (strcasecmp(colors_style, "circles") == 0) {
+                sprintf(str, "\e[3%dm⬤  ", i);
+                str += 10;
+            } else if (strcasecmp(colors_style, "ghosts") == 0) {
+                sprintf(str, "\e[3%dm   ", i);
+                str += 11;
+            } else if (strcasecmp(colors_style, "classic") == 0) {
+                sprintf(str, "\e[4%dm   ", i);
+                str += 8;
+            }
         }
     }
     snprintf(str, 5, "\e[0m");
@@ -531,14 +541,24 @@ char *get_colors_bright() {
     char *bright_colors = xmalloc(BUF_SIZE);
     char *str = bright_colors;
     const char *colors_style = get_option_string("colors_style");
+    const char *colors_icon = get_option_string("colors_icon");
 
     for (int i = 8; i < 16; i++) {
-        if (strcasecmp(colors_style, "circles") == 0) {
-            sprintf(str, "\e[38;5;%dm⬤  ", i);
-            str += 14 + (i >= 10 ? 1 : 0);
-        } else if (strcasecmp(colors_style, "classic") == 0) {
-            sprintf(str, "\e[48;5;%dm   ", i);
-            str += 12 + (i >= 10 ? 1 : 0);
+        if (strlen(colors_icon) > 0) {
+            int color_message_len = snprintf(NULL, 0, "\e[38;5;0m%s", colors_icon);
+            sprintf(str, "\e[38;5;%dm%s", i, colors_icon);
+            str += color_message_len + (i >= 10 ? 1 : 0);
+        } else {
+            if (strcasecmp(colors_style, "circles") == 0) {
+                sprintf(str, "\e[38;5;%dm⬤  ", i);
+                str += 14 + (i >= 10 ? 1 : 0);
+            } else if (strcasecmp(colors_style, "ghosts") == 0) {
+                sprintf(str, "\e[38;5;%dm   ", i);
+                str += 15 + (i >= 10 ? 1 : 0);
+            } else if (strcasecmp(colors_style, "classic") == 0) {
+                sprintf(str, "\e[48;5;%dm   ", i);
+                str += 12 + (i >= 10 ? 1 : 0);
+            }
         }
     }
     snprintf(str, 5, "\e[0m");

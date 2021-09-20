@@ -150,26 +150,36 @@ The **lcfetch** configurations resides under `~/.config/lcfetch` directory and a
     Default: "Memory"
 
 **delimiter**
-: The delimiter shown between the field message and the information
+: The delimiter shown between the field message and the information.
 
     Type: string
 
     Default: ":"
 
 **separator**
-:The separator shown between your USERNAME@HOSTNAME message 
+: The separator shown between your USERNAME@HOSTNAME message.
 
     Type: string
 
     Default: "-"
 
+**colors_icon**
+: The terminal colors icon, this option overrides colors_style.
+
+    Type: string
+
+    Default: ""
+
 **colors_style**
 : The terminal colors style.
+
+    Type: string
 
     Available styles:
 
     - classic
     - circles
+    - ghosts (requires a patched font like nerd fonts)
 
     Default: "classic"
 

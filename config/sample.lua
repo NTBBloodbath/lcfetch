@@ -75,10 +75,17 @@ options.delimiter = ":"
 -- NOTE: default is "-"
 options.separator = "-"
 
+-- The terminal colors icon, this option overrides colors_style
+-- in order to use your own icon for the color palette
+--
+-- NOTE: default is ""
+options.colors_icon = ""
+
 -- The terminal colors style
 -- Available styles:
 --   * classic
 --   * circles
+--   * ghosts (requires a patched font like nerd fonts)
 --
 -- NOTE: default is "classic"
 options.colors_style = "classic"
