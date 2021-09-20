@@ -13,7 +13,7 @@
 #define LCFETCH_H
 
 /* lcfetch version */
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 /* copyright notice */
 #define COPYRIGHT                                                                                                      \
@@ -63,6 +63,7 @@ char **get_distro_logo(char *distro);
 int get_distro_logo_rows(char *distro);
 char *get_distro_accent(char *distro);
 char *get_custom_accent(char *color);
+void print_colors(char *logo_part, char *next_logo_part, char *gap_logo, char *gap_info);
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name);
 char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);
 
