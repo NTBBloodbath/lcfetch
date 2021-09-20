@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2021-09-19
+
+### Added
+
+- Support for WM field
+- Support for `separator` configuration option
+- Support for `accent_color` configuration option
+
+### Fixed
+
+- Small bugs on Lua API stack
+- Properly exit on errors (ERROR and FATAL logs) 
+- Proper conditional for Nix packages
+- Proper terminal detection on WSL (only WT at the moment)
+
+### Changed
+
+- Increased buffer size to 256
+- `user@hostname` and `separator` (`----------`) are now fields that can be enabled or disabled in your configurations
+- Use `-Ofast` instead of `-O2` when building to improve performance
+- Use `<stdbool.h>` header for boolean values instead of `0` and `1` (should improve code readability)
+- Refactor printing logic with a faster implementation
+- Use `getenv` for getting the username (fixes issues on WSL)
+- Use `log_fatal` instead of `log_error` when we were unable to open system files
+- Memory field small visual tweaks
+- Changed Ubuntu logo detection
+- Changed Fedora logo detection to also detect incoming F35 changes to `/etc/os-release` file
+
 ## [0.1.0-beta6] - 2021-08-25
 
 ### Added
@@ -98,7 +126,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta6...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta6..v0.1.0
 [0.1.0-beta6]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta5..v0.1.0-beta6
 [0.1.0-beta5]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4..v0.1.0-beta5
 [0.1.0-beta4]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta3..v0.1.0-beta4
