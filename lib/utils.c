@@ -79,15 +79,15 @@ char *str_to_lower(char *str) {
 
 char **get_distro_logo(char *distro) {
     char **logo;
-    if (strstr(distro, "fedora")) {
+    if ((strcasecmp(distro, "fedora") == 0) || (strstr(distro, "Fedora"))) {
         logo = fedora;
     } else if (strcasecmp(distro, "gentoo") == 0) {
         logo = gentoo;
-    } else if (strstr(distro, "Arch")) {
+    } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         logo = arch;
     } else if (strcasecmp(distro, "debian") == 0) {
         logo = debian;
-    } else if (strstr(distro, "ubuntu")) {
+    } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         logo = ubuntu;
     } else if (strcasecmp(distro, "nixos") == 0) {
         logo = nixos;
@@ -99,15 +99,15 @@ char **get_distro_logo(char *distro) {
 
 int get_distro_logo_rows(char *distro) {
     int rows;
-    if (strstr(distro, "fedora")) {
+    if ((strcasecmp(distro, "fedora") == 0) || (strstr(distro, "Fedora"))) {
         rows = LEN(fedora);
     } else if (strcasecmp(distro, "gentoo") == 0) {
         rows = LEN(gentoo);
-    } else if (strstr(distro, "Arch")) {
+    } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         rows = LEN(arch);
     } else if (strcasecmp(distro, "debian") == 0) {
         rows = LEN(debian);
-    } else if (strstr(distro, "ubuntu")) {
+    } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         rows = LEN(ubuntu);
     } else if (strcasecmp(distro, "nixos") == 0) {
         rows = LEN(nixos);
@@ -119,15 +119,15 @@ int get_distro_logo_rows(char *distro) {
 
 char *get_distro_accent(char *distro) {
     char *accent_color = xmalloc(BUF_SIZE);
-    if (strstr(distro, "fedora")) {
+    if ((strcasecmp(distro, "fedora") == 0) || (strstr(distro, "Fedora"))) {
         strncpy(accent_color, fedora_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "gentoo") == 0) {
         strncpy(accent_color, gentoo_accent, BUF_SIZE);
-    } else if (strstr(distro, "Arch")) {
+    } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         strncpy(accent_color, arch_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "debian") == 0) {
         strncpy(accent_color, debian_accent, BUF_SIZE);
-    } else if (strstr(distro, "ubuntu")) {
+    } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "nixos") == 0) {
         strncpy(accent_color, nixos_accent, BUF_SIZE);
