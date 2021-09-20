@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2021-09-19
+
+### Added
+
+- Add `print_colors` function to handle colors field
+
+### Changed
+
+- Small Lua API stack changes
+
+### Fixed
+
+- Properly detect some logos with `strstr`
+
 ## [0.1.0] - 2021-09-19
 
 ### Added
@@ -13,13 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for WM field
 - Support for `separator` configuration option
 - Support for `accent_color` configuration option
-
-### Fixed
-
-- Small bugs on Lua API stack
-- Properly exit on errors (ERROR and FATAL logs) 
-- Proper conditional for Nix packages
-- Proper terminal detection on WSL (only WT at the moment)
 
 ### Changed
 
@@ -33,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Memory field small visual tweaks
 - Changed Ubuntu logo detection
 - Changed Fedora logo detection to also detect incoming F35 changes to `/etc/os-release` file
+
+### Fixed
+
+- Small bugs on Lua API stack
+- Properly exit on errors (ERROR and FATAL logs) 
+- Proper conditional for Nix packages
+- Proper terminal detection on WSL (only WT at the moment)
 
 ## [0.1.0-beta6] - 2021-08-25
 
@@ -73,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for packages field
 - Option to choose whether showing extra information when printing CPU field
-    or keep it short
+  or keep it short
 
 ### Changed
 
@@ -126,7 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0..v0.1.1
 [0.1.0]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta6..v0.1.0
 [0.1.0-beta6]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta5..v0.1.0-beta6
 [0.1.0-beta5]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta4..v0.1.0-beta5
