@@ -27,6 +27,13 @@
     "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "                                                   \
     "GNU General Public License for more details.\n"
 
+/* Structures and types */
+typedef struct custom_logo {
+    size_t cols;
+    size_t rows;
+    char **arr;
+} custom_ascii_logo;
+
 /* lcfetch.c */
 #define BUF_SIZE 256
 #define COUNT(x) (int)(sizeof x / sizeof *x)
@@ -63,6 +70,7 @@ char **get_distro_logo(char *distro);
 int get_distro_logo_rows(char *distro);
 char *get_distro_accent(char *distro);
 char *get_custom_accent(char *color);
+custom_ascii_logo get_custom_logo();
 void print_colors(char *logo_part, char *next_logo_part, char *gap_logo, char *gap_info);
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name);
 char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);

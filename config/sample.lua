@@ -104,6 +104,11 @@ options.colors_style = "classic"
 -- NOTE: by default is the ASCII distro accent color. Colors are case-insensitive
 options.accent_color = ""
 
+-- Custom ASCII logo to be printed
+--
+-- NOTE: by default is an empty table (array)
+options.custom_ascii_logo = {}
+
 -- ASCII distro logo to be printed
 -- Available logos:
 --   * tux

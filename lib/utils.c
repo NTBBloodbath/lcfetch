@@ -15,6 +15,16 @@
 #include "../include/logos/nixos.h"
 #include "../include/logos/ubuntu.h"
 
+size_t utf8len(char *s) {
+    size_t len = 0;
+    for (; *s; s++) {
+        if ((*s & 0xC0) != 0x80) {
+            len++;
+        }
+    }
+    return len;
+}
+
 char *repeat_string(char *str, int times) {
     if (times < 1) {
         return str;
@@ -168,6 +178,23 @@ char *get_custom_accent(char *color) {
         strncpy(accent_color, "\e[1;37m", BUF_SIZE);
     }
     return accent_color;
+}
+
+custom_ascii_logo get_custom_logo() {
+    custom_ascii_logo logo;
+    int custom_logo_size = get_table_size("custom_ascii_logo");
+    if (custom_logo_size > 0) {
+        logo.cols = custom_logo_size;
+        logo.arr = (char **)xmalloc(BUF_SIZE * logo.cols);
+        for (int i = 1; i <= custom_logo_size; i++) {
+            logo.arr[i - 1] = (char *)get_subtable_string("custom_ascii_logo", i);
+        }
+        logo.rows = utf8len(logo.arr[0]);
+        return logo;
+    }
+    
+    logo.cols = logo.rows = 0;
+    return logo;
 }
 
 void print_colors(char *logo_part, char *next_logo_part, char *gap_logo, char *gap_info) {
