@@ -72,6 +72,11 @@ build: _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/me
 	strip --strip-unneeded $(BIN_DIR)/lcfetch
 
 
+dev: _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memory.c $(LIB_DIR)/utils.c $(INC_DIR)/lcfetch.h
+	@echo -e "$(LOG_INFO) Building lcfetch.c for debugging purposes ..."
+	$(CC) lcfetch.c $(LIB_DIR)/*.c $(TP_DIR)/log.c/src/log.c $(CFLAGS) -g3 $(LDFLAGS) -o $(BIN_DIR)/lcfetch -Wl,-E -DLOG_USE_COLOR
+
+
 install: build
 	@echo -e "\n$(LOG_INFO) Installing lcfetch under $(PREFIX)/bin directory ..."
 	mkdir -p $(PREFIX)/bin $(PREFIX)/share/man/man1 $(CONFIG_DIR)
