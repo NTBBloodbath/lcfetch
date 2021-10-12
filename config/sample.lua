@@ -118,7 +118,8 @@ options.custom_ascii_logo = {}
 --   * gentoo
 --   * debian
 --   * ubuntu
---
+--   * manjaro
+-- 
 -- NOTE: by default the ASCII distro logo is automatically detected
 options.ascii_distro = ""
 
