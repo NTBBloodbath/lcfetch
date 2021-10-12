@@ -1,15 +1,15 @@
 #include "../include/lcfetch.h"
 #include "../third-party/log.c/src/log.h"
 #include <ctype.h>
+#include <dirent.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <dirent.h>
 /* ASCII logos */
-#include "../include/logos/arch.h"
 #include "../include/logos/android.h"
+#include "../include/logos/arch.h"
 #include "../include/logos/debian.h"
 #include "../include/logos/fedora.h"
 #include "../include/logos/gentoo.h"
@@ -127,7 +127,7 @@ bool is_android_device() {
     if (sys_app && sys_priv_app) {
         closedir(sys_app);
         closedir(sys_priv_app);
-        
+
         return true;
     }
 

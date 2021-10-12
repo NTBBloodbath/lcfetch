@@ -32,7 +32,7 @@ char *get_title(char *accent_color) {
 
     // char *username = getenv("USERNAME");
     char username[BUF_SIZE / 3];
-    getlogin_r(username,  BUF_SIZE / 3);
+    getlogin_r(username, BUF_SIZE / 3);
 
     // Calculate the length of hostname + @ + username
     title_length = strlen(hostname) + strlen(username) + 1;
@@ -473,7 +473,8 @@ char *get_cpu() {
     }
 
     // e.g. Intel i5 760 (4) @ 2.8GHz
-    snprintf(cpu, BUF_SIZE, "%s (%d) @ %.*f%s", strlen(cpu_model) > 1 ? cpu_model : "", num_cores, prec, freq, freq_unit);
+    snprintf(cpu, BUF_SIZE, "%s (%d) @ %.*f%s", strlen(cpu_model) > 1 ? cpu_model : "", num_cores, prec, freq,
+             freq_unit);
     xfree(cpu_model);
 
     // Remove unneeded information
