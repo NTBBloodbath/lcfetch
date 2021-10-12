@@ -79,7 +79,7 @@ dev: _clone_deps lcfetch.c $(LIB_DIR)/lua_api.c $(LIB_DIR)/cli.c $(LIB_DIR)/memo
 
 valgrind: dev
 	@echo -e "$(LOG_INFO) Running valgrind on lcfetch binary ..."
-	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --show-error-list=yes $(BIN_DIR)/lcfetch
+	valgrind --track-origins=yes --leak-check=full $(BIN_DIR)/lcfetch
 
 
 install: build
