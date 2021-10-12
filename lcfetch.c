@@ -415,6 +415,7 @@ char *get_cpu() {
     xfree(line);
 
     // CPU MODEL
+    line = NULL;
     FILE *cpu_model_f = fopen("/proc/cpuinfo", "r");
     if (cpu_model_f == NULL) {
         log_fatal("Unable to open /proc/cpuinfo");
