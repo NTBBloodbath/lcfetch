@@ -16,6 +16,7 @@
 #include "../include/logos/linux.h"
 #include "../include/logos/nixos.h"
 #include "../include/logos/ubuntu.h"
+#include "../include/logos/manjaro.h"
 
 size_t utf8len(char *s) {
     size_t len = 0;
@@ -148,6 +149,8 @@ char **get_distro_logo(char *distro) {
         logo = ubuntu;
     } else if (strcasecmp(distro, "nixos") == 0) {
         logo = nixos;
+    } else if ((strcasecmp(distro, "manjaro") == 0) || (strstr(distro, "Manjaro"))) { 
+        logo = manjaro;
     } else if (is_android_device()) {
         logo = android;
     } else {
@@ -170,6 +173,8 @@ int get_distro_logo_rows(char *distro) {
         rows = LEN(ubuntu);
     } else if (strcasecmp(distro, "nixos") == 0) {
         rows = LEN(nixos);
+    } else if ((strcasecmp(distro, "manjaro") == 0) || (strstr(distro, "Manjaro"))) { 
+        rows = LEN(manjaro);
     } else if (is_android_device()) {
         rows = LEN(android);
     } else {
@@ -192,6 +197,8 @@ char *get_distro_accent(char *distro) {
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "nixos") == 0) {
         strncpy(accent_color, nixos_accent, BUF_SIZE);
+    } else if ((strcasecmp(distro, "manjaro") == 0) || (strstr(distro, "Manjaro"))) { 
+        strncpy(accent_color, manjaro_accent, BUF_SIZE);
     } else if (is_android_device()) {
         strncpy(accent_color, android_accent, BUF_SIZE);
     } else {
@@ -415,3 +422,4 @@ char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name
     XFree(ret_prop);
     return ret;
 }
+
