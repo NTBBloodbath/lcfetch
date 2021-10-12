@@ -30,7 +30,9 @@ char *get_title(char *accent_color) {
     char hostname[BUF_SIZE / 3];
     gethostname(hostname, BUF_SIZE / 3);
 
-    char *username = getenv("USER");
+    // char *username = getenv("USERNAME");
+    char username[BUF_SIZE / 3];
+    getlogin_r(username,  BUF_SIZE / 3);
 
     // Calculate the length of hostname + @ + username
     title_length = strlen(hostname) + strlen(username) + 1;
@@ -52,6 +54,17 @@ char *get_os(bool return_pretty_name) {
     char *line = NULL;
     bool show_arch = get_option_boolean("show_arch");
     size_t len;
+
+    // Android detection
+    if (is_android_device()) {
+        int android_version;
+        FILE *android_version_prop = popen("getprop ro.build.version.release", "r");
+        fscanf(android_version_prop, "%d", &android_version);
+        snprintf(os, BUF_SIZE, "%s %d", "Android", android_version);
+        xfree(name);
+
+        return os;
+    }
 
     FILE *os_release = fopen("/etc/os-release", "r");
     if (os_release == NULL) {
@@ -143,10 +156,6 @@ char *get_wm() {
         XFree(top_win);
     }
 
-    if (wm_name == NULL) {
-        snprintf(wm_name, BUF_SIZE, "lcfetch was not able to recognize your window manager");
-    }
-
     return wm_name;
 }
 
@@ -164,9 +173,9 @@ char *get_resolution() {
             snprintf(res + strlen(res), BUF_SIZE, " @ %dHz", XRRConfigCurrentRate(conf));
         }
     } else {
-        // If we were unable to detect the screen resolution then send an error message
-        // in the information field
-        snprintf(res, BUF_SIZE, "lcfetch was not able to recognize your screen resolution");
+        // If we were unable to detect the screen resolution then return NULL
+        xfree(res);
+        return NULL;
     }
 
     return res;
@@ -221,6 +230,8 @@ char *get_terminal() {
             // In TTY, $TERM is simply returned as "linux" so we get the actual TTY name
             if (strcmp(environment_term, "linux") == 0) {
                 strncpy(terminal, ttyname(STDIN_FILENO), BUF_SIZE);
+            } else if (is_android_device()) {
+                strncpy(terminal, "Termux", BUF_SIZE);
             }
         }
     }
@@ -390,15 +401,31 @@ char *get_cpu() {
     char freq_unit[] = "GHz";
     size_t len;
 
-    FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
-    if (cpuinfo == NULL) {
+    // TODO: find a way to get cpu cores and model without duplicating code
+    // CPU CORES
+    FILE *cpu_cores = fopen("/proc/cpuinfo", "r");
+    if (cpu_cores == NULL) {
         log_fatal("Unable to open /proc/cpuinfo");
         exit(1);
     }
-    while (getline(&line, &len, cpuinfo) != -1) {
-        num_cores += sscanf(line, "model name : %[^\n@]", cpu_model);
+    while (getline(&line, &len, cpu_cores) != -1) {
+        num_cores += sscanf(line, "processor : %[^\n@]", cpu_model);
     }
-    fclose(cpuinfo);
+    fclose(cpu_cores);
+    xfree(line);
+
+    // CPU MODEL
+    FILE *cpu_model_f = fopen("/proc/cpuinfo", "r");
+    if (cpu_model_f == NULL) {
+        log_fatal("Unable to open /proc/cpuinfo");
+        exit(1);
+    }
+    while (getline(&line, &len, cpu_model_f) != -1) {
+        if (sscanf(line, "model name : %[^\n@]", cpu_model) > 0) {
+            break;
+        }
+    }
+    fclose(cpu_model_f);
     xfree(line);
 
     line = NULL;
@@ -446,7 +473,7 @@ char *get_cpu() {
     }
 
     // e.g. Intel i5 760 (4) @ 2.8GHz
-    snprintf(cpu, BUF_SIZE, "%s (%d) @ %.*f%s", cpu_model, num_cores, prec, freq, freq_unit);
+    snprintf(cpu, BUF_SIZE, "%s (%d) @ %.*f%s", strlen(cpu_model) > 1 ? cpu_model : "", num_cores, prec, freq, freq_unit);
     xfree(cpu_model);
 
     // Remove unneeded information
@@ -693,7 +720,7 @@ void print_info() {
 int main(int argc, char *argv[]) {
     // Command-line arguments (CLI)
     int c;
-    char *config_file_path;
+    char *config_file_path = NULL;
     while (1) {
         static struct option long_options[] = {
             {"help", no_argument, NULL, 'h'},

@@ -74,6 +74,7 @@ custom_ascii_logo get_custom_logo();
 void print_colors(char *logo_part, char *next_logo_part, char *gap_logo, char *gap_info);
 void print_field(char *logo_part, char *gap, const char *delimiter, char *accent, const char *field_name);
 char *get_property(Display *disp, Window win, Atom xa_prop_type, char *prop_name, unsigned long *size);
+bool is_android_device();
 
 /* lua_api.c */
 void start_lua(const char *config_file_path);

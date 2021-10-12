@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <dirent.h>
 /* ASCII logos */
 #include "../include/logos/arch.h"
+#include "../include/logos/android.h"
 #include "../include/logos/debian.h"
 #include "../include/logos/fedora.h"
 #include "../include/logos/gentoo.h"
@@ -119,6 +121,19 @@ char *str_to_lower(char *str) {
     return str;
 }
 
+bool is_android_device() {
+    DIR *sys_app = opendir("/system/app");
+    DIR *sys_priv_app = opendir("/system/priv-app");
+    if (sys_app && sys_priv_app) {
+        closedir(sys_app);
+        closedir(sys_priv_app);
+        
+        return true;
+    }
+
+    return false;
+}
+
 char **get_distro_logo(char *distro) {
     char **logo;
     if ((strcasecmp(distro, "fedora") == 0) || (strstr(distro, "Fedora"))) {
@@ -133,6 +148,8 @@ char **get_distro_logo(char *distro) {
         logo = ubuntu;
     } else if (strcasecmp(distro, "nixos") == 0) {
         logo = nixos;
+    } else if (is_android_device()) {
+        logo = android;
     } else {
         logo = linux_logo;
     }
@@ -153,6 +170,8 @@ int get_distro_logo_rows(char *distro) {
         rows = LEN(ubuntu);
     } else if (strcasecmp(distro, "nixos") == 0) {
         rows = LEN(nixos);
+    } else if (is_android_device()) {
+        rows = LEN(android);
     } else {
         rows = LEN(linux_logo);
     }
@@ -173,6 +192,8 @@ char *get_distro_accent(char *distro) {
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
     } else if (strcasecmp(distro, "nixos") == 0) {
         strncpy(accent_color, nixos_accent, BUF_SIZE);
+    } else if (is_android_device()) {
+        strncpy(accent_color, android_accent, BUF_SIZE);
     } else {
         strncpy(accent_color, linux_accent, BUF_SIZE);
     }
@@ -328,7 +349,7 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
     }
     xfree(field_message);
 
-    if ((strcasecmp(field_name, "kernel") != 0)) {
+    if ((strcasecmp(field_name, "kernel") != 0) && (field_function != NULL)) {
         xfree(field_function);
     }
 
@@ -338,13 +359,21 @@ void print_field(char *logo_part, char *gap, const char *delimiter, char *accent
         if (is_user_title) {
             printf("%s%s%s", gap, accent, message);
         } else {
-            printf("%s%s%s\n", gap, accent, message);
+            if (field_function != NULL) {
+                printf("%s%s%s\n", gap, accent, message);
+            } else {
+                printf("%s%s\n", gap, accent);
+            }
         }
     } else {
         if (is_user_title) {
             printf("%s%s%s%s", logo_part, gap, accent, message);
         } else {
-            printf("%s%s%s%s\n", logo_part, gap, accent, message);
+            if (field_function != NULL) {
+                printf("%s%s%s%s\n", logo_part, gap, accent, message);
+            } else {
+                printf("%s%s%s\n", logo_part, gap, accent);
+            }
         }
     }
     xfree(message);
