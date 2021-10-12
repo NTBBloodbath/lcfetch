@@ -42,10 +42,16 @@ apt install lua5.3 liblua5.3-dev libx11-dev libxrandr-dev libreadline-dev
 dnf install lua lua-devel libX11-devel libXrandr-devel readline-devel
 ```
 
-#### Arch
+##### Arch
 
 ```sh
 pacman -S lua53 libx11 libxrandr readline
+```
+
+##### Termux
+
+```sh
+apt install lua53 liblua53 libx11 libxrandr readline xorgproto
 ```
 
 > **NOTE**: isn't your distro covered here but you know the exact packages names? Please
@@ -88,6 +94,9 @@ make install
 2. If you're getting errors regarding to `ld` and `-llua` you will need to change the
     `LUA` variable when running `make` to match with your `liblua*.so` file, e.g.
     `LUA=lua5.3` for `liblua5.3.so`.
+
+3. If you're getting an error related to `Xatom.h` header during compilation you will
+     need to install `xorgproto` package (don't know if the package name changes in some distros tho).
 
 ## Usage
 
