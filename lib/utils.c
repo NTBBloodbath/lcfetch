@@ -174,7 +174,7 @@ int get_distro_logo_rows(char *distro) {
     } else if (strcasecmp(distro, "nixos") == 0) {
         rows = LEN(nixos);
     } else if ((strcasecmp(distro, "manjaro") == 0) || (strstr(distro, "Manjaro"))) { 
-        rows = LEN(manjaro);
+        rows = utf8len(manjaro[0]);
     } else if (is_android_device()) {
         rows = LEN(android);
     } else {
