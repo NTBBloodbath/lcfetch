@@ -62,7 +62,11 @@ char *get_os(bool return_pretty_name) {
             int android_version;
             FILE *android_version_prop = popen("getprop ro.build.version.release", "r");
             fscanf(android_version_prop, "%d", &android_version);
-            snprintf(os, BUF_SIZE, "%s %d", "Android", android_version);
+            if (show_arch) {
+                snprintf(os, BUF_SIZE, "%s %d %s", "Android", android_version, os_uname.machine);                
+            } else {
+                snprintf(os, BUF_SIZE, "%s %d", "Android", android_version);
+            }
             xfree(name);
 
             return os;
