@@ -84,10 +84,12 @@ valgrind: dev
 
 install: build
 	@echo -e "\n$(LOG_INFO) Installing lcfetch under $(PREFIX)/bin directory ..."
-	mkdir -p $(PREFIX)/bin $(PREFIX)/share/man/man1 $(CONFIG_DIR)
+	@mkdir -p $(PREFIX)/bin $(PREFIX)/share/man/man1 $(CONFIG_DIR)
 	install $(BIN_DIR)/lcfetch $(PREFIX)/bin/lcfetch
-	cp $(CURDIR)/config/sample.lua $(CONFIG_DIR)/config.lua
-	cp $(CURDIR)/man/lcfetch.1 $(PREFIX)/share/man/man1/lcfetch.1
+	@if [[ ! -f "$(CONFIG_DIR)/config.lua" ]]; then \
+		cp $(CURDIR)/config/sample.lua $(CONFIG_DIR)/config.lua; \
+	fi
+	cp --update $(CURDIR)/man/lcfetch.1 $(PREFIX)/share/man/man1/lcfetch.1
 	mandb -pu
 
 
