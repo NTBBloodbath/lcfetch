@@ -164,7 +164,7 @@ int get_distro_logo_rows(char *distro) {
         rows = LEN(gentoo);
     } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         rows = LEN(arch);
-    } else if (strcasecmp(distro, "debian") == 0) {
+    } else if ((strcasecmp(distro, "debian") == 0) || (strstr(distro, "Debian"))) {
         rows = LEN(debian);
     } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         rows = LEN(ubuntu);
@@ -186,7 +186,7 @@ char *get_distro_accent(char *distro) {
         strncpy(accent_color, gentoo_accent, BUF_SIZE);
     } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         strncpy(accent_color, arch_accent, BUF_SIZE);
-    } else if (strcasecmp(distro, "debian") == 0) {
+    } else if ((strcasecmp(distro, "debian") == 0) || (strstr(distro, "Debian"))) {
         strncpy(accent_color, debian_accent, BUF_SIZE);
     } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         strncpy(accent_color, ubuntu_accent, BUF_SIZE);
