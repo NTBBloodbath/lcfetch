@@ -142,7 +142,7 @@ char **get_distro_logo(char *distro) {
         logo = gentoo;
     } else if ((strcasecmp(distro, "arch") == 0) || (strstr(distro, "Arch"))) {
         logo = arch;
-    } else if (strcasecmp(distro, "debian") == 0) {
+    } else if ((strcasecmp(distro, "debian") == 0) || (strstr(distro, "Debian"))) {
         logo = debian;
     } else if ((strcasecmp(distro, "ubuntu") == 0) || (strstr(distro, "Ubuntu"))) {
         logo = ubuntu;
