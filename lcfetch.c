@@ -55,19 +55,19 @@ char *get_os(bool return_pretty_name) {
     bool show_arch = get_option_boolean("show_arch");
     size_t len;
 
-    // Android detection
-    if (is_android_device()) {
-        int android_version;
-        FILE *android_version_prop = popen("getprop ro.build.version.release", "r");
-        fscanf(android_version_prop, "%d", &android_version);
-        snprintf(os, BUF_SIZE, "%s %d", "Android", android_version);
-        xfree(name);
-
-        return os;
-    }
-
     FILE *os_release = fopen("/etc/os-release", "r");
     if (os_release == NULL) {
+        // Android detection
+        if (is_android_device()) {
+            int android_version;
+            FILE *android_version_prop = popen("getprop ro.build.version.release", "r");
+            fscanf(android_version_prop, "%d", &android_version);
+            snprintf(os, BUF_SIZE, "%s %d", "Android", android_version);
+            xfree(name);
+
+            return os;
+        }
+
         log_fatal("Unable to open /etc/os-release");
         exit(1);
     }
