@@ -62,6 +62,7 @@ char *get_os(bool return_pretty_name) {
             int android_version;
             FILE *android_version_prop = popen("getprop ro.build.version.release", "r");
             fscanf(android_version_prop, "%d", &android_version);
+            pclose(android_version_prop);
             if (show_arch) {
                 snprintf(os, BUF_SIZE, "%s %d %s", "Android", android_version, os_uname.machine);
             } else {
@@ -432,6 +433,14 @@ char *get_cpu() {
     }
     fclose(cpu_model_f);
     xfree(line);
+
+    // Hijack processor name detection in Android devices
+    // without permissive SELinux
+    if ((strlen(cpu_model) < 2) && is_android_device()) {
+        FILE *android_processor_prop = popen("getprop ro.product.board", "r");
+        fscanf(android_processor_prop, "%s", cpu_model);
+        pclose(android_processor_prop);
+    }
 
     line = NULL;
     FILE *cpufreq = fopen("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", "r");
