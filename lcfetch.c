@@ -185,7 +185,6 @@ char *get_shell() {
     char *shell = xmalloc(BUF_SIZE);
     char *shell_path = getenv("SHELL");
     char *shell_name = strrchr(getenv("SHELL"), '/');
-    log_debug("Shell name - %s", shell_name);
 
     // If the shell does not contains a separator in the path, e.g.
     // zsh instead of /usr/bin/zsh then write it directly
