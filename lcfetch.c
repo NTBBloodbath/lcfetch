@@ -436,7 +436,7 @@ char *get_cpu() {
 
     // Hijack processor name detection in Android devices
     // without permissive SELinux
-    if ((strlen(cpu_model) < 2) && is_android_device()) {
+    if ((strlen(cpu_model) < 2) && is_android_device() && (system("which getprop >/dev/null 2>&1") == 0)) {
         FILE *android_processor_prop = popen("getprop ro.product.board", "r");
         fscanf(android_processor_prop, "%s", cpu_model);
         pclose(android_processor_prop);
