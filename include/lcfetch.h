@@ -13,7 +13,7 @@
 #define LCFETCH_H
 
 /* lcfetch version */
-#define VERSION "0.1.2"
+#define VERSION "0.2.0"
 
 /* copyright notice */
 #define COPYRIGHT                                                                                                      \

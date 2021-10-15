@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2021-10-15
+
+### Added
+
+- Add `colors_icon` option, now users can use their own color palette themes!
+- Add `ghosts` color palette style (_requires a patched font like nerd fonts_)
+- Add `custom_ascii_logo` option, set your own ASCII logo!
+- Add support for Android devices (Termux)
+- Add debugging build targets in Makefile (`make dev` and `make valgrind`)
+- Add `USER_FLAGS` variable to Makefile to handle extra preprocessors that are optionals (e.g. `-DUSE_PWD_SHELL`)
+- ASCII logos:
+  - Android
+  - Manjaro
+
+### Changed
+
+- Shell is now obtained in a more robust and accurate method by default instead of relying in `SHELL` environment variable
+- If a field cannot be obtained then print line without field information
+
+### Fixed
+
+- Fix CPU model if `/proc/cpuinfo` does not have a `model name` field
+- Fix getting username in some distributions (and WSL)
+- Fix ninja bug where the configuration files were ignored
+- Logos with special characters were having a weird length
+- Proper conditional to get Debian logo and accent
+- Do not override lcfetch configuration file when installing
+
 ## [0.1.2] - 2021-09-19
 
 ### Fixed
@@ -146,7 +174,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/NTBBloodbath/lcfetch/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.2..v0.2.0
 [0.1.2]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.1..v0.1.2
 [0.1.1]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0..v0.1.1
 [0.1.0]: https://github.com/NTBBloodbath/lcfetch/compare/v0.1.0-beta6..v0.1.0
