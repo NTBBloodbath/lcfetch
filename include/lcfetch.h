@@ -62,6 +62,7 @@ void version(void);
 void help(void);
 
 /* utils.c */
+size_t utf8len(char *s);
 char *repeat_string(char *str, int times);
 void truncate_whitespaces(char *str);
 char *remove_substr(char *str, const char *sub);
