@@ -13,8 +13,9 @@ LUA_INC_DIR=/usr/include/$(LUA)
 
 CC=clang
 CCF=clang-format
-CFLAGS=-Ofast -Wall -Wextra
-LDFLAGS=$(shell pkg-config --libs $(LUA) || echo "-llua -lm -ldl") -lX11 -lXrandr
+USER_FLAGS=-DUSE_PWD_SHELL
+CFLAGS=-Ofast -Wall -Wextra $(USER_FLAGS)
+LDFLAGS=$(shell pkg-config --libs $(LUA) || echo "-llua -lm -ldl") -lc -lX11 -lXrandr
 ifeq (1,$(USE_SYSTEM_LUA))
 	CFLAGS+=-I $(LUA_INC_DIR) -DUSE_SYSTEM_LUA
 else
@@ -41,7 +42,8 @@ _echo_info:
 	echo -e "\e[1mLUA_INC_DIR\e[0m=$(LUA_INC_DIR)"
 	echo -e "\e[1mCC\e[0m=$(CC)"
 	echo -e "\e[1mCFLAGS\e[0m=$(CFLAGS)"
-	echo -e "\e[1mLDFLAGS\e[0m=$(LDFLAGS)\n"
+	echo -e "\e[1mLDFLAGS\e[0m=$(LDFLAGS)"
+	echo -e "\e[1mUSER_FLAGS\e[0m=$(USER_FLAGS)\n"
 
 
 _clone_deps: _echo_info

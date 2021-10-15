@@ -5,6 +5,7 @@
 #include <X11/extensions/Xrandr.h>
 #include <errno.h>
 #include <getopt.h>
+#include <pwd.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +19,7 @@
 
 struct utsname os_uname;
 struct sysinfo sys_info;
+struct passwd *pw;
 
 Display *display;
 int title_length;
@@ -30,9 +32,10 @@ char *get_title(char *accent_color) {
     char hostname[BUF_SIZE / 3];
     gethostname(hostname, BUF_SIZE / 3);
 
-    // char *username = getenv("USERNAME");
-    char username[BUF_SIZE / 3];
-    getlogin_r(username, BUF_SIZE / 3);
+    // NOTE: this approach doesn't seems to work well in some machines?
+    /* char username[BUF_SIZE / 3];
+    getlogin_r(username, BUF_SIZE / 3); */
+    char *username = pw->pw_name;
 
     // Calculate the length of hostname + @ + username
     title_length = strlen(hostname) + strlen(username) + 1;
@@ -207,9 +210,14 @@ char *get_shell() {
         strncpy(shell, shell_name + 1, BUF_SIZE);
     } else {
         char *user_shell;
-        // If getusershell is not defined then fallback to SHELL env variable
-#ifdef HAVE_GETUSERSHELL
-        user_shell = getusershell();
+// If we should use pw_shell from passwd struct for a more accurate
+// and portable shell detection since SHELL environment variable does not
+// always exists
+#ifdef USE_PWD_SHELL
+        // struct passwd *pw;
+        /* const uid_t uid = getuid();
+        pw = getpwuid(uid); */
+        user_shell = pw->pw_shell; // getusershell();
 #else
         user_shell = getenv("SHELL");
 #endif
@@ -798,6 +806,12 @@ int main(int argc, char *argv[]) {
     uname(&os_uname);
     // populate the sys_info struct
     sysinfo(&sys_info);
+
+    // Get User ID
+    const uid_t uid = getuid();
+
+    // populate the passwd struct
+    pw = getpwuid(uid);
 
     display = XOpenDisplay(NULL);
 
