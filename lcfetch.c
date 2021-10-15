@@ -214,10 +214,7 @@ char *get_shell() {
 // and portable shell detection since SHELL environment variable does not
 // always exists
 #ifdef USE_PWD_SHELL
-        // struct passwd *pw;
-        /* const uid_t uid = getuid();
-        pw = getpwuid(uid); */
-        user_shell = pw->pw_shell; // getusershell();
+        user_shell = pw->pw_shell;
 #else
         user_shell = getenv("SHELL");
 #endif
