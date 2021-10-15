@@ -188,16 +188,41 @@ char *get_resolution() {
 
 char *get_shell() {
     char *shell = xmalloc(BUF_SIZE);
-    char *shell_path = getenv("SHELL");
-    char *shell_name = strrchr(getenv("SHELL"), '/');
+    if (is_android_device() && access("/etc/shells", F_OK) != 0) {
+        // Android does not have an /etc/shells file
+        // so we need a special treatment for it
+        char *termux_shell = xmalloc(BUF_SIZE);
+        char *read_termux_shell = xmalloc(BUF_SIZE);
+        snprintf(read_termux_shell, BUF_SIZE, "readlink %s/.termux/shell", getenv("HOME"));
 
-    // If the shell does not contains a separator in the path, e.g.
-    // zsh instead of /usr/bin/zsh then write it directly
-    if (shell_name == NULL) {
-        strncpy(shell, shell_path, BUF_SIZE);
-    } else {
-        // Copy only the last '/'
+        FILE *shell_link = popen(read_termux_shell, "r");
+        fscanf(shell_link, "%s", termux_shell);
+        pclose(shell_link);
+        xfree(read_termux_shell);
+
+        char *shell_name = strrchr(termux_shell, '/');
+        xfree(termux_shell);
+
+        // Copy only the last '/', e.g. /zsh → zsh
         strncpy(shell, shell_name + 1, BUF_SIZE);
+    } else {
+        char *user_shell;
+        // If getusershell is not defined then fallback to SHELL env variable
+#ifdef HAVE_GETUSERSHELL
+        user_shell = getusershell();
+#else
+        user_shell = getenv("SHELL");
+#endif
+        char *shell_name = strrchr(user_shell, '/');
+
+        // If the shell does not contains a separator in the path, e.g.
+        // zsh instead of /usr/bin/zsh then write it directly
+        if (shell_name == NULL) {
+            return user_shell;
+        } else {
+            // Copy only the last '/', e.g. /zsh → zsh
+            strncpy(shell, shell_name + 1, BUF_SIZE);
+        }
     }
 
     return shell;
