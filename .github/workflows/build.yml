@@ -28,7 +28,7 @@ jobs:
       - name: Build lcfetch
         run: |
           cd ./lcfetch
-          xmake
+          xmake -y
 
       - name: Upload produced binary
         uses: actions/upload-artifact@v2

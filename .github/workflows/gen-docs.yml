@@ -27,7 +27,7 @@ jobs:
       - name: Convert man pages
         run: |
           cd ./lcfetch
-          xmake run docs
+          xmake -y run docs
 
       - name: Commit man pages
         run: |
