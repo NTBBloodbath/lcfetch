@@ -21,9 +21,7 @@
 #include "lcfetch.h"
 #include <log.h>
 
-#ifdef MACOS
-struct timespec get_macos_uptime();
-#else
+#ifndef MACOS
 struct sysinfo sys_info;
 #endif
 
@@ -115,7 +113,7 @@ char *get_os(bool return_pretty_name) {
 char *get_kernel() { return os_uname.release; }
 
 #ifdef MACOS
-static timespec get_macos_uptime() {
+timespec get_macos_uptime() {
     struct timespec uptime;
     if (clock_gettime(CLOCK_MONOTONIC_RAW, &uptime) != 0) {
         log_error(strerror(errno));
