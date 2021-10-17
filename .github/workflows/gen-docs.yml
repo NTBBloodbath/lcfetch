@@ -19,10 +19,15 @@ jobs:
           sudo apt update -q
           sudo apt install pandoc
 
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest 
+
       - name: Convert man pages
         run: |
           cd ./lcfetch
-          make docs
+          xmake run docs
 
       - name: Commit man pages
         run: |

@@ -20,10 +20,15 @@ jobs:
           sudo apt update -q
           sudo apt install clang-format -y -q
 
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
       - name: Format source code
         run: |
           cd ./lcfetch
-          make fmt
+          xmake run fmt
 
       - name: Commit changes
         run: |
