@@ -24,7 +24,7 @@ end
 add_defines("USE_PWD_SHELL")
 
 -- third-party dependencies
-add_requires("lua >= 5.3.6", "libx11", "libxrandr", "xorgproto", "log.c")
+add_requires("lua >= 5.3.6", "libx11", "xorgproto", "libxrandr", "log.c")
 
 -- headers directories
 add_includedirs("src/include")
@@ -73,7 +73,7 @@ target("lcfetch")
   add_files("src/*.c", "src/lib/*.c")
 
   -- Add third-party dependencies
-  add_packages("lua", "libx11", "libxrandr", "xorgproto", "log.c")
+  add_packages("lua", "libx11", "xorgproto", "libxrandr", "log.c")
 
   -- Precompile main lcfetch header to optimize compile time
   set_pcheader("src/include/lcfetch.h")
