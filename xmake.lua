@@ -106,7 +106,7 @@ target("lcfetch")
     local targetfile = target:targetfile()
     os.run(
       string.format(
-        "install -m a+rX %s %s",
+        "install %s %s",
         path.join(config.buildir(), path.filename(targetfile)),
         os.getenv("HOME") .. "/.local/bin/" .. path.filename(targetfile)
       )
