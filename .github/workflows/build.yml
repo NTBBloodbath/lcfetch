@@ -33,8 +33,33 @@ jobs:
       - name: Upload produced binary
         uses: actions/upload-artifact@v2
         with:
-          name: lcfetch-x86_64
+          name: lcfetch-linux-x86_64
           path: ./lcfetch/build/linux/x86_64/release/lcfetch
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          path: lcfetch
+
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      - name: Build lcfetch
+        run: |
+          cd ./lcfetch
+          xmake -y
+
+      - name: Upload produced binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: lcfetch-macosx-x86_64
+          path: ./lcfetch/build/macosx/x86_64/release/lcfetch
           if-no-files-found: error
 
   release:
@@ -51,12 +76,12 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: lcfetch-x86_64
+          name: lcfetch-linux-x86_64
 
-      - name: Compress
+      - name: Compress Linux binaries
         run: |
           chmod +x lcfetch
-          tar caf lcfetch-x86_64.tar.xz lcfetch && rm lcfetch
+          tar caf lcfetch-linux-x86_64.tar.xz lcfetch && rm lcfetch
           ls -lh
 
       - name: Setup Release information
