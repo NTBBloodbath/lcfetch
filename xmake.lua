@@ -14,14 +14,22 @@ set_warnings("allextra")
 set_languages("c99")
 
 -- build modes
-add_rules("mode.debug", "mode.release")
+add_rules("mode.debug", "mode.release", "mode.valgrind")
 if is_mode("release") then
   -- '-Ofast' equivalent
   set_optimize("aggresive")
+  -- Strip unneeded debugging symbols
+  set_strip("all")
+  -- Hide symbols
+  set_symbols("hidden")
 end
 
 -- preprocessor variables
-add_defines("USE_PWD_SHELL")
+if is_plat("macosx") then
+  add_defines("USE_PWD_SHELL", "MACOS")
+else
+  add_defines("USE_PWD_SHELL")
+end
 
 -- third-party dependencies
 add_requires("lua >= 5.3.6", "libx11", "libxrandr", "xorgproto", "log.c")
@@ -35,13 +43,11 @@ package("log.c")
   set_description("A simple logging library implemented in C99")
   set_sourcedir(path.join(os.scriptdir(), "third-party/log.c/src"))
 
-  add_defines("LOG_USE_COLOR")
-
   on_install(function(package)
     -- Create directories
     os.mkdir(package:installdir("lib"), package:installdir("include"))
     -- Generate static log.c library
-    os.run("gcc -c -o log.o log.c")
+    os.run("gcc -DLOG_USE_COLOR -c -o log.o log.c")
     os.run("ar rcs liblog.a log.o")
     -- Copy libraries and headers
     os.cp("*.h", package:installdir("include"))

@@ -10,15 +10,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef MACOS
+#include <sys/sysctl.h>
+#else
 #include <sys/sysinfo.h>
+#endif
 #include <sys/utsname.h>
 #include <unistd.h>
 /* Custom headers */
 #include "lcfetch.h"
 #include <log.h>
 
-struct utsname os_uname;
+#ifdef MACOS
+struct timespec get_macos_uptime();
+#else
 struct sysinfo sys_info;
+#endif
+
+struct utsname os_uname;
 struct passwd *pw;
 
 Display *display;
@@ -105,8 +114,26 @@ char *get_os(bool return_pretty_name) {
 
 char *get_kernel() { return os_uname.release; }
 
+#ifdef MACOS
+static timespec get_macos_uptime() {
+    struct timespec uptime;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &uptime) != 0) {
+        log_error(strerror(errno));
+        exit(errno);
+    }
+
+    return uptime;
+}
+#endif
+
 char *get_uptime() {
-    long seconds = sys_info.uptime;
+    long seconds;
+#ifdef MACOS
+    struct timespec macos_uptime = get_macos_uptime();
+    seconds = macos_uptime.tv_sec;
+#else
+    seconds = sys_info.uptime;
+#endif
     struct {
         char *name;
         int seconds;
@@ -801,8 +828,11 @@ int main(int argc, char *argv[]) {
 
     // populate the os_uname struct
     uname(&os_uname);
+
+#ifndef MACOS
     // populate the sys_info struct
     sysinfo(&sys_info);
+#endif
 
     // Get User ID
     const uid_t uid = getuid();
