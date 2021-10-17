@@ -1,3 +1,7 @@
+# Produced static libraries
+*.a
+*.o
+
 # Xmake cache
 .xmake/
 build/
