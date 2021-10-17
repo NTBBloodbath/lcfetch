@@ -81,6 +81,11 @@ target("lcfetch")
   -- Add third-party dependencies
   add_packages("lua", "libx11", "libxrandr", "xorgproto", "log.c")
 
+  -- Add MacOS dynamic libraries that doesn't follow the 'libfoo.*' pattern
+  if is_plat("macosx") then
+    add_links("libXrandr.2.dylib")
+  end
+
   -- Precompile main lcfetch header to optimize compile time
   set_pcheader("src/include/lcfetch.h")
 
