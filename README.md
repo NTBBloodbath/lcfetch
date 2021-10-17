@@ -27,8 +27,12 @@ or if you want to live in the bleeding-edge with the latest features you can [bu
 
 #### Installing dependencies
 
-The Lua packages listed below are optional because lcfetch will download `Lua 5.3.6` locally
-by default in order to avoid installing extra stuff in your system.
+The packages listed below are optional because lcfetch will download `Lua 5.3.6` locally
+by default in order to avoid installing extra stuff in your system and libraries if they
+aren't installed in your system.
+
+> **IMPORTANT**: xmake is not in all distributions repositories,
+> please refer to xmake [installation guide](https://xmake.io/#/guide/installation).
 
 ##### Ubuntu
 
@@ -51,7 +55,7 @@ pacman -S lua53 libx11 libxrandr readline
 ##### Termux
 
 ```sh
-apt install lua53 liblua53 libx11 libxrandr readline xorgproto
+apt install xmake lua53 liblua53 libx11 libxrandr readline xorgproto
 ```
 
 > **NOTE**: isn't your distro covered here but you know the exact packages names? Please
@@ -66,36 +70,25 @@ git clone --depth 1 https://github.com/NTBBloodbath/lcfetch.git \
     && cd lcfetch
 ```
 
-For speeding up things, you can simply use our [Makefile](./Makefile).
+For speeding up things, you can simply use our [XMake file](./xmake.lua).
 
-The Makefile `build` target (the default one) will automatically download the required
-third-party dependencies for building lcfetch (`log.c` and `Lua 5.3.6`).
+The `lcfetch` target (the default one) will automatically download the required
+third-party dependencies for building lcfetch (`Lua 5.3.6` and system dependencies like `libxrandr` if needed).
 
 ```sh
-# For only building lcfetch, produced binary will be located at 'bin/lcfetch'
-make
-
-# If you want to compile using your system's Lua version
-make USE_SYSTEM_LUA=1
+# For only building lcfetch
+xmake
 
 # For building and installing lcfetch, lcfetch will be installed at '~/.local/bin'
-make install
+xmake install
 ```
 
-> **IMPORTANT**: if you don't have clang installed you will need to change the `CC` variable
-> value by adding `CC=gcc` in your make call.
+> **IMPORTANT**: if you don't have clang installed you will need to change the compiler
+> by adding `--cc=gcc` in your xmake call.
 
 #### Troubleshooting
 
-1. If you're getting errors regarding to missing Lua headers (e.g. `lauxlib.h`)
-    change the `LUA` variable when running `make` to match your Lua `include/` path,
-    e.g. `LUA=lua5.3` for `/usr/include/lua5.3`.
-
-2. If you're getting errors regarding to `ld` and `-llua` you will need to change the
-    `LUA` variable when running `make` to match with your `liblua*.so` file, e.g.
-    `LUA=lua5.3` for `liblua5.3.so`.
-
-3. If you're getting an error related to `Xatom.h` header during compilation you will
+1. If you're getting an error related to `Xatom.h` header during compilation you will
      need to install `xorgproto` package (don't know if the package name changes in some distros tho).
 
 ## Usage
@@ -123,10 +116,10 @@ Report bugs to https://github.com/NTBBloodbath/lcfetch/issues
 lcfetch uses the [Lua scripting language](https://www.lua.org/) as its configuration
 language.
 
-When installing lcfetch with `GNU Make` we will automatically copy the default configurations
+When installing lcfetch with `XMake` we will automatically copy the default configurations
 under the default configurations path for lcfetch (`~/.config/lcfetch/config.lua`).
 
-> **NOTE**: if you didn't installed lcfetch with `make` you will need to copy the file
+> **NOTE**: if you didn't installed lcfetch with `xmake install` you will need to copy the file
 > by yourself under `~/.config/lcfetch` directory. The default configurations file is
 > located under [config](./config) directory in the repository.
 
@@ -134,11 +127,12 @@ All the configuration options are self-documented and easy to understand.
 
 ## Uninstalling
 
-For uninstalling lcfetch you can simply run `make uninstall` in the lcfetch directory.
+For uninstalling lcfetch you can simply run `xmake uninstall` in the lcfetch directory.
 
 This command will remove the lcfetch binary from `~/.local/bin` directory and also
-the lcfetch man pages from `~/.local/share/man/man1` and refresh your `mandb` to
-completely remove them.
+the lcfetch man pages from `~/.local/share/man/man1`.
+
+> **NOTE**: you will need to refresh your `mandb` to completely remove lcfetch man pages.
 
 ## Acknowledgements
 

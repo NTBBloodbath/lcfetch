@@ -14,8 +14,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 /* Custom headers */
-#include "include/lcfetch.h"
-#include "third-party/log.c/src/log.h"
+#include "lcfetch.h"
+#include <log.h>
 
 struct utsname os_uname;
 struct sysinfo sys_info;

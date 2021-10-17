@@ -4,17 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 /* Lua headers */
-#ifdef USE_SYSTEM_LUA
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
-#else
-#include "../third-party/lua-5.3.6/src/lauxlib.h"
-#include "../third-party/lua-5.3.6/src/lua.h"
-#include "../third-party/lua-5.3.6/src/lualib.h"
-#endif
 /* Custom headers */
-#include "../include/lcfetch.h"
+#include "lcfetch.h"
 
 // Lua interpreter state
 static lua_State *lua;

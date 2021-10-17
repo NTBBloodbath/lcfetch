@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../third-party/log.c/src/log.h"
+#include <log.h>
 
 /**
  * A malloc() wrapper that checks the results and dies in case of error

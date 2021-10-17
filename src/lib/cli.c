@@ -1,4 +1,4 @@
-#include "../include/lcfetch.h"
+#include "lcfetch.h"
 #include <stdio.h>
 #include <stdlib.h>
 

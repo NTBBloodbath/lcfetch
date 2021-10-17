@@ -1,5 +1,5 @@
-#include "../include/lcfetch.h"
-#include "../third-party/log.c/src/log.h"
+#include "lcfetch.h"
+#include <log.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <stdbool.h>
@@ -8,15 +8,15 @@
 #include <string.h>
 #include <strings.h>
 /* ASCII logos */
-#include "../include/logos/android.h"
-#include "../include/logos/arch.h"
-#include "../include/logos/debian.h"
-#include "../include/logos/fedora.h"
-#include "../include/logos/gentoo.h"
-#include "../include/logos/linux.h"
-#include "../include/logos/manjaro.h"
-#include "../include/logos/nixos.h"
-#include "../include/logos/ubuntu.h"
+#include "logos/android.h"
+#include "logos/arch.h"
+#include "logos/debian.h"
+#include "logos/fedora.h"
+#include "logos/gentoo.h"
+#include "logos/linux.h"
+#include "logos/manjaro.h"
+#include "logos/nixos.h"
+#include "logos/ubuntu.h"
 
 size_t utf8len(char *s) {
     size_t len = 0;
