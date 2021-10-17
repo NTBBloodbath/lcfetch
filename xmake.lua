@@ -24,7 +24,7 @@ end
 add_defines("USE_PWD_SHELL")
 
 -- third-party dependencies
-add_requires("lua >= 5.3.6", "libx11", "xorgproto", "libxrandr", "log.c")
+add_requires("lua >= 5.3.6", "xtrans", "libx11", "xorgproto", "libxrandr", "log.c")
 
 -- headers directories
 add_includedirs("src/include")
