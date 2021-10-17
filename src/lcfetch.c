@@ -21,7 +21,9 @@
 #include "lcfetch.h"
 #include <log.h>
 
-#ifndef MACOS
+#ifdef MACOS
+typedef struct timespec timespec;
+#else
 struct sysinfo sys_info;
 #endif
 
