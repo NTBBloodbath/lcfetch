@@ -1,7 +1,7 @@
 #include "lcfetch.h"
-#include <log.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <log.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
