@@ -28,6 +28,7 @@ jobs:
       - name: Format source code
         run: |
           cd ./lcfetch
+          xmake -y
           xmake run fmt
 
       - name: Commit changes
