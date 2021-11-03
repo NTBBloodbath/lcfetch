@@ -6,5 +6,8 @@
 .xmake/
 build/
 
+# VSCodium cache
+.vscode/
+
 # MacOS Cache
 .DS_Store
