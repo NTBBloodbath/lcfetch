@@ -37,40 +37,40 @@ jobs:
           path: ./lcfetch/build/linux/x86_64/release/lcfetch
           if-no-files-found: error
 
-  macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-        with:
-          path: lcfetch
+  # macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout source code
+  #       uses: actions/checkout@v2
+  #       with:
+  #         path: lcfetch
 
-      - name: Install xmake
-        uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: latest
+  #     - name: Install xmake
+  #       uses: xmake-io/github-action-setup-xmake@v1
+  #       with:
+  #         xmake-version: latest
 
-      # Update xmake repository (in order to have the file that will be cached)
-      - name: Update xmake repository
-        run: xmake repo --update
+  #     # Update xmake repository (in order to have the file that will be cached)
+  #     - name: Update xmake repository
+  #       run: xmake repo --update
 
-      # Cache xmake dependencies because it's slow as hell in MacOS
-      - uses: actions/cache@v2
-        with:
-          path: /Users/runneradmin/.xmake/packages
-          key: ${{ runner.os }}-${{ matrix.arch }}-${{ matrix.mode }}-${{ hashFiles('xmake.lua') }}-${{ hashFiles('/Users/runneradmin/.xmake/xmake.conf') }}-${{ hashFiles('/Users/runneradmin/.xmake/repositories/**') }}
+  #     # Cache xmake dependencies because it's slow as hell in MacOS
+  #     - uses: actions/cache@v2
+  #       with:
+  #         path: /Users/runneradmin/.xmake/packages
+  #         key: ${{ runner.os }}-${{ matrix.arch }}-${{ matrix.mode }}-${{ hashFiles('xmake.lua') }}-${{ hashFiles('/Users/runneradmin/.xmake/xmake.conf') }}-${{ hashFiles('/Users/runneradmin/.xmake/repositories/**') }}
 
-      - name: Build lcfetch
-        run: |
-          cd ./lcfetch
-          xmake -y
+  #     - name: Build lcfetch
+  #       run: |
+  #         cd ./lcfetch
+  #         xmake -y
 
-      - name: Upload produced binary
-        uses: actions/upload-artifact@v2
-        with:
-          name: lcfetch-macosx-x86_64
-          path: ./lcfetch/build/macosx/x86_64/release/lcfetch
-          if-no-files-found: error
+  #     - name: Upload produced binary
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: lcfetch-macosx-x86_64
+  #         path: ./lcfetch/build/macosx/x86_64/release/lcfetch
+  #         if-no-files-found: error
 
   release:
     name: Release to GitHub
