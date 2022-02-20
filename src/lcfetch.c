@@ -665,7 +665,7 @@ char *get_colors_bright() {
     return bright_colors;
 }
 
-void print_info() {
+void print_info(char *distro_logo) {
     // If the ASCII distro logo should be printed
     bool display_logo = get_option_boolean("display_logo");
     // The delimiter shown between the field message and the information, e.g.
@@ -689,6 +689,12 @@ void print_info() {
         xfree(accent_color);
         accent_color = get_distro_accent((char *)custom_distro_logo);
     }
+    if (distro_logo != NULL) {
+        logo = get_distro_logo(distro_logo);
+        logo_rows = get_distro_logo_rows(distro_logo);
+        xfree(accent_color);
+        accent_color = get_distro_accent(distro_logo);
+    }
     if (strlen(custom_accent_color) > 0) {
         xfree(accent_color);
         accent_color = get_custom_accent((char *)custom_accent_color);
@@ -697,7 +703,7 @@ void print_info() {
 
     bool is_custom_logo = false;
     struct custom_logo custom_ascii_logo = get_custom_logo();
-    if (custom_ascii_logo.cols > 0) {
+    if (custom_ascii_logo.cols > 0 && distro_logo == NULL) {
         memmove(logo, custom_ascii_logo.arr, BUF_SIZE);
         logo_rows = custom_ascii_logo.cols;
         is_custom_logo = true;
@@ -793,16 +799,18 @@ void print_info() {
 int main(int argc, char *argv[]) {
     // Command-line arguments (CLI)
     int c;
+    char *distro_logo = NULL;
     char *config_file_path = NULL;
     while (1) {
         static struct option long_options[] = {
             {"help", no_argument, NULL, 'h'},
             {"version", no_argument, NULL, 'v'},
             {"config", required_argument, NULL, 'c'},
+            {"distro_name", required_argument, NULL, 'd'},
         };
 
         int option_index = 0;
-        c = getopt_long(argc, argv, "hvc:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hvcd:", long_options, &option_index);
 
         // Detect the end of the command-line options
         if (c == -1) {
@@ -817,6 +825,9 @@ int main(int argc, char *argv[]) {
             exit(0);
         case 'c':
             config_file_path = optarg;
+            break;
+        case 'd':
+            distro_logo = optarg;
             break;
         default:
             help();
@@ -846,7 +857,7 @@ int main(int argc, char *argv[]) {
     // Disable line wrapping so we can keep the logo intact on small terminals
     printf("\e[?7l");
     // Print all stuff (logo, information)
-    print_info();
+    print_info(distro_logo);
     // Re-enable line wrapping again
     printf("\e[?7h");
 

@@ -12,6 +12,7 @@ void help() {
                                "OPTIONS:\n"
                                "\t-c, --config /path/to/config\tSpecify a path to a custom config "
                                "file\n"
+                               "\t-d, --distro_name distro_name\tDistribution logo\n"
                                "\t-h, --help\t\t\t\t\t\tPrint this message and exit\n"
                                "\t-v, --version\t\t\t\t\tShow lcfetch version\n\n"
                                "Report bugs to https://github.com/NTBBloodbath/lcfetch/issues\n";

@@ -87,7 +87,7 @@ target("lcfetch")
   end
 
   -- Precompile main lcfetch header to optimize compile time
-  set_pcheader("src/include/lcfetch.h")
+  -- set_pcheader("src/include/lcfetch.h")
 
   ----- HOOKS -------------------------
   after_build(function(target)

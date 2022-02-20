@@ -30,6 +30,9 @@ in C and configured using Lua.
 **-c**, **--config**
 : Specify a path to a custom config file.
 
+**-d**, **--distro_name**
+: Specify the distribution logo that is going to be printed.
+
 # EXAMPLES
 
 **lcfetch -h | lcfetch --help**
