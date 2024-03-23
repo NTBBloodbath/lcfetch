@@ -237,14 +237,13 @@ char *get_shell() {
         strncpy(shell, shell_name + 1, BUF_SIZE);
     } else {
         char *user_shell;
-// If we should use pw_shell from passwd struct for a more accurate
-// and portable shell detection since SHELL environment variable does not
-// always exists
-#ifdef USE_PWD_SHELL
-        user_shell = pw->pw_shell;
-#else
-        user_shell = getenv("SHELL");
-#endif
+        // If we should use pw_shell from passwd struct for a more accurate
+        // and portable shell detection since SHELL environment variable does not
+        // always exists
+        if (!(user_shell = getenv("SHELL"))) {
+            user_shell = pw->pw_shell;
+        };
+
         char *shell_name = strrchr(user_shell, '/');
 
         // If the shell does not contains a separator in the path, e.g.

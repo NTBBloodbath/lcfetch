@@ -26,9 +26,7 @@ end
 
 -- preprocessor variables
 if is_plat("macosx") then
-  add_defines("USE_PWD_SHELL", "MACOS")
-else
-  add_defines("USE_PWD_SHELL")
+  add_defines("MACOS")
 end
 
 -- third-party dependencies
