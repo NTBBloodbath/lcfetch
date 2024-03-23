@@ -748,8 +748,7 @@ void print_info(char *distro_logo) {
 
                 const char *field = get_subtable_string("enabled_fields", i + 1);
                 if (strcasecmp(field, "Colors") == 0) {
-                    size_t logo_cols = LEN(logo);
-                    print_colors(logo[i], (i + 1 > logo_cols) ? "" : logo[i + 1], gap_logo, gap_logo_info);
+                    print_colors(logo[i], (i + 1 >= logo_rows) ? "" : logo[i + 1], gap_logo, gap_logo_info);
                     i++;
                 } else if (strcmp(field, "") == 0) {
                     // If we should draw an empty line as a separator
