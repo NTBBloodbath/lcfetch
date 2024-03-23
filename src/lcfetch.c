@@ -302,7 +302,7 @@ char *get_terminal() {
 }
 
 char *get_packages() {
-   char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "emerge", "pacman", "apk", "xbps-query", "flatpak"};
+    char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "emerge", "pacman", "apk", "xbps-query", "flatpak"};
     char *packages = xmalloc(BUF_SIZE * 2);
     int apt, rpm, dnf, emerge, pacman, aur, nix, apk, xbps, flatpak = 0;
 
