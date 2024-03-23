@@ -18,5 +18,5 @@ char *gentoo[] = {
     "\e[1;35myM\e[1;37mMNNNNNNNmmmmmNNMmhs+/\e[1;35m-`            ",
     "\e[1;35m/h\e[1;37mMMNNNNNNNNMNdhs++/\e[1;35m-`               ",
     "\e[1;35m`/\e[1;37mohdmmddhys+++/:\e[1;35m.`                  ",
-    "  \e[1;35m`-//////:--.\n                                     ",
+    "  \e[1;35m`-//////:--.                       ",
 };
