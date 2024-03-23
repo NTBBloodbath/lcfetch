@@ -302,9 +302,9 @@ char *get_terminal() {
 }
 
 char *get_packages() {
-    char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "pacman", "apk", "xbps-query", "flatpak"};
+   char *pkg_managers[] = {"apt", "dnf", "rpm", "nix", "emerge", "pacman", "apk", "xbps-query", "flatpak"};
     char *packages = xmalloc(BUF_SIZE * 2);
-    int apt, rpm, dnf, pacman, aur, nix, apk, xbps, flatpak = 0;
+    int apt, rpm, dnf, emerge, pacman, aur, nix, apk, xbps, flatpak = 0;
 
     // Add an initial empty string to our packages characters array to be able
     // to use snprintf() for append to it later
@@ -360,6 +360,18 @@ char *get_packages() {
                         snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", rpm, pkg_manager);
                     } else {
                         snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", rpm, pkg_manager);
+                    }
+                    displayed_pkg_managers++;
+                }
+            } else if (strcmp(pkg_manager, "emerge") == 0) {
+                FILE *emerge_packages = popen("ls -d /var/db/pkg/*/* | wc -l", "r");
+                fscanf(emerge_packages, "%d", &emerge);
+                pclose(emerge_packages);
+                if (emerge > 0) {
+                    if (displayed_pkg_managers >= 1) {
+                        snprintf(packages + strlen(packages), BUF_SIZE, ", %d (%s)", emerge, pkg_manager);
+                    } else {
+                        snprintf(packages + strlen(packages), BUF_SIZE, "%d (%s)", emerge, pkg_manager);
                     }
                     displayed_pkg_managers++;
                 }
