@@ -17,7 +17,7 @@ set_languages("c99")
 add_rules("mode.debug", "mode.release", "mode.valgrind")
 if is_mode("release") then
   -- '-Ofast' equivalent
-  set_optimize("aggresive")
+  set_optimize("aggressive")
   -- Strip unneeded debugging symbols
   set_strip("all")
   -- Hide symbols
