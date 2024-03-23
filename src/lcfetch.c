@@ -206,6 +206,7 @@ char *get_resolution() {
             Window root = RootWindow(display, 0);
             XRRScreenConfiguration *conf = XRRGetScreenInfo(display, root);
             snprintf(res + strlen(res), BUF_SIZE, " @ %dHz", XRRConfigCurrentRate(conf));
+            xfree(conf);
         }
     } else {
         // If we were unable to detect the screen resolution then return NULL
