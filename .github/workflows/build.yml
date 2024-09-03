@@ -84,7 +84,7 @@ jobs:
           path: "workspace"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: lcfetch-linux-x86_64
 
